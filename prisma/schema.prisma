@@ -1,0 +1,614 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================================
+// 0. ORGANISATION
+// ============================================================================
+
+model Organisation {
+  id        String  @id @default(cuid())
+  nom       String
+  matricule String? // Registre de commerce ou ID fiscal
+  adresse   String?
+  siteWeb   String?
+  logoUrl   String?
+
+  // Cette variable est la clé de ton parcours client
+  estConfiguree Boolean @default(false)
+
+  dateCreation  DateTime @default(now())
+  dateMiseAJour DateTime @updatedAt
+
+  @@map("organisation")
+}
+
+// ============================================================================
+// 1. GESTION DES UTILISATEURS & ORGANISATION (ADMIN)
+// ============================================================================
+
+// Hiérarchie validée avec le Chef de Projet
+enum RoleUtilisateur {
+  ADMIN // Gestion technique uniquement
+
+  // --- Hiérarchie Audit Interne ---
+  DIRECTEUR_AUDIT // Validation plan audit
+  CHEF_DEPARTEMENT_AUDIT // Supervision
+  CHEF_MISSION // Lead sur une mission
+  AUDITEUR_SENIOR // Exécution & Encadrement
+  AUDITEUR_JUNIOR // Exécution
+  STAGIAIRE // Support
+
+  // --- Métier (Business) ---
+  RISK_CHAMPION // Point focal Audit dans un département
+  MANAGER_METIER // Chef de service / Directeur (Peut être Action Owner)
+  EMPLOYE_METIER // Employé standard (Peut être Action Owner)
+
+  // --- Accès Spéciaux ---
+  LECTURE_SEULE // Régulateur, DG (Consultation uniquement)
+}
+
+enum StatutUtilisateur {
+  ACTIF
+  INACTIF
+  SUSPENDU
+}
+
+model OtpToken {
+  id      String   @id @default(uuid())
+  code    String   @db.VarChar(255)
+  email   String
+  counter Int?
+  expire  DateTime
+
+  @@map("otp_tokens")
+}
+
+model CounterOtp {
+  id      String @id @default(uuid())
+  counter Int
+
+  @@map("counters_otp")
+}
+
+model Utilisateur {
+  id         String  @id @default(cuid())
+  matricule  String? @unique
+  email      String  @unique
+  prenom     String
+  nom        String
+  motDePasse String
+
+  role   RoleUtilisateur
+  statut StatutUtilisateur @default(ACTIF)
+
+  // Département d'appartenance (RH, IT, Audit, etc.)
+  departementId String?
+  departement   Departement? @relation("AppartenanceDepartement", fields: [departementId], references: [id])
+
+  // --- Relations Audit (Interne) ---
+  auditsDiriges       Audit[]      @relation("ResponsableAudit")
+  auditsParticipation Audit[]      @relation("EquipeAudit")
+  pointsCrees         PointAudit[] @relation("AuditeurCreateur")
+
+  // --- Relations FRM (Fraude) ---
+  casFraudeGeres    CasFraude[]   @relation("AuditeurFRM")
+  pointsFraudeGeres PointFraude[] @relation("AuditeurPointFraude")
+
+  // --- Relations Métier (Business) ---
+  actionsAssignees ActionPoint[] @relation("ProprietaireAction")
+  riskChampionDe   Departement?  @relation("RiskChampionDepartement")
+
+  // --- Relations Système ---
+  importsRealises ImportBatch[]
+
+  dateCreation      DateTime  @default(now())
+  dateMiseAJour     DateTime  @updatedAt
+  derniereConnexion DateTime?
+
+  @@map("utilisateurs")
+}
+
+model Departement {
+  id          String  @id @default(cuid())
+  code        String  @unique // Ex: FIN, IT, HR
+  nom         String
+  description String?
+
+  parentId         String?
+  parent           Departement?  @relation("HierarchieDept", fields: [parentId], references: [id])
+  sousDepartements Departement[] @relation("HierarchieDept")
+
+  // Risk Champion attitré
+  riskChampionId String?      @unique
+  riskChampion   Utilisateur? @relation("RiskChampionDepartement", fields: [riskChampionId], references: [id])
+
+  actif         Boolean  @default(true)
+  dateCreation  DateTime @default(now())
+  dateMiseAJour DateTime @updatedAt
+
+  // Relations
+  employes Utilisateur[] @relation("AppartenanceDepartement")
+
+  // Scopes
+  auditsPrincipaux Audit[]      @relation("DepartementPrincipal")
+  pointsConcernes  PointAudit[] @relation("DepartementConcerne")
+  casFraude        CasFraude[]  @relation("DepartementFraude")
+
+  @@map("departements")
+}
+
+// ============================================================================
+// 2. MODULE AUDIT (INTERNE & EXTERNE)
+// ============================================================================
+
+enum TypeAudit {
+  INTERNE
+  EXTERNE
+}
+
+enum SourceAudit {
+  SAISIE_MANUELLE
+  IMPORT_EXCEL // Pour les audits externes intégrés
+}
+
+enum StatutAudit {
+  PLANIFIE
+  EN_COURS // Fieldwork
+  PRE_PROJET // Draft
+  PUBLIE // Final (Active le Dunning)
+  CLOTURE // Terminée
+  ARCHIVE
+}
+
+model Audit {
+  id        String      @id @default(cuid())
+  reference String      @unique // Ex: AUD-2026-001
+  titre     String
+  type      TypeAudit
+  source    SourceAudit @default(SAISIE_MANUELLE)
+
+  anneeFiscale Int
+
+  dateDebutPrevue DateTime
+  dateFinPrevue   DateTime
+  datePublication DateTime? // Date réelle (départ du Dunning)
+
+  // Périmètre Principal
+  departementId String
+  departement   Departement @relation("DepartementPrincipal", fields: [departementId], references: [id])
+
+  // Responsable (Chef de mission)
+  responsableId String
+  responsable   Utilisateur @relation("ResponsableAudit", fields: [responsableId], references: [id])
+
+  // Équipe complète (Many-to-Many)
+  equipe Utilisateur[] @relation("EquipeAudit")
+
+  // --- Spécifique Audit Externe ---
+  cabinetExterne    String?
+  associeSignataire String?
+  noteEvaluation    String?
+
+  statut StatutAudit @default(PLANIFIE)
+
+  // Relations
+  points        PointAudit[]
+  piecesJointes PieceJointe[] // Rapport final signé, Lettre de mission...
+
+  // Lié aux imports (si source = IMPORT_EXCEL)
+  importsSource ImportBatch[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("audits")
+}
+
+// ============================================================================
+// 3. GESTION DES POINTS (FINDINGS)
+// ============================================================================
+
+enum Criticite {
+  CRITIQUE
+  ELEVEE
+  MOYENNE
+  FAIBLE
+}
+
+enum StatutPoint {
+  OUVERT
+  EN_ATTENTE_VALIDATION // CPF (Complete Pending Follow-up) - Le métier a fini, l'audit doit vérifier
+  FERME_RESOLU // Validé par l'audit
+  FERME_RISQUE_ACCEPTE // Validé via RAF
+  OBSOLETE
+}
+
+model PointAudit {
+  id        String @id @default(cuid())
+  reference String @unique // Ex: F-001
+
+  auditId String
+  audit   Audit  @relation(fields: [auditId], references: [id], onDelete: Cascade)
+
+  // Département spécifique du point (peut différer de l'audit)
+  departementId String
+  departement   Departement @relation("DepartementConcerne", fields: [departementId], references: [id])
+
+  // Détails
+  titre          String
+  description    String  @db.Text
+  causes         String? @db.Text
+  consequences   String? @db.Text
+  recommandation String  @db.Text
+
+  criticite Criticite
+
+  // Dates
+  dateEcheanceInitiale DateTime
+  dateEcheanceActuelle DateTime
+  dateResolution       DateTime?
+  dateCPF              DateTime? // Date de passage en "En attente validation"
+
+  // Double Statut (Optionnel, ici unifié pour simplification, mais extensible)
+  statut StatutPoint @default(OUVERT)
+
+  // Suivi
+  ageing     Int @default(0) // Jours de retard
+  nbRelances Int @default(0)
+
+  // Créateur
+  createurId String
+  createur   Utilisateur @relation("AuditeurCreateur", fields: [createurId], references: [id])
+
+  // Relations
+  actions       ActionPoint[]
+  historique    HistoriqueStatut[]
+  commentaires  Commentaire[]
+  piecesJointes PieceJointe[]
+
+  // Acceptation de risque
+  formulaireRisqueId String?
+  formulaireRisque   FormulaireAcceptationRisque? @relation(fields: [formulaireRisqueId], references: [id])
+
+  // Lien avec le Staging (si importé)
+  sourceImportId String? @unique // Lien 1-1 vers la ligne d'import originale
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("points_audit")
+}
+
+model ActionPoint {
+  id String @id @default(cuid())
+
+  pointAuditId String
+  pointAudit   PointAudit @relation(fields: [pointAuditId], references: [id], onDelete: Cascade)
+
+  description String
+
+  // Action Owner
+  responsableId String
+  responsable   Utilisateur @relation("ProprietaireAction", fields: [responsableId], references: [id])
+
+  dateEcheance DateTime
+  statut       String // "A_FAIRE", "EN_COURS", "TERMINE"
+  avancement   Int      @default(0)
+
+  piecesJointes PieceJointe[] // Preuves de réalisation
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("actions_points")
+}
+
+model FormulaireAcceptationRisque {
+  id     String @id @default(cuid())
+  numero String @unique
+
+  justification         String  @db.Text
+  controleCompensatoire String?
+
+  // Workflow d'approbation (simplifié)
+  approuvePar_HoD       String?
+  approuvePar_GM        String?
+  approuvePar_CEO       String?
+  validePar_ComiteAudit String? // Final
+
+  dateValidationFinal DateTime?
+
+  pointsAudit PointAudit[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("formulaires_acceptation_risque")
+}
+
+// ============================================================================
+// 4. MODULE FRM (FRAUD RISK MANAGEMENT)
+// ============================================================================
+
+enum StatutCasFraude {
+  EN_INVESTIGATION
+  INVESTIGATION_TERMINEE
+  CLOTURE
+}
+
+model CasFraude {
+  id          String @id @default(cuid())
+  numeroCas   String @unique // FRM-2026-00X
+  titre       String
+  description String @db.Text
+
+  departementId String
+  departement   Departement @relation("DepartementFraude", fields: [departementId], references: [id])
+
+  dateSignalement DateTime
+  coutImpact      Decimal? @db.Decimal(15, 2)
+
+  statut StatutCasFraude @default(EN_INVESTIGATION)
+
+  auditeurFRMId String
+  auditeurFRM   Utilisateur @relation("AuditeurFRM", fields: [auditeurFRMId], references: [id])
+
+  points PointFraude[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cas_fraudes")
+}
+
+model PointFraude {
+  id   String @id @default(cuid())
+  code String @unique
+
+  casId String
+  cas   CasFraude @relation(fields: [casId], references: [id], onDelete: Cascade)
+
+  titre          String
+  detail         String   @db.Text
+  recommandation String   @db.Text
+  coutImpact     Decimal? @db.Decimal(15, 2)
+
+  auditeurFRMId String
+  auditeurFRM   Utilisateur @relation("AuditeurPointFraude", fields: [auditeurFRMId], references: [id])
+
+  dateEcheance  DateTime
+  dateReporting DateTime? // Spécifique FRM
+
+  statut String @default("OUVERT")
+
+  historique    HistoriqueStatut[]
+  commentaires  Commentaire[]
+  piecesJointes PieceJointe[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("points_fraude")
+}
+
+// ============================================================================
+// 5. IMPORT BATCH & STAGING (SAS DE VALIDATION)
+// ============================================================================
+
+enum StatutImportBatch {
+  EN_ATTENTE_VALIDATION
+  EN_COURS_TRAITEMENT
+  TERMINE_SUCCES
+  TERMINE_AVEC_ERREURS
+  ANNULE
+}
+
+enum StatutLigneImport {
+  VALIDE
+  ERREUR
+  AVERTISSEMENT
+  IMPORTE
+}
+
+model ImportBatch {
+  id String @id @default(cuid())
+
+  typeModule String // "AUDIT_EXTERNE", "FRM"
+  nomFichier String
+  urlFichier String
+
+  // Lien optionnel vers l'audit cible
+  auditCibleId String?
+  auditCible   Audit?  @relation(fields: [auditCibleId], references: [id])
+
+  statut StatutImportBatch @default(EN_ATTENTE_VALIDATION)
+
+  // Stats
+  totalLignes    Int @default(0)
+  lignesReussies Int @default(0)
+  lignesEchouees Int @default(0)
+
+  importateurId String
+  importateur   Utilisateur @relation(fields: [importateurId], references: [id])
+
+  dateImport DateTime @default(now())
+
+  lignes ImportLigneStaging[]
+
+  @@map("imports_batch")
+}
+
+model ImportLigneStaging {
+  id String @id @default(cuid())
+
+  batchId String
+  batch   ImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  numeroLigneExcel Int
+  donneesBrutes    Json // Raw data { "titre": "...", "date": "..." }
+
+  statut        StatutLigneImport @default(VALIDE)
+  messageErreur String?
+
+  // Mapping résolu par l'utilisateur
+  mappingResolu Json? // { "departementId": "...", "priorite": "..." }
+
+  // Lien une fois importé
+  pointAuditCreeId String? // ID final
+
+  @@index([batchId])
+  @@map("imports_lignes_staging")
+}
+
+// ============================================================================
+// 6. TRANSVERSE (LOGS, COMMENTAIRES, NOTIFS)
+// ============================================================================
+
+enum TypeActionLog {
+  // Auth
+  CONNEXION
+  DECONNEXION
+  // CRUD
+  CREATION
+  MODIFICATION
+  SUPPRESSION
+  // Métier
+  PUBLICATION_RAPPORT
+  VALIDATION_POINT
+  IMPORT_EXCEL
+  EXPORT_EXCEL
+}
+
+model JournalAudit {
+  id String @id @default(cuid())
+
+  // Snapshot Utilisateur (Sécurité si user supprimé)
+  utilisateurId   String?
+  utilisateurNom  String?
+  utilisateurRole String?
+
+  action     TypeActionLog
+  entiteType String // "POINT", "AUDIT"
+  entiteId   String?
+  entiteRef  String? // "F-001"
+
+  details Json? // Diff { "before": ..., "after": ... }
+  motif   String?
+
+  adresseIP String?
+  userAgent String?
+
+  dateAction DateTime @default(now())
+
+  @@index([entiteId])
+  @@index([dateAction])
+  @@map("journaux_audit")
+}
+
+model HistoriqueStatut {
+  id         String @id @default(cuid())
+  typeEntite String // "POINT_AUDIT", "POINT_FRAUDE"
+  entiteId   String
+
+  statutPrecedent String?
+  nouveauStatut   String?
+  commentaire     String? // Justification
+
+  modifiePar       String // Nom/ID user
+  dateModification DateTime @default(now())
+
+  // Relations optionnelles pour intégrité
+  pointAuditId String?
+  pointAudit   PointAudit? @relation(fields: [pointAuditId], references: [id], onDelete: Cascade)
+
+  pointFraudeId String?
+  pointFraude   PointFraude? @relation(fields: [pointFraudeId], references: [id], onDelete: Cascade)
+
+  @@index([entiteId])
+  @@map("historique_statuts")
+}
+
+model Commentaire {
+  id         String @id @default(cuid())
+  typeEntite String
+  entiteId   String
+
+  texte      String  @db.Text
+  estInterne Boolean @default(false)
+
+  creePar      String // ID user
+  dateCreation DateTime @default(now())
+
+  pointAuditId String?
+  pointAudit   PointAudit? @relation(fields: [pointAuditId], references: [id], onDelete: Cascade)
+
+  pointFraudeId String?
+  pointFraude   PointFraude? @relation(fields: [pointFraudeId], references: [id], onDelete: Cascade)
+
+  @@index([entiteId])
+  @@map("commentaires")
+}
+
+model PieceJointe {
+  id         String @id @default(cuid())
+  nomFichier String
+  urlFichier String
+  typeMime   String
+  taille     Int
+
+  televerseePar String
+  dateAjout     DateTime @default(now())
+
+  // Polymorphisme relationnel
+  auditId String?
+  audit   Audit?  @relation(fields: [auditId], references: [id])
+
+  pointAuditId String?
+  pointAudit   PointAudit? @relation(fields: [pointAuditId], references: [id])
+
+  actionPointId String?
+  actionPoint   ActionPoint? @relation(fields: [actionPointId], references: [id])
+
+  pointFraudeId String?
+  pointFraude   PointFraude? @relation(fields: [pointFraudeId], references: [id])
+
+  @@map("pieces_jointes")
+}
+
+model Notification {
+  id           String @id @default(cuid())
+  destinataire String // Email
+  sujet        String
+  message      String @db.Text
+
+  type   String // "RELANCE", "INFO"
+  statut String // "EN_ATTENTE", "ENVOYE"
+
+  dateProgrammee DateTime?
+  dateEnvoi      DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model PlanificationDunning {
+  id        String  @id @default(cuid())
+  typeCible String // "POINTS_ECHUS"
+  frequence String // "HEBDOMADAIRE"
+  jour      Int?
+  heure     Int     @default(9)
+  actif     Boolean @default(true)
+
+  lastRun DateTime?
+  nextRun DateTime?
+
+  @@map("planifications_dunning")
+}
