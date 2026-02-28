@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { OrganisationModule } from './modules/organisation/organisation.module';
-import { DepartementsModule } from './modules/departements/departements.module';
-import { UtilisateursModule } from './modules/utilisateurs/utilisateurs.module';
-import { AuditsModule } from './modules/audits/audits.module';
-import { PointsAuditModule } from './modules/points-audit/points-audit.module';
-import { ActionsPointsModule } from './modules/actions-points/actions-points.module';
+import { AuthModule } from 'src/auth/auth.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
+import { OrganisationModule } from 'src/modules/organisation/organisation.module';
+import { DepartementsModule } from 'src/modules/departements/departements.module';
+import { UtilisateursModule } from 'src/modules/utilisateurs/utilisateurs.module';
+import { AuditsModule } from 'src/modules/audits/audits.module';
+import { PointsAuditModule } from 'src/modules/points-audit/points-audit.module';
+import { ActionsPointsModule } from 'src/modules/actions-points/actions-points.module';
 
 @Module({
   imports: [

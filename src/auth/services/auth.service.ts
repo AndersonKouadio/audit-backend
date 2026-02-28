@@ -54,7 +54,7 @@ export class AuthService {
     const token = await this.jwtService.generateToken(user.id, user.role);
 
     // 6. Vérifier l'état de l'organisation (Pour le Wizard frontend)
-    // const organisation = await this.prisma.organisation.findFirst();
+    const organisation = await this.prisma.organisation.findFirst();
 
     // 7. Renvoyer le tout
     const userData = {
@@ -74,8 +74,8 @@ export class AuthService {
       user: userData,
       token,
       tokenExpires: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
-      // setupRequired: !organisation?.estConfiguree,
-      // organisationName: organisation?.nom,
+      setupRequired: !organisation?.estConfiguree,
+      organisationName: organisation?.nom,
     };
   }
 
