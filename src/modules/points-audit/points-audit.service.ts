@@ -3,10 +3,12 @@ import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePointAuditDto } from './dto/create-points-audit.dto';
 import { PointQueryDto } from './dto/point-query.dto';
+import { UpdatePointsAuditDto } from './dto/update-points-audit.dto';
+import { PointAudit } from 'src/generated/prisma/client';
 
 @Injectable()
 export class PointsAuditService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(createurId: string, dto: CreatePointAuditDto) {
     // 1. Vérifier si l'audit existe
@@ -50,11 +52,11 @@ export class PointsAuditService {
       AND: [
         search
           ? {
-              OR: [
-                { titre: { contains: search, mode: 'insensitive' } },
-                { reference: { contains: search, mode: 'insensitive' } },
-              ],
-            }
+            OR: [
+              { titre: { contains: search, mode: 'insensitive' } },
+              { reference: { contains: search, mode: 'insensitive' } },
+            ],
+          }
           : {},
         criticite ? { criticite } : {},
         statut ? { statut } : {},
@@ -104,5 +106,35 @@ export class PointsAuditService {
     });
     if (!point) throw new NotFoundException("Point d'audit introuvable.");
     return point;
+  }
+  // Méthode pour la mise à jour (Statut, Criticité, etc.)
+  async update(id: string, dto: UpdatePointsAuditDto) {
+    return this.prisma.pointAudit.update({
+      where: { id },
+      data: dto,
+    });
+  }
+
+  // Logique pour l'import groupé (Staging)
+  async createMany(createurId: string, dtos: CreatePointAuditDto[]) {
+    // On utilise une transaction pour garantir que tout passe ou rien
+    return this.prisma.$transaction(async (tx) => {
+      const results : PointAudit[] = [];
+      const baseCount = await tx.pointAudit.count();
+
+      for (let i = 0; i < dtos.length; i++) {
+        const reference = `F-${(baseCount + i + 1).toString().padStart(3, '0')}`;
+        const point = await tx.pointAudit.create({
+          data: {
+            ...dtos[i],
+            reference,
+            createurId,
+            dateEcheanceActuelle: dtos[i].dateEcheanceInitiale,
+          }
+        });
+        results.push(point);
+      }
+      return results;
+    });
   }
 }
