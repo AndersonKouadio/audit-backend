@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -71,16 +72,29 @@ export class UtilisateursController {
   @Roles(RoleUtilisateur.ADMIN)
   @ApiOperation({ summary: 'Modifier un utilisateur (Rôle, Dept, Statut...)' })
   update(
+    @Req() req: Request,
     @Param('id') id: string,
     @Body() updateUtilisateurDto: UpdateUtilisateurDto,
   ) {
+    const user = req.user as Utilisateur;
+    if (user.id === id) {
+      throw new ForbiddenException(
+        'Vous ne pouvez modifier que les profils des autres utilisateurs',
+      );
+    }
     return this.utilisateursService.update(id, updateUtilisateurDto);
   }
 
   @Delete(':id')
   @Roles(RoleUtilisateur.ADMIN)
   @ApiOperation({ summary: 'Supprimer un utilisateur' })
-  remove(@Param('id') id: string) {
+  remove(@Req() req: Request, @Param('id') id: string) {
+    const user = req.user as Utilisateur;
+    if (user.id === id) {
+      throw new ForbiddenException(
+        'Vous ne pouvez supprimer que les profils des autres utilisateurs',
+      );
+    }
     return this.utilisateursService.remove(id);
   }
 }

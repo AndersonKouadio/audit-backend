@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsInt,
@@ -47,7 +47,7 @@ export class CreateAuditDto {
   @IsString()
   responsableId: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: [String],
     description: "Tableau d'IDs des membres de l'équipe",
   })
@@ -55,4 +55,21 @@ export class CreateAuditDto {
   @IsArray()
   @IsString({ each: true })
   equipeIds?: string[];
+
+  // --- Champs Spécifiques Audit Externe ---
+  
+  @ApiPropertyOptional({ example: 'KPMG', description: 'Nom du cabinet externe' })
+  @IsOptional()
+  @IsString()
+  cabinetExterne?: string;
+
+  @ApiPropertyOptional({ example: 'Jean Dupont', description: 'Associé signataire du cabinet' })
+  @IsOptional()
+  @IsString()
+  associeSignataire?: string;
+
+  @ApiPropertyOptional({ example: 'Material Weakness', description: 'Note ou évaluation' })
+  @IsOptional()
+  @IsString()
+  noteEvaluation?: string;
 }
