@@ -27,11 +27,11 @@ export class PointsAuditController {
   constructor(private readonly pointsAuditService: PointsAuditService) { }
 
   @Post()
-  @Roles(
-    RoleUtilisateur.AUDITEUR_JUNIOR,
-    RoleUtilisateur.AUDITEUR_SENIOR,
-    RoleUtilisateur.CHEF_MISSION,
-  )
+  // @Roles(
+  //   RoleUtilisateur.AUDITEUR_JUNIOR,
+  //   RoleUtilisateur.AUDITEUR_SENIOR,
+  //   RoleUtilisateur.CHEF_MISSION,
+  // )
   @ApiOperation({ summary: "Créer un nouveau point d'audit (Constat)" })
   create(@Req() req, @Body() dto: CreatePointAuditDto) {
     return this.pointsAuditService.create(req.user.id, dto);

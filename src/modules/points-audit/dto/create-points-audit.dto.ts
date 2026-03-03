@@ -5,17 +5,16 @@ import {
   IsOptional,
   IsString,
   IsDateString,
-  IsUUID,
 } from 'class-validator';
 import { Criticite } from 'src/generated/prisma/enums';
 
 export class CreatePointAuditDto {
   @ApiProperty({
-    example: 'AUD-2026-001',
-    description: "ID de la mission d'audit",
+    example: 'clxxxxxxxxxxxxxxxx',
+    description: "ID (cuid) de la mission d'audit",
   })
   @IsNotEmpty()
-  @IsUUID()
+  @IsString()
   auditId: string;
 
   @ApiProperty({
@@ -37,6 +36,11 @@ export class CreatePointAuditDto {
   @IsNotEmpty()
   @IsString()
   description: string;
+
+  @ApiProperty({ example: 'Absence de procédure de contrôle interne' })
+  @IsOptional()
+  @IsString()
+  causes?: string;
 
   @ApiProperty({ example: "Risque de contentieux prud'homal" })
   @IsOptional()

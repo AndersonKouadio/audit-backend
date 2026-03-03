@@ -27,7 +27,8 @@ export class PointsAuditService {
         ...dto,
         reference,
         createurId,
-        dateEcheanceActuelle: dto.dateEcheanceInitiale, // Par défaut, identique à l'initiale
+        dateEcheanceInitiale: new Date(dto.dateEcheanceInitiale),
+        dateEcheanceActuelle: new Date(dto.dateEcheanceInitiale), // Par défaut, identique à l'initiale
       },
       include: {
         departement: { select: { nom: true, code: true } },
@@ -129,7 +130,8 @@ export class PointsAuditService {
             ...dtos[i],
             reference,
             createurId,
-            dateEcheanceActuelle: dtos[i].dateEcheanceInitiale,
+            dateEcheanceInitiale: new Date(dtos[i].dateEcheanceInitiale),
+            dateEcheanceActuelle: new Date(dtos[i].dateEcheanceInitiale),
           }
         });
         results.push(point);
