@@ -66,7 +66,7 @@ export class PointsAuditController {
   }
 
   @Post('batch')
-  @Roles(RoleUtilisateur.CHEF_MISSION, RoleUtilisateur.AUDITEUR_SENIOR)
+  // @Roles(RoleUtilisateur.CHEF_MISSION, RoleUtilisateur.AUDITEUR_SENIOR)
   @ApiOperation({ summary: "Importation massive de constats pour une mission" })
   createMany(@Req() req, @Body() dtos: CreatePointAuditDto[]) {
     return this.pointsAuditService.createMany(req.user.id, dtos, req.user);
