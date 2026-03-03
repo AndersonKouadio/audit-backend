@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateActionPointDto {
   @ApiProperty({ description: "ID du point d'audit rattaché" })
   @IsNotEmpty()
-  @IsUUID()
+  @IsString()
   pointAuditId: string;
 
   @ApiProperty({
@@ -18,7 +18,7 @@ export class CreateActionPointDto {
     description: "ID de l'utilisateur responsable (Action Owner)",
   })
   @IsNotEmpty()
-  @IsUUID()
+  @IsString()
   responsableId: string;
 
   @ApiProperty({ example: '2026-05-15' })

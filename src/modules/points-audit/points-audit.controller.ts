@@ -8,6 +8,7 @@ import {
   Req,
   Param,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { PointsAuditService } from './points-audit.service';
 import { CreatePointAuditDto } from './dto/create-points-audit.dto';
@@ -55,6 +56,13 @@ export class PointsAuditController {
   @ApiOperation({ summary: "Mettre à jour un constat (statut, échéance, etc.)" })
   update(@Param('id') id: string, @Body() dto: UpdatePointsAuditDto) {
     return this.pointsAuditService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT, RoleUtilisateur.CHEF_MISSION)
+  @ApiOperation({ summary: "Supprimer un point d'audit" })
+  remove(@Param('id') id: string) {
+    return this.pointsAuditService.remove(id);
   }
 
   @Post('batch')

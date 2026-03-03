@@ -4,6 +4,7 @@ import {
   Post,
   Body,
   Patch,
+  Delete,
   Param,
   Query,
   UseGuards,
@@ -52,5 +53,12 @@ export class ActionsPointsController {
   @ApiOperation({ summary: "Mettre à jour l'avancement d'une action" })
   update(@Param('id') id: string, @Body() dto: UpdateActionPointDto) {
     return this.actionsPointsService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.CHEF_MISSION, RoleUtilisateur.AUDITEUR_SENIOR)
+  @ApiOperation({ summary: "Supprimer une action corrective" })
+  remove(@Param('id') id: string) {
+    return this.actionsPointsService.remove(id);
   }
 }

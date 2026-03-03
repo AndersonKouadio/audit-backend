@@ -120,4 +120,8 @@ export class AuditsService {
       },
     });
   }
+
+  async remove(id: string) {
+    return this.prisma.audit.delete({ where: { id } });
+  }
 }

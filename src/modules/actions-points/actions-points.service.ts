@@ -6,7 +6,7 @@ import { UpdateActionPointDto } from './dto/update-actions-point.dto';
 
 @Injectable()
 export class ActionsPointsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(dto: CreateActionPointDto) {
     const point = await this.prisma.pointAudit.findUnique({
@@ -18,6 +18,7 @@ export class ActionsPointsService {
       data: {
         ...dto,
         statut: 'A_FAIRE',
+        dateEcheance: new Date(dto.dateEcheance),
         avancement: 0,
       },
       include: {
@@ -28,7 +29,7 @@ export class ActionsPointsService {
 
   async findAll(query: any): Promise<PaginationResponseDto<any>> {
     const { page = 1, limit = 10, pointAuditId, responsableId, statut } = query;
-    const skip = (page - 1) * limit;
+    const skip = (Number(page) - 1) * Number(limit);
 
     const where: any = {
       AND: [
@@ -42,8 +43,8 @@ export class ActionsPointsService {
       this.prisma.actionPoint.count({ where }),
       this.prisma.actionPoint.findMany({
         where,
-        skip,
-        take: limit,
+        skip: skip,
+        take: Number(limit),
         orderBy: { dateEcheance: 'asc' },
         include: {
           responsable: { select: { nom: true, prenom: true } },
@@ -73,7 +74,14 @@ export class ActionsPointsService {
 
     return this.prisma.actionPoint.update({
       where: { id },
-      data: dto,
+      data: {
+        ...dto,
+        ...(dto.dateEcheance && { dateEcheance: new Date(dto.dateEcheance) })
+      },
     });
+  }
+
+  async remove(id: string) {
+    return this.prisma.actionPoint.delete({ where: { id } });
   }
 }

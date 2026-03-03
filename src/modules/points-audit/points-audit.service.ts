@@ -116,6 +116,10 @@ export class PointsAuditService {
     });
   }
 
+  async remove(id: string) {
+    return this.prisma.pointAudit.delete({ where: { id } });
+  }
+
   // Logique pour l'import groupé (Staging)
   async createMany(createurId: string, dtos: CreatePointAuditDto[]) {
     // On utilise une transaction pour garantir que tout passe ou rien
