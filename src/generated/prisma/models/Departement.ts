@@ -221,6 +221,7 @@ export type DepartementWhereInput = {
   auditsPrincipaux?: Prisma.AuditListRelationFilter
   pointsConcernes?: Prisma.PointAuditListRelationFilter
   casFraude?: Prisma.CasFraudeListRelationFilter
+  risques?: Prisma.RisqueListRelationFilter
 }
 
 export type DepartementOrderByWithRelationInput = {
@@ -240,6 +241,7 @@ export type DepartementOrderByWithRelationInput = {
   auditsPrincipaux?: Prisma.AuditOrderByRelationAggregateInput
   pointsConcernes?: Prisma.PointAuditOrderByRelationAggregateInput
   casFraude?: Prisma.CasFraudeOrderByRelationAggregateInput
+  risques?: Prisma.RisqueOrderByRelationAggregateInput
 }
 
 export type DepartementWhereUniqueInput = Prisma.AtLeast<{
@@ -262,6 +264,7 @@ export type DepartementWhereUniqueInput = Prisma.AtLeast<{
   auditsPrincipaux?: Prisma.AuditListRelationFilter
   pointsConcernes?: Prisma.PointAuditListRelationFilter
   casFraude?: Prisma.CasFraudeListRelationFilter
+  risques?: Prisma.RisqueListRelationFilter
 }, "id" | "code" | "riskChampionId">
 
 export type DepartementOrderByWithAggregationInput = {
@@ -309,6 +312,7 @@ export type DepartementCreateInput = {
   auditsPrincipaux?: Prisma.AuditCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementUncheckedCreateInput = {
@@ -326,6 +330,7 @@ export type DepartementUncheckedCreateInput = {
   auditsPrincipaux?: Prisma.AuditUncheckedCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditUncheckedCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueUncheckedCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementUpdateInput = {
@@ -343,6 +348,7 @@ export type DepartementUpdateInput = {
   auditsPrincipaux?: Prisma.AuditUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUncheckedUpdateInput = {
@@ -360,6 +366,7 @@ export type DepartementUncheckedUpdateInput = {
   auditsPrincipaux?: Prisma.AuditUncheckedUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUncheckedUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUncheckedUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUncheckedUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementCreateManyInput = {
@@ -600,6 +607,20 @@ export type DepartementUpdateOneRequiredWithoutCasFraudeNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DepartementUpdateToOneWithWhereWithoutCasFraudeInput, Prisma.DepartementUpdateWithoutCasFraudeInput>, Prisma.DepartementUncheckedUpdateWithoutCasFraudeInput>
 }
 
+export type DepartementCreateNestedOneWithoutRisquesInput = {
+  create?: Prisma.XOR<Prisma.DepartementCreateWithoutRisquesInput, Prisma.DepartementUncheckedCreateWithoutRisquesInput>
+  connectOrCreate?: Prisma.DepartementCreateOrConnectWithoutRisquesInput
+  connect?: Prisma.DepartementWhereUniqueInput
+}
+
+export type DepartementUpdateOneRequiredWithoutRisquesNestedInput = {
+  create?: Prisma.XOR<Prisma.DepartementCreateWithoutRisquesInput, Prisma.DepartementUncheckedCreateWithoutRisquesInput>
+  connectOrCreate?: Prisma.DepartementCreateOrConnectWithoutRisquesInput
+  upsert?: Prisma.DepartementUpsertWithoutRisquesInput
+  connect?: Prisma.DepartementWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DepartementUpdateToOneWithWhereWithoutRisquesInput, Prisma.DepartementUpdateWithoutRisquesInput>, Prisma.DepartementUncheckedUpdateWithoutRisquesInput>
+}
+
 export type DepartementCreateWithoutEmployesInput = {
   id?: string
   code: string
@@ -614,6 +635,7 @@ export type DepartementCreateWithoutEmployesInput = {
   auditsPrincipaux?: Prisma.AuditCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementUncheckedCreateWithoutEmployesInput = {
@@ -630,6 +652,7 @@ export type DepartementUncheckedCreateWithoutEmployesInput = {
   auditsPrincipaux?: Prisma.AuditUncheckedCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditUncheckedCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueUncheckedCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementCreateOrConnectWithoutEmployesInput = {
@@ -651,6 +674,7 @@ export type DepartementCreateWithoutRiskChampionInput = {
   auditsPrincipaux?: Prisma.AuditCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementUncheckedCreateWithoutRiskChampionInput = {
@@ -667,6 +691,7 @@ export type DepartementUncheckedCreateWithoutRiskChampionInput = {
   auditsPrincipaux?: Prisma.AuditUncheckedCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditUncheckedCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueUncheckedCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementCreateOrConnectWithoutRiskChampionInput = {
@@ -699,6 +724,7 @@ export type DepartementUpdateWithoutEmployesInput = {
   auditsPrincipaux?: Prisma.AuditUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUncheckedUpdateWithoutEmployesInput = {
@@ -715,6 +741,7 @@ export type DepartementUncheckedUpdateWithoutEmployesInput = {
   auditsPrincipaux?: Prisma.AuditUncheckedUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUncheckedUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUncheckedUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUncheckedUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUpsertWithoutRiskChampionInput = {
@@ -742,6 +769,7 @@ export type DepartementUpdateWithoutRiskChampionInput = {
   auditsPrincipaux?: Prisma.AuditUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUncheckedUpdateWithoutRiskChampionInput = {
@@ -758,6 +786,7 @@ export type DepartementUncheckedUpdateWithoutRiskChampionInput = {
   auditsPrincipaux?: Prisma.AuditUncheckedUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUncheckedUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUncheckedUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUncheckedUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementCreateWithoutSousDepartementsInput = {
@@ -774,6 +803,7 @@ export type DepartementCreateWithoutSousDepartementsInput = {
   auditsPrincipaux?: Prisma.AuditCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementUncheckedCreateWithoutSousDepartementsInput = {
@@ -790,6 +820,7 @@ export type DepartementUncheckedCreateWithoutSousDepartementsInput = {
   auditsPrincipaux?: Prisma.AuditUncheckedCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditUncheckedCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueUncheckedCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementCreateOrConnectWithoutSousDepartementsInput = {
@@ -811,6 +842,7 @@ export type DepartementCreateWithoutParentInput = {
   auditsPrincipaux?: Prisma.AuditCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementUncheckedCreateWithoutParentInput = {
@@ -827,6 +859,7 @@ export type DepartementUncheckedCreateWithoutParentInput = {
   auditsPrincipaux?: Prisma.AuditUncheckedCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditUncheckedCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueUncheckedCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementCreateOrConnectWithoutParentInput = {
@@ -864,6 +897,7 @@ export type DepartementUpdateWithoutSousDepartementsInput = {
   auditsPrincipaux?: Prisma.AuditUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUncheckedUpdateWithoutSousDepartementsInput = {
@@ -880,6 +914,7 @@ export type DepartementUncheckedUpdateWithoutSousDepartementsInput = {
   auditsPrincipaux?: Prisma.AuditUncheckedUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUncheckedUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUncheckedUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUncheckedUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUpsertWithWhereUniqueWithoutParentInput = {
@@ -927,6 +962,7 @@ export type DepartementCreateWithoutAuditsPrincipauxInput = {
   employes?: Prisma.UtilisateurCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementUncheckedCreateWithoutAuditsPrincipauxInput = {
@@ -943,6 +979,7 @@ export type DepartementUncheckedCreateWithoutAuditsPrincipauxInput = {
   employes?: Prisma.UtilisateurUncheckedCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditUncheckedCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueUncheckedCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementCreateOrConnectWithoutAuditsPrincipauxInput = {
@@ -975,6 +1012,7 @@ export type DepartementUpdateWithoutAuditsPrincipauxInput = {
   employes?: Prisma.UtilisateurUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUncheckedUpdateWithoutAuditsPrincipauxInput = {
@@ -991,6 +1029,7 @@ export type DepartementUncheckedUpdateWithoutAuditsPrincipauxInput = {
   employes?: Prisma.UtilisateurUncheckedUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUncheckedUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUncheckedUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUncheckedUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementCreateWithoutPointsConcernesInput = {
@@ -1007,6 +1046,7 @@ export type DepartementCreateWithoutPointsConcernesInput = {
   employes?: Prisma.UtilisateurCreateNestedManyWithoutDepartementInput
   auditsPrincipaux?: Prisma.AuditCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementUncheckedCreateWithoutPointsConcernesInput = {
@@ -1023,6 +1063,7 @@ export type DepartementUncheckedCreateWithoutPointsConcernesInput = {
   employes?: Prisma.UtilisateurUncheckedCreateNestedManyWithoutDepartementInput
   auditsPrincipaux?: Prisma.AuditUncheckedCreateNestedManyWithoutDepartementInput
   casFraude?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueUncheckedCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementCreateOrConnectWithoutPointsConcernesInput = {
@@ -1055,6 +1096,7 @@ export type DepartementUpdateWithoutPointsConcernesInput = {
   employes?: Prisma.UtilisateurUpdateManyWithoutDepartementNestedInput
   auditsPrincipaux?: Prisma.AuditUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUncheckedUpdateWithoutPointsConcernesInput = {
@@ -1071,6 +1113,7 @@ export type DepartementUncheckedUpdateWithoutPointsConcernesInput = {
   employes?: Prisma.UtilisateurUncheckedUpdateManyWithoutDepartementNestedInput
   auditsPrincipaux?: Prisma.AuditUncheckedUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUncheckedUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUncheckedUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementCreateWithoutCasFraudeInput = {
@@ -1087,6 +1130,7 @@ export type DepartementCreateWithoutCasFraudeInput = {
   employes?: Prisma.UtilisateurCreateNestedManyWithoutDepartementInput
   auditsPrincipaux?: Prisma.AuditCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementUncheckedCreateWithoutCasFraudeInput = {
@@ -1103,6 +1147,7 @@ export type DepartementUncheckedCreateWithoutCasFraudeInput = {
   employes?: Prisma.UtilisateurUncheckedCreateNestedManyWithoutDepartementInput
   auditsPrincipaux?: Prisma.AuditUncheckedCreateNestedManyWithoutDepartementInput
   pointsConcernes?: Prisma.PointAuditUncheckedCreateNestedManyWithoutDepartementInput
+  risques?: Prisma.RisqueUncheckedCreateNestedManyWithoutDepartementInput
 }
 
 export type DepartementCreateOrConnectWithoutCasFraudeInput = {
@@ -1135,6 +1180,7 @@ export type DepartementUpdateWithoutCasFraudeInput = {
   employes?: Prisma.UtilisateurUpdateManyWithoutDepartementNestedInput
   auditsPrincipaux?: Prisma.AuditUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUncheckedUpdateWithoutCasFraudeInput = {
@@ -1151,6 +1197,91 @@ export type DepartementUncheckedUpdateWithoutCasFraudeInput = {
   employes?: Prisma.UtilisateurUncheckedUpdateManyWithoutDepartementNestedInput
   auditsPrincipaux?: Prisma.AuditUncheckedUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUncheckedUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUncheckedUpdateManyWithoutDepartementNestedInput
+}
+
+export type DepartementCreateWithoutRisquesInput = {
+  id?: string
+  code: string
+  nom: string
+  description?: string | null
+  actif?: boolean
+  dateCreation?: Date | string
+  dateMiseAJour?: Date | string
+  parent?: Prisma.DepartementCreateNestedOneWithoutSousDepartementsInput
+  sousDepartements?: Prisma.DepartementCreateNestedManyWithoutParentInput
+  riskChampion?: Prisma.UtilisateurCreateNestedOneWithoutRiskChampionDeInput
+  employes?: Prisma.UtilisateurCreateNestedManyWithoutDepartementInput
+  auditsPrincipaux?: Prisma.AuditCreateNestedManyWithoutDepartementInput
+  pointsConcernes?: Prisma.PointAuditCreateNestedManyWithoutDepartementInput
+  casFraude?: Prisma.CasFraudeCreateNestedManyWithoutDepartementInput
+}
+
+export type DepartementUncheckedCreateWithoutRisquesInput = {
+  id?: string
+  code: string
+  nom: string
+  description?: string | null
+  parentId?: string | null
+  riskChampionId?: string | null
+  actif?: boolean
+  dateCreation?: Date | string
+  dateMiseAJour?: Date | string
+  sousDepartements?: Prisma.DepartementUncheckedCreateNestedManyWithoutParentInput
+  employes?: Prisma.UtilisateurUncheckedCreateNestedManyWithoutDepartementInput
+  auditsPrincipaux?: Prisma.AuditUncheckedCreateNestedManyWithoutDepartementInput
+  pointsConcernes?: Prisma.PointAuditUncheckedCreateNestedManyWithoutDepartementInput
+  casFraude?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutDepartementInput
+}
+
+export type DepartementCreateOrConnectWithoutRisquesInput = {
+  where: Prisma.DepartementWhereUniqueInput
+  create: Prisma.XOR<Prisma.DepartementCreateWithoutRisquesInput, Prisma.DepartementUncheckedCreateWithoutRisquesInput>
+}
+
+export type DepartementUpsertWithoutRisquesInput = {
+  update: Prisma.XOR<Prisma.DepartementUpdateWithoutRisquesInput, Prisma.DepartementUncheckedUpdateWithoutRisquesInput>
+  create: Prisma.XOR<Prisma.DepartementCreateWithoutRisquesInput, Prisma.DepartementUncheckedCreateWithoutRisquesInput>
+  where?: Prisma.DepartementWhereInput
+}
+
+export type DepartementUpdateToOneWithWhereWithoutRisquesInput = {
+  where?: Prisma.DepartementWhereInput
+  data: Prisma.XOR<Prisma.DepartementUpdateWithoutRisquesInput, Prisma.DepartementUncheckedUpdateWithoutRisquesInput>
+}
+
+export type DepartementUpdateWithoutRisquesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateMiseAJour?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.DepartementUpdateOneWithoutSousDepartementsNestedInput
+  sousDepartements?: Prisma.DepartementUpdateManyWithoutParentNestedInput
+  riskChampion?: Prisma.UtilisateurUpdateOneWithoutRiskChampionDeNestedInput
+  employes?: Prisma.UtilisateurUpdateManyWithoutDepartementNestedInput
+  auditsPrincipaux?: Prisma.AuditUpdateManyWithoutDepartementNestedInput
+  pointsConcernes?: Prisma.PointAuditUpdateManyWithoutDepartementNestedInput
+  casFraude?: Prisma.CasFraudeUpdateManyWithoutDepartementNestedInput
+}
+
+export type DepartementUncheckedUpdateWithoutRisquesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  riskChampionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actif?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateMiseAJour?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sousDepartements?: Prisma.DepartementUncheckedUpdateManyWithoutParentNestedInput
+  employes?: Prisma.UtilisateurUncheckedUpdateManyWithoutDepartementNestedInput
+  auditsPrincipaux?: Prisma.AuditUncheckedUpdateManyWithoutDepartementNestedInput
+  pointsConcernes?: Prisma.PointAuditUncheckedUpdateManyWithoutDepartementNestedInput
+  casFraude?: Prisma.CasFraudeUncheckedUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementCreateManyParentInput = {
@@ -1178,6 +1309,7 @@ export type DepartementUpdateWithoutParentInput = {
   auditsPrincipaux?: Prisma.AuditUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUncheckedUpdateWithoutParentInput = {
@@ -1194,6 +1326,7 @@ export type DepartementUncheckedUpdateWithoutParentInput = {
   auditsPrincipaux?: Prisma.AuditUncheckedUpdateManyWithoutDepartementNestedInput
   pointsConcernes?: Prisma.PointAuditUncheckedUpdateManyWithoutDepartementNestedInput
   casFraude?: Prisma.CasFraudeUncheckedUpdateManyWithoutDepartementNestedInput
+  risques?: Prisma.RisqueUncheckedUpdateManyWithoutDepartementNestedInput
 }
 
 export type DepartementUncheckedUpdateManyWithoutParentInput = {
@@ -1218,6 +1351,7 @@ export type DepartementCountOutputType = {
   auditsPrincipaux: number
   pointsConcernes: number
   casFraude: number
+  risques: number
 }
 
 export type DepartementCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1226,6 +1360,7 @@ export type DepartementCountOutputTypeSelect<ExtArgs extends runtime.Types.Exten
   auditsPrincipaux?: boolean | DepartementCountOutputTypeCountAuditsPrincipauxArgs
   pointsConcernes?: boolean | DepartementCountOutputTypeCountPointsConcernesArgs
   casFraude?: boolean | DepartementCountOutputTypeCountCasFraudeArgs
+  risques?: boolean | DepartementCountOutputTypeCountRisquesArgs
 }
 
 /**
@@ -1273,6 +1408,13 @@ export type DepartementCountOutputTypeCountCasFraudeArgs<ExtArgs extends runtime
   where?: Prisma.CasFraudeWhereInput
 }
 
+/**
+ * DepartementCountOutputType without action
+ */
+export type DepartementCountOutputTypeCountRisquesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RisqueWhereInput
+}
+
 
 export type DepartementSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1291,6 +1433,7 @@ export type DepartementSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   auditsPrincipaux?: boolean | Prisma.Departement$auditsPrincipauxArgs<ExtArgs>
   pointsConcernes?: boolean | Prisma.Departement$pointsConcernesArgs<ExtArgs>
   casFraude?: boolean | Prisma.Departement$casFraudeArgs<ExtArgs>
+  risques?: boolean | Prisma.Departement$risquesArgs<ExtArgs>
   _count?: boolean | Prisma.DepartementCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["departement"]>
 
@@ -1343,6 +1486,7 @@ export type DepartementInclude<ExtArgs extends runtime.Types.Extensions.Internal
   auditsPrincipaux?: boolean | Prisma.Departement$auditsPrincipauxArgs<ExtArgs>
   pointsConcernes?: boolean | Prisma.Departement$pointsConcernesArgs<ExtArgs>
   casFraude?: boolean | Prisma.Departement$casFraudeArgs<ExtArgs>
+  risques?: boolean | Prisma.Departement$risquesArgs<ExtArgs>
   _count?: boolean | Prisma.DepartementCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DepartementIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1364,6 +1508,7 @@ export type $DepartementPayload<ExtArgs extends runtime.Types.Extensions.Interna
     auditsPrincipaux: Prisma.$AuditPayload<ExtArgs>[]
     pointsConcernes: Prisma.$PointAuditPayload<ExtArgs>[]
     casFraude: Prisma.$CasFraudePayload<ExtArgs>[]
+    risques: Prisma.$RisquePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1776,6 +1921,7 @@ export interface Prisma__DepartementClient<T, Null = never, ExtArgs extends runt
   auditsPrincipaux<T extends Prisma.Departement$auditsPrincipauxArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Departement$auditsPrincipauxArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pointsConcernes<T extends Prisma.Departement$pointsConcernesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Departement$pointsConcernesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PointAuditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   casFraude<T extends Prisma.Departement$casFraudeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Departement$casFraudeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CasFraudePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  risques<T extends Prisma.Departement$risquesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Departement$risquesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RisquePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2365,6 +2511,30 @@ export type Departement$casFraudeArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.CasFraudeScalarFieldEnum | Prisma.CasFraudeScalarFieldEnum[]
+}
+
+/**
+ * Departement.risques
+ */
+export type Departement$risquesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Risque
+   */
+  select?: Prisma.RisqueSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Risque
+   */
+  omit?: Prisma.RisqueOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RisqueInclude<ExtArgs> | null
+  where?: Prisma.RisqueWhereInput
+  orderBy?: Prisma.RisqueOrderByWithRelationInput | Prisma.RisqueOrderByWithRelationInput[]
+  cursor?: Prisma.RisqueWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RisqueScalarFieldEnum | Prisma.RisqueScalarFieldEnum[]
 }
 
 /**

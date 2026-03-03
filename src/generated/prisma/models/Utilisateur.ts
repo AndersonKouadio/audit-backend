@@ -246,6 +246,8 @@ export type UtilisateurWhereInput = {
   pointsFraudeGeres?: Prisma.PointFraudeListRelationFilter
   actionsAssignees?: Prisma.ActionPointListRelationFilter
   riskChampionDe?: Prisma.XOR<Prisma.DepartementNullableScalarRelationFilter, Prisma.DepartementWhereInput> | null
+  risquesResponsable?: Prisma.RisqueListRelationFilter
+  risquesCrees?: Prisma.RisqueListRelationFilter
   importsRealises?: Prisma.ImportBatchListRelationFilter
 }
 
@@ -270,6 +272,8 @@ export type UtilisateurOrderByWithRelationInput = {
   pointsFraudeGeres?: Prisma.PointFraudeOrderByRelationAggregateInput
   actionsAssignees?: Prisma.ActionPointOrderByRelationAggregateInput
   riskChampionDe?: Prisma.DepartementOrderByWithRelationInput
+  risquesResponsable?: Prisma.RisqueOrderByRelationAggregateInput
+  risquesCrees?: Prisma.RisqueOrderByRelationAggregateInput
   importsRealises?: Prisma.ImportBatchOrderByRelationAggregateInput
 }
 
@@ -297,6 +301,8 @@ export type UtilisateurWhereUniqueInput = Prisma.AtLeast<{
   pointsFraudeGeres?: Prisma.PointFraudeListRelationFilter
   actionsAssignees?: Prisma.ActionPointListRelationFilter
   riskChampionDe?: Prisma.XOR<Prisma.DepartementNullableScalarRelationFilter, Prisma.DepartementWhereInput> | null
+  risquesResponsable?: Prisma.RisqueListRelationFilter
+  risquesCrees?: Prisma.RisqueListRelationFilter
   importsRealises?: Prisma.ImportBatchListRelationFilter
 }, "id" | "matricule" | "email">
 
@@ -356,6 +362,8 @@ export type UtilisateurCreateInput = {
   pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
 }
 
@@ -379,6 +387,8 @@ export type UtilisateurUncheckedCreateInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
 }
 
@@ -402,6 +412,8 @@ export type UtilisateurUpdateInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
 }
 
@@ -425,6 +437,8 @@ export type UtilisateurUncheckedUpdateInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
 }
 
@@ -729,6 +743,36 @@ export type UtilisateurUpdateOneRequiredWithoutImportsRealisesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UtilisateurUpdateToOneWithWhereWithoutImportsRealisesInput, Prisma.UtilisateurUpdateWithoutImportsRealisesInput>, Prisma.UtilisateurUncheckedUpdateWithoutImportsRealisesInput>
 }
 
+export type UtilisateurCreateNestedOneWithoutRisquesResponsableInput = {
+  create?: Prisma.XOR<Prisma.UtilisateurCreateWithoutRisquesResponsableInput, Prisma.UtilisateurUncheckedCreateWithoutRisquesResponsableInput>
+  connectOrCreate?: Prisma.UtilisateurCreateOrConnectWithoutRisquesResponsableInput
+  connect?: Prisma.UtilisateurWhereUniqueInput
+}
+
+export type UtilisateurCreateNestedOneWithoutRisquesCreesInput = {
+  create?: Prisma.XOR<Prisma.UtilisateurCreateWithoutRisquesCreesInput, Prisma.UtilisateurUncheckedCreateWithoutRisquesCreesInput>
+  connectOrCreate?: Prisma.UtilisateurCreateOrConnectWithoutRisquesCreesInput
+  connect?: Prisma.UtilisateurWhereUniqueInput
+}
+
+export type UtilisateurUpdateOneWithoutRisquesResponsableNestedInput = {
+  create?: Prisma.XOR<Prisma.UtilisateurCreateWithoutRisquesResponsableInput, Prisma.UtilisateurUncheckedCreateWithoutRisquesResponsableInput>
+  connectOrCreate?: Prisma.UtilisateurCreateOrConnectWithoutRisquesResponsableInput
+  upsert?: Prisma.UtilisateurUpsertWithoutRisquesResponsableInput
+  disconnect?: Prisma.UtilisateurWhereInput | boolean
+  delete?: Prisma.UtilisateurWhereInput | boolean
+  connect?: Prisma.UtilisateurWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UtilisateurUpdateToOneWithWhereWithoutRisquesResponsableInput, Prisma.UtilisateurUpdateWithoutRisquesResponsableInput>, Prisma.UtilisateurUncheckedUpdateWithoutRisquesResponsableInput>
+}
+
+export type UtilisateurUpdateOneRequiredWithoutRisquesCreesNestedInput = {
+  create?: Prisma.XOR<Prisma.UtilisateurCreateWithoutRisquesCreesInput, Prisma.UtilisateurUncheckedCreateWithoutRisquesCreesInput>
+  connectOrCreate?: Prisma.UtilisateurCreateOrConnectWithoutRisquesCreesInput
+  upsert?: Prisma.UtilisateurUpsertWithoutRisquesCreesInput
+  connect?: Prisma.UtilisateurWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UtilisateurUpdateToOneWithWhereWithoutRisquesCreesInput, Prisma.UtilisateurUpdateWithoutRisquesCreesInput>, Prisma.UtilisateurUncheckedUpdateWithoutRisquesCreesInput>
+}
+
 export type UtilisateurCreateWithoutRiskChampionDeInput = {
   id?: string
   matricule?: string | null
@@ -748,6 +792,8 @@ export type UtilisateurCreateWithoutRiskChampionDeInput = {
   casFraudeGeres?: Prisma.CasFraudeCreateNestedManyWithoutAuditeurFRMInput
   pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
 }
 
@@ -770,6 +816,8 @@ export type UtilisateurUncheckedCreateWithoutRiskChampionDeInput = {
   casFraudeGeres?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
 }
 
@@ -797,6 +845,8 @@ export type UtilisateurCreateWithoutDepartementInput = {
   pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
 }
 
@@ -819,6 +869,8 @@ export type UtilisateurUncheckedCreateWithoutDepartementInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
 }
 
@@ -862,6 +914,8 @@ export type UtilisateurUpdateWithoutRiskChampionDeInput = {
   casFraudeGeres?: Prisma.CasFraudeUpdateManyWithoutAuditeurFRMNestedInput
   pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
 }
 
@@ -884,6 +938,8 @@ export type UtilisateurUncheckedUpdateWithoutRiskChampionDeInput = {
   casFraudeGeres?: Prisma.CasFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
 }
 
@@ -940,6 +996,8 @@ export type UtilisateurCreateWithoutAuditsDirigesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
 }
 
@@ -962,6 +1020,8 @@ export type UtilisateurUncheckedCreateWithoutAuditsDirigesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
 }
 
@@ -989,6 +1049,8 @@ export type UtilisateurCreateWithoutAuditsParticipationInput = {
   pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
 }
 
@@ -1011,6 +1073,8 @@ export type UtilisateurUncheckedCreateWithoutAuditsParticipationInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
 }
 
@@ -1049,6 +1113,8 @@ export type UtilisateurUpdateWithoutAuditsDirigesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1071,6 +1137,8 @@ export type UtilisateurUncheckedUpdateWithoutAuditsDirigesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1109,6 +1177,8 @@ export type UtilisateurCreateWithoutPointsCreesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
 }
 
@@ -1131,6 +1201,8 @@ export type UtilisateurUncheckedCreateWithoutPointsCreesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
 }
 
@@ -1169,6 +1241,8 @@ export type UtilisateurUpdateWithoutPointsCreesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1191,6 +1265,8 @@ export type UtilisateurUncheckedUpdateWithoutPointsCreesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1213,6 +1289,8 @@ export type UtilisateurCreateWithoutActionsAssigneesInput = {
   casFraudeGeres?: Prisma.CasFraudeCreateNestedManyWithoutAuditeurFRMInput
   pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
   riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
 }
 
@@ -1235,6 +1313,8 @@ export type UtilisateurUncheckedCreateWithoutActionsAssigneesInput = {
   casFraudeGeres?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
 }
 
@@ -1273,6 +1353,8 @@ export type UtilisateurUpdateWithoutActionsAssigneesInput = {
   casFraudeGeres?: Prisma.CasFraudeUpdateManyWithoutAuditeurFRMNestedInput
   pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
   riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1295,6 +1377,8 @@ export type UtilisateurUncheckedUpdateWithoutActionsAssigneesInput = {
   casFraudeGeres?: Prisma.CasFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1317,6 +1401,8 @@ export type UtilisateurCreateWithoutCasFraudeGeresInput = {
   pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
 }
 
@@ -1339,6 +1425,8 @@ export type UtilisateurUncheckedCreateWithoutCasFraudeGeresInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
 }
 
@@ -1377,6 +1465,8 @@ export type UtilisateurUpdateWithoutCasFraudeGeresInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1399,6 +1489,8 @@ export type UtilisateurUncheckedUpdateWithoutCasFraudeGeresInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1421,6 +1513,8 @@ export type UtilisateurCreateWithoutPointsFraudeGeresInput = {
   casFraudeGeres?: Prisma.CasFraudeCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
 }
 
@@ -1443,6 +1537,8 @@ export type UtilisateurUncheckedCreateWithoutPointsFraudeGeresInput = {
   casFraudeGeres?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
   importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
 }
 
@@ -1481,6 +1577,8 @@ export type UtilisateurUpdateWithoutPointsFraudeGeresInput = {
   casFraudeGeres?: Prisma.CasFraudeUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1503,6 +1601,8 @@ export type UtilisateurUncheckedUpdateWithoutPointsFraudeGeresInput = {
   casFraudeGeres?: Prisma.CasFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1526,6 +1626,8 @@ export type UtilisateurCreateWithoutImportsRealisesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
 }
 
 export type UtilisateurUncheckedCreateWithoutImportsRealisesInput = {
@@ -1548,6 +1650,8 @@ export type UtilisateurUncheckedCreateWithoutImportsRealisesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
   actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
   riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
 }
 
 export type UtilisateurCreateOrConnectWithoutImportsRealisesInput = {
@@ -1586,6 +1690,8 @@ export type UtilisateurUpdateWithoutImportsRealisesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
 }
 
 export type UtilisateurUncheckedUpdateWithoutImportsRealisesInput = {
@@ -1608,6 +1714,232 @@ export type UtilisateurUncheckedUpdateWithoutImportsRealisesInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
+}
+
+export type UtilisateurCreateWithoutRisquesResponsableInput = {
+  id?: string
+  matricule?: string | null
+  email: string
+  prenom: string
+  nom: string
+  motDePasse: string
+  role: $Enums.RoleUtilisateur
+  statut?: $Enums.StatutUtilisateur
+  dateCreation?: Date | string
+  dateMiseAJour?: Date | string
+  derniereConnexion?: Date | string | null
+  departement?: Prisma.DepartementCreateNestedOneWithoutEmployesInput
+  auditsDiriges?: Prisma.AuditCreateNestedManyWithoutResponsableInput
+  auditsParticipation?: Prisma.AuditCreateNestedManyWithoutEquipeInput
+  pointsCrees?: Prisma.PointAuditCreateNestedManyWithoutCreateurInput
+  casFraudeGeres?: Prisma.CasFraudeCreateNestedManyWithoutAuditeurFRMInput
+  pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
+  actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
+  riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesCrees?: Prisma.RisqueCreateNestedManyWithoutCreateurInput
+  importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
+}
+
+export type UtilisateurUncheckedCreateWithoutRisquesResponsableInput = {
+  id?: string
+  matricule?: string | null
+  email: string
+  prenom: string
+  nom: string
+  motDePasse: string
+  role: $Enums.RoleUtilisateur
+  statut?: $Enums.StatutUtilisateur
+  departementId?: string | null
+  dateCreation?: Date | string
+  dateMiseAJour?: Date | string
+  derniereConnexion?: Date | string | null
+  auditsDiriges?: Prisma.AuditUncheckedCreateNestedManyWithoutResponsableInput
+  auditsParticipation?: Prisma.AuditUncheckedCreateNestedManyWithoutEquipeInput
+  pointsCrees?: Prisma.PointAuditUncheckedCreateNestedManyWithoutCreateurInput
+  casFraudeGeres?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
+  pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
+  actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
+  riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesCrees?: Prisma.RisqueUncheckedCreateNestedManyWithoutCreateurInput
+  importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
+}
+
+export type UtilisateurCreateOrConnectWithoutRisquesResponsableInput = {
+  where: Prisma.UtilisateurWhereUniqueInput
+  create: Prisma.XOR<Prisma.UtilisateurCreateWithoutRisquesResponsableInput, Prisma.UtilisateurUncheckedCreateWithoutRisquesResponsableInput>
+}
+
+export type UtilisateurCreateWithoutRisquesCreesInput = {
+  id?: string
+  matricule?: string | null
+  email: string
+  prenom: string
+  nom: string
+  motDePasse: string
+  role: $Enums.RoleUtilisateur
+  statut?: $Enums.StatutUtilisateur
+  dateCreation?: Date | string
+  dateMiseAJour?: Date | string
+  derniereConnexion?: Date | string | null
+  departement?: Prisma.DepartementCreateNestedOneWithoutEmployesInput
+  auditsDiriges?: Prisma.AuditCreateNestedManyWithoutResponsableInput
+  auditsParticipation?: Prisma.AuditCreateNestedManyWithoutEquipeInput
+  pointsCrees?: Prisma.PointAuditCreateNestedManyWithoutCreateurInput
+  casFraudeGeres?: Prisma.CasFraudeCreateNestedManyWithoutAuditeurFRMInput
+  pointsFraudeGeres?: Prisma.PointFraudeCreateNestedManyWithoutAuditeurFRMInput
+  actionsAssignees?: Prisma.ActionPointCreateNestedManyWithoutResponsableInput
+  riskChampionDe?: Prisma.DepartementCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueCreateNestedManyWithoutResponsableInput
+  importsRealises?: Prisma.ImportBatchCreateNestedManyWithoutImportateurInput
+}
+
+export type UtilisateurUncheckedCreateWithoutRisquesCreesInput = {
+  id?: string
+  matricule?: string | null
+  email: string
+  prenom: string
+  nom: string
+  motDePasse: string
+  role: $Enums.RoleUtilisateur
+  statut?: $Enums.StatutUtilisateur
+  departementId?: string | null
+  dateCreation?: Date | string
+  dateMiseAJour?: Date | string
+  derniereConnexion?: Date | string | null
+  auditsDiriges?: Prisma.AuditUncheckedCreateNestedManyWithoutResponsableInput
+  auditsParticipation?: Prisma.AuditUncheckedCreateNestedManyWithoutEquipeInput
+  pointsCrees?: Prisma.PointAuditUncheckedCreateNestedManyWithoutCreateurInput
+  casFraudeGeres?: Prisma.CasFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
+  pointsFraudeGeres?: Prisma.PointFraudeUncheckedCreateNestedManyWithoutAuditeurFRMInput
+  actionsAssignees?: Prisma.ActionPointUncheckedCreateNestedManyWithoutResponsableInput
+  riskChampionDe?: Prisma.DepartementUncheckedCreateNestedOneWithoutRiskChampionInput
+  risquesResponsable?: Prisma.RisqueUncheckedCreateNestedManyWithoutResponsableInput
+  importsRealises?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutImportateurInput
+}
+
+export type UtilisateurCreateOrConnectWithoutRisquesCreesInput = {
+  where: Prisma.UtilisateurWhereUniqueInput
+  create: Prisma.XOR<Prisma.UtilisateurCreateWithoutRisquesCreesInput, Prisma.UtilisateurUncheckedCreateWithoutRisquesCreesInput>
+}
+
+export type UtilisateurUpsertWithoutRisquesResponsableInput = {
+  update: Prisma.XOR<Prisma.UtilisateurUpdateWithoutRisquesResponsableInput, Prisma.UtilisateurUncheckedUpdateWithoutRisquesResponsableInput>
+  create: Prisma.XOR<Prisma.UtilisateurCreateWithoutRisquesResponsableInput, Prisma.UtilisateurUncheckedCreateWithoutRisquesResponsableInput>
+  where?: Prisma.UtilisateurWhereInput
+}
+
+export type UtilisateurUpdateToOneWithWhereWithoutRisquesResponsableInput = {
+  where?: Prisma.UtilisateurWhereInput
+  data: Prisma.XOR<Prisma.UtilisateurUpdateWithoutRisquesResponsableInput, Prisma.UtilisateurUncheckedUpdateWithoutRisquesResponsableInput>
+}
+
+export type UtilisateurUpdateWithoutRisquesResponsableInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  matricule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  motDePasse?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleUtilisateurFieldUpdateOperationsInput | $Enums.RoleUtilisateur
+  statut?: Prisma.EnumStatutUtilisateurFieldUpdateOperationsInput | $Enums.StatutUtilisateur
+  dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateMiseAJour?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  derniereConnexion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  departement?: Prisma.DepartementUpdateOneWithoutEmployesNestedInput
+  auditsDiriges?: Prisma.AuditUpdateManyWithoutResponsableNestedInput
+  auditsParticipation?: Prisma.AuditUpdateManyWithoutEquipeNestedInput
+  pointsCrees?: Prisma.PointAuditUpdateManyWithoutCreateurNestedInput
+  casFraudeGeres?: Prisma.CasFraudeUpdateManyWithoutAuditeurFRMNestedInput
+  pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
+  actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
+  riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
+  importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
+}
+
+export type UtilisateurUncheckedUpdateWithoutRisquesResponsableInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  matricule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  motDePasse?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleUtilisateurFieldUpdateOperationsInput | $Enums.RoleUtilisateur
+  statut?: Prisma.EnumStatutUtilisateurFieldUpdateOperationsInput | $Enums.StatutUtilisateur
+  departementId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateMiseAJour?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  derniereConnexion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  auditsDiriges?: Prisma.AuditUncheckedUpdateManyWithoutResponsableNestedInput
+  auditsParticipation?: Prisma.AuditUncheckedUpdateManyWithoutEquipeNestedInput
+  pointsCrees?: Prisma.PointAuditUncheckedUpdateManyWithoutCreateurNestedInput
+  casFraudeGeres?: Prisma.CasFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
+  pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
+  actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
+  riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
+  importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
+}
+
+export type UtilisateurUpsertWithoutRisquesCreesInput = {
+  update: Prisma.XOR<Prisma.UtilisateurUpdateWithoutRisquesCreesInput, Prisma.UtilisateurUncheckedUpdateWithoutRisquesCreesInput>
+  create: Prisma.XOR<Prisma.UtilisateurCreateWithoutRisquesCreesInput, Prisma.UtilisateurUncheckedCreateWithoutRisquesCreesInput>
+  where?: Prisma.UtilisateurWhereInput
+}
+
+export type UtilisateurUpdateToOneWithWhereWithoutRisquesCreesInput = {
+  where?: Prisma.UtilisateurWhereInput
+  data: Prisma.XOR<Prisma.UtilisateurUpdateWithoutRisquesCreesInput, Prisma.UtilisateurUncheckedUpdateWithoutRisquesCreesInput>
+}
+
+export type UtilisateurUpdateWithoutRisquesCreesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  matricule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  motDePasse?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleUtilisateurFieldUpdateOperationsInput | $Enums.RoleUtilisateur
+  statut?: Prisma.EnumStatutUtilisateurFieldUpdateOperationsInput | $Enums.StatutUtilisateur
+  dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateMiseAJour?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  derniereConnexion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  departement?: Prisma.DepartementUpdateOneWithoutEmployesNestedInput
+  auditsDiriges?: Prisma.AuditUpdateManyWithoutResponsableNestedInput
+  auditsParticipation?: Prisma.AuditUpdateManyWithoutEquipeNestedInput
+  pointsCrees?: Prisma.PointAuditUpdateManyWithoutCreateurNestedInput
+  casFraudeGeres?: Prisma.CasFraudeUpdateManyWithoutAuditeurFRMNestedInput
+  pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
+  actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
+  riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
+}
+
+export type UtilisateurUncheckedUpdateWithoutRisquesCreesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  matricule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  motDePasse?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleUtilisateurFieldUpdateOperationsInput | $Enums.RoleUtilisateur
+  statut?: Prisma.EnumStatutUtilisateurFieldUpdateOperationsInput | $Enums.StatutUtilisateur
+  departementId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateMiseAJour?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  derniereConnexion?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  auditsDiriges?: Prisma.AuditUncheckedUpdateManyWithoutResponsableNestedInput
+  auditsParticipation?: Prisma.AuditUncheckedUpdateManyWithoutEquipeNestedInput
+  pointsCrees?: Prisma.PointAuditUncheckedUpdateManyWithoutCreateurNestedInput
+  casFraudeGeres?: Prisma.CasFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
+  pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
+  actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
+  riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
 }
 
 export type UtilisateurCreateManyDepartementInput = {
@@ -1643,6 +1975,8 @@ export type UtilisateurUpdateWithoutDepartementInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1665,6 +1999,8 @@ export type UtilisateurUncheckedUpdateWithoutDepartementInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1701,6 +2037,8 @@ export type UtilisateurUpdateWithoutAuditsParticipationInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1723,6 +2061,8 @@ export type UtilisateurUncheckedUpdateWithoutAuditsParticipationInput = {
   pointsFraudeGeres?: Prisma.PointFraudeUncheckedUpdateManyWithoutAuditeurFRMNestedInput
   actionsAssignees?: Prisma.ActionPointUncheckedUpdateManyWithoutResponsableNestedInput
   riskChampionDe?: Prisma.DepartementUncheckedUpdateOneWithoutRiskChampionNestedInput
+  risquesResponsable?: Prisma.RisqueUncheckedUpdateManyWithoutResponsableNestedInput
+  risquesCrees?: Prisma.RisqueUncheckedUpdateManyWithoutCreateurNestedInput
   importsRealises?: Prisma.ImportBatchUncheckedUpdateManyWithoutImportateurNestedInput
 }
 
@@ -1753,6 +2093,8 @@ export type UtilisateurCountOutputType = {
   casFraudeGeres: number
   pointsFraudeGeres: number
   actionsAssignees: number
+  risquesResponsable: number
+  risquesCrees: number
   importsRealises: number
 }
 
@@ -1763,6 +2105,8 @@ export type UtilisateurCountOutputTypeSelect<ExtArgs extends runtime.Types.Exten
   casFraudeGeres?: boolean | UtilisateurCountOutputTypeCountCasFraudeGeresArgs
   pointsFraudeGeres?: boolean | UtilisateurCountOutputTypeCountPointsFraudeGeresArgs
   actionsAssignees?: boolean | UtilisateurCountOutputTypeCountActionsAssigneesArgs
+  risquesResponsable?: boolean | UtilisateurCountOutputTypeCountRisquesResponsableArgs
+  risquesCrees?: boolean | UtilisateurCountOutputTypeCountRisquesCreesArgs
   importsRealises?: boolean | UtilisateurCountOutputTypeCountImportsRealisesArgs
 }
 
@@ -1821,6 +2165,20 @@ export type UtilisateurCountOutputTypeCountActionsAssigneesArgs<ExtArgs extends 
 /**
  * UtilisateurCountOutputType without action
  */
+export type UtilisateurCountOutputTypeCountRisquesResponsableArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RisqueWhereInput
+}
+
+/**
+ * UtilisateurCountOutputType without action
+ */
+export type UtilisateurCountOutputTypeCountRisquesCreesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RisqueWhereInput
+}
+
+/**
+ * UtilisateurCountOutputType without action
+ */
 export type UtilisateurCountOutputTypeCountImportsRealisesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ImportBatchWhereInput
 }
@@ -1847,6 +2205,8 @@ export type UtilisateurSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   pointsFraudeGeres?: boolean | Prisma.Utilisateur$pointsFraudeGeresArgs<ExtArgs>
   actionsAssignees?: boolean | Prisma.Utilisateur$actionsAssigneesArgs<ExtArgs>
   riskChampionDe?: boolean | Prisma.Utilisateur$riskChampionDeArgs<ExtArgs>
+  risquesResponsable?: boolean | Prisma.Utilisateur$risquesResponsableArgs<ExtArgs>
+  risquesCrees?: boolean | Prisma.Utilisateur$risquesCreesArgs<ExtArgs>
   importsRealises?: boolean | Prisma.Utilisateur$importsRealisesArgs<ExtArgs>
   _count?: boolean | Prisma.UtilisateurCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["utilisateur"]>
@@ -1908,6 +2268,8 @@ export type UtilisateurInclude<ExtArgs extends runtime.Types.Extensions.Internal
   pointsFraudeGeres?: boolean | Prisma.Utilisateur$pointsFraudeGeresArgs<ExtArgs>
   actionsAssignees?: boolean | Prisma.Utilisateur$actionsAssigneesArgs<ExtArgs>
   riskChampionDe?: boolean | Prisma.Utilisateur$riskChampionDeArgs<ExtArgs>
+  risquesResponsable?: boolean | Prisma.Utilisateur$risquesResponsableArgs<ExtArgs>
+  risquesCrees?: boolean | Prisma.Utilisateur$risquesCreesArgs<ExtArgs>
   importsRealises?: boolean | Prisma.Utilisateur$importsRealisesArgs<ExtArgs>
   _count?: boolean | Prisma.UtilisateurCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1929,6 +2291,8 @@ export type $UtilisateurPayload<ExtArgs extends runtime.Types.Extensions.Interna
     pointsFraudeGeres: Prisma.$PointFraudePayload<ExtArgs>[]
     actionsAssignees: Prisma.$ActionPointPayload<ExtArgs>[]
     riskChampionDe: Prisma.$DepartementPayload<ExtArgs> | null
+    risquesResponsable: Prisma.$RisquePayload<ExtArgs>[]
+    risquesCrees: Prisma.$RisquePayload<ExtArgs>[]
     importsRealises: Prisma.$ImportBatchPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2346,6 +2710,8 @@ export interface Prisma__UtilisateurClient<T, Null = never, ExtArgs extends runt
   pointsFraudeGeres<T extends Prisma.Utilisateur$pointsFraudeGeresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Utilisateur$pointsFraudeGeresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PointFraudePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   actionsAssignees<T extends Prisma.Utilisateur$actionsAssigneesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Utilisateur$actionsAssigneesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActionPointPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   riskChampionDe<T extends Prisma.Utilisateur$riskChampionDeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Utilisateur$riskChampionDeArgs<ExtArgs>>): Prisma.Prisma__DepartementClient<runtime.Types.Result.GetResult<Prisma.$DepartementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  risquesResponsable<T extends Prisma.Utilisateur$risquesResponsableArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Utilisateur$risquesResponsableArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RisquePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  risquesCrees<T extends Prisma.Utilisateur$risquesCreesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Utilisateur$risquesCreesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RisquePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   importsRealises<T extends Prisma.Utilisateur$importsRealisesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Utilisateur$importsRealisesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImportBatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2963,6 +3329,54 @@ export type Utilisateur$riskChampionDeArgs<ExtArgs extends runtime.Types.Extensi
    */
   include?: Prisma.DepartementInclude<ExtArgs> | null
   where?: Prisma.DepartementWhereInput
+}
+
+/**
+ * Utilisateur.risquesResponsable
+ */
+export type Utilisateur$risquesResponsableArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Risque
+   */
+  select?: Prisma.RisqueSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Risque
+   */
+  omit?: Prisma.RisqueOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RisqueInclude<ExtArgs> | null
+  where?: Prisma.RisqueWhereInput
+  orderBy?: Prisma.RisqueOrderByWithRelationInput | Prisma.RisqueOrderByWithRelationInput[]
+  cursor?: Prisma.RisqueWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RisqueScalarFieldEnum | Prisma.RisqueScalarFieldEnum[]
+}
+
+/**
+ * Utilisateur.risquesCrees
+ */
+export type Utilisateur$risquesCreesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Risque
+   */
+  select?: Prisma.RisqueSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Risque
+   */
+  omit?: Prisma.RisqueOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RisqueInclude<ExtArgs> | null
+  where?: Prisma.RisqueWhereInput
+  orderBy?: Prisma.RisqueOrderByWithRelationInput | Prisma.RisqueOrderByWithRelationInput[]
+  cursor?: Prisma.RisqueWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RisqueScalarFieldEnum | Prisma.RisqueScalarFieldEnum[]
 }
 
 /**

@@ -35,7 +35,7 @@ export class PointsAuditController {
   // )
   @ApiOperation({ summary: "Créer un nouveau point d'audit (Constat)" })
   create(@Req() req, @Body() dto: CreatePointAuditDto) {
-    return this.pointsAuditService.create(req.user.id, dto);
+    return this.pointsAuditService.create(req.user.id, dto, req.user);
   }
 
   @Get()
@@ -54,21 +54,21 @@ export class PointsAuditController {
 
   @Patch(':id')
   @ApiOperation({ summary: "Mettre à jour un constat (statut, échéance, etc.)" })
-  update(@Param('id') id: string, @Body() dto: UpdatePointsAuditDto) {
-    return this.pointsAuditService.update(id, dto);
+  update(@Req() req, @Param('id') id: string, @Body() dto: UpdatePointsAuditDto) {
+    return this.pointsAuditService.update(id, dto, req.user);
   }
 
   @Delete(':id')
   @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT, RoleUtilisateur.CHEF_MISSION)
   @ApiOperation({ summary: "Supprimer un point d'audit" })
-  remove(@Param('id') id: string) {
-    return this.pointsAuditService.remove(id);
+  remove(@Req() req, @Param('id') id: string) {
+    return this.pointsAuditService.remove(id, req.user);
   }
 
   @Post('batch')
   @Roles(RoleUtilisateur.CHEF_MISSION, RoleUtilisateur.AUDITEUR_SENIOR)
   @ApiOperation({ summary: "Importation massive de constats pour une mission" })
   createMany(@Req() req, @Body() dtos: CreatePointAuditDto[]) {
-    return this.pointsAuditService.createMany(req.user.id, dtos);
+    return this.pointsAuditService.createMany(req.user.id, dtos, req.user);
   }
 }

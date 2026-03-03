@@ -518,6 +518,40 @@ export type EnumTypeActionLogWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumTypeActionLogFilter<$PrismaModel>
 }
 
+export type EnumCategorieRisqueFilter<$PrismaModel = never> = {
+  equals?: $Enums.CategorieRisque | Prisma.EnumCategorieRisqueFieldRefInput<$PrismaModel>
+  in?: $Enums.CategorieRisque[] | Prisma.ListEnumCategorieRisqueFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CategorieRisque[] | Prisma.ListEnumCategorieRisqueFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCategorieRisqueFilter<$PrismaModel> | $Enums.CategorieRisque
+}
+
+export type EnumStatutRisqueFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatutRisque | Prisma.EnumStatutRisqueFieldRefInput<$PrismaModel>
+  in?: $Enums.StatutRisque[] | Prisma.ListEnumStatutRisqueFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatutRisque[] | Prisma.ListEnumStatutRisqueFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatutRisqueFilter<$PrismaModel> | $Enums.StatutRisque
+}
+
+export type EnumCategorieRisqueWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CategorieRisque | Prisma.EnumCategorieRisqueFieldRefInput<$PrismaModel>
+  in?: $Enums.CategorieRisque[] | Prisma.ListEnumCategorieRisqueFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CategorieRisque[] | Prisma.ListEnumCategorieRisqueFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCategorieRisqueWithAggregatesFilter<$PrismaModel> | $Enums.CategorieRisque
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCategorieRisqueFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCategorieRisqueFilter<$PrismaModel>
+}
+
+export type EnumStatutRisqueWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatutRisque | Prisma.EnumStatutRisqueFieldRefInput<$PrismaModel>
+  in?: $Enums.StatutRisque[] | Prisma.ListEnumStatutRisqueFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatutRisque[] | Prisma.ListEnumStatutRisqueFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatutRisqueWithAggregatesFilter<$PrismaModel> | $Enums.StatutRisque
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStatutRisqueFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStatutRisqueFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -979,6 +1013,40 @@ export type NestedEnumTypeActionLogWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTypeActionLogFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTypeActionLogFilter<$PrismaModel>
+}
+
+export type NestedEnumCategorieRisqueFilter<$PrismaModel = never> = {
+  equals?: $Enums.CategorieRisque | Prisma.EnumCategorieRisqueFieldRefInput<$PrismaModel>
+  in?: $Enums.CategorieRisque[] | Prisma.ListEnumCategorieRisqueFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CategorieRisque[] | Prisma.ListEnumCategorieRisqueFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCategorieRisqueFilter<$PrismaModel> | $Enums.CategorieRisque
+}
+
+export type NestedEnumStatutRisqueFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatutRisque | Prisma.EnumStatutRisqueFieldRefInput<$PrismaModel>
+  in?: $Enums.StatutRisque[] | Prisma.ListEnumStatutRisqueFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatutRisque[] | Prisma.ListEnumStatutRisqueFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatutRisqueFilter<$PrismaModel> | $Enums.StatutRisque
+}
+
+export type NestedEnumCategorieRisqueWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CategorieRisque | Prisma.EnumCategorieRisqueFieldRefInput<$PrismaModel>
+  in?: $Enums.CategorieRisque[] | Prisma.ListEnumCategorieRisqueFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CategorieRisque[] | Prisma.ListEnumCategorieRisqueFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCategorieRisqueWithAggregatesFilter<$PrismaModel> | $Enums.CategorieRisque
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCategorieRisqueFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCategorieRisqueFilter<$PrismaModel>
+}
+
+export type NestedEnumStatutRisqueWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatutRisque | Prisma.EnumStatutRisqueFieldRefInput<$PrismaModel>
+  in?: $Enums.StatutRisque[] | Prisma.ListEnumStatutRisqueFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatutRisque[] | Prisma.ListEnumStatutRisqueFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatutRisqueWithAggregatesFilter<$PrismaModel> | $Enums.StatutRisque
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStatutRisqueFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStatutRisqueFilter<$PrismaModel>
 }
 
 

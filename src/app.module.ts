@@ -15,6 +15,7 @@ import { JournalAuditModule } from 'src/modules/journal-audit/journal-audit.modu
 import { DashboardModule } from 'src/modules/dashboard/dashboard.module';
 import { SchedulerModule } from 'src/modules/scheduler/scheduler.module';
 import { ExportModule } from 'src/modules/export/export.module';
+import { RisquesModule } from 'src/modules/risques/risques.module';
 
 @Module({
   imports: [
@@ -42,6 +43,9 @@ import { ExportModule } from 'src/modules/export/export.module';
     // 6. Modules Métiers - FRM (Fraud Risk Management)
     CasFraudeModule,
     PointsFraudeModule,
+
+    // 6b. Modules Métiers - Risk Management
+    RisquesModule,
 
     // 7. Modules Transverses
     CommentairesModule,

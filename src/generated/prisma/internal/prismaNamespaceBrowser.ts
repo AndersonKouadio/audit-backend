@@ -69,7 +69,8 @@ export const ModelName = {
   Commentaire: 'Commentaire',
   PieceJointe: 'PieceJointe',
   Notification: 'Notification',
-  PlanificationDunning: 'PlanificationDunning'
+  PlanificationDunning: 'PlanificationDunning',
+  Risque: 'Risque'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -399,6 +400,30 @@ export const PlanificationDunningScalarFieldEnum = {
 } as const
 
 export type PlanificationDunningScalarFieldEnum = (typeof PlanificationDunningScalarFieldEnum)[keyof typeof PlanificationDunningScalarFieldEnum]
+
+
+export const RisqueScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  titre: 'titre',
+  description: 'description',
+  categorie: 'categorie',
+  probabilite: 'probabilite',
+  impact: 'impact',
+  score: 'score',
+  mesuresControle: 'mesuresControle',
+  planTraitement: 'planTraitement',
+  statut: 'statut',
+  departementId: 'departementId',
+  responsableId: 'responsableId',
+  createurId: 'createurId',
+  dateIdentification: 'dateIdentification',
+  dateProchaineRevue: 'dateProchaineRevue',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RisqueScalarFieldEnum = (typeof RisqueScalarFieldEnum)[keyof typeof RisqueScalarFieldEnum]
 
 
 export const SortOrder = {

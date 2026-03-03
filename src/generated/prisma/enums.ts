@@ -127,3 +127,26 @@ export const TypeActionLog = {
 } as const
 
 export type TypeActionLog = (typeof TypeActionLog)[keyof typeof TypeActionLog]
+
+
+export const StatutRisque = {
+  IDENTIFIE: 'IDENTIFIE',
+  EN_TRAITEMENT: 'EN_TRAITEMENT',
+  ACCEPTE: 'ACCEPTE',
+  CLOTURE: 'CLOTURE'
+} as const
+
+export type StatutRisque = (typeof StatutRisque)[keyof typeof StatutRisque]
+
+
+export const CategorieRisque = {
+  OPERATIONNEL: 'OPERATIONNEL',
+  FINANCIER: 'FINANCIER',
+  JURIDIQUE: 'JURIDIQUE',
+  REPUTATION: 'REPUTATION',
+  STRATEGIQUE: 'STRATEGIQUE',
+  CONFORMITE: 'CONFORMITE',
+  TECHNOLOGIQUE: 'TECHNOLOGIQUE'
+} as const
+
+export type CategorieRisque = (typeof CategorieRisque)[keyof typeof CategorieRisque]

@@ -402,7 +402,8 @@ export const ModelName = {
   Commentaire: 'Commentaire',
   PieceJointe: 'PieceJointe',
   Notification: 'Notification',
-  PlanificationDunning: 'PlanificationDunning'
+  PlanificationDunning: 'PlanificationDunning',
+  Risque: 'Risque'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organisation" | "otpToken" | "counterOtp" | "utilisateur" | "departement" | "audit" | "pointAudit" | "actionPoint" | "formulaireAcceptationRisque" | "casFraude" | "pointFraude" | "importBatch" | "importLigneStaging" | "journalAudit" | "historiqueStatut" | "commentaire" | "pieceJointe" | "notification" | "planificationDunning"
+    modelProps: "organisation" | "otpToken" | "counterOtp" | "utilisateur" | "departement" | "audit" | "pointAudit" | "actionPoint" | "formulaireAcceptationRisque" | "casFraude" | "pointFraude" | "importBatch" | "importLigneStaging" | "journalAudit" | "historiqueStatut" | "commentaire" | "pieceJointe" | "notification" | "planificationDunning" | "risque"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1828,6 +1829,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Risque: {
+      payload: Prisma.$RisquePayload<ExtArgs>
+      fields: Prisma.RisqueFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RisqueFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RisqueFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+        }
+        findFirst: {
+          args: Prisma.RisqueFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RisqueFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+        }
+        findMany: {
+          args: Prisma.RisqueFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>[]
+        }
+        create: {
+          args: Prisma.RisqueCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+        }
+        createMany: {
+          args: Prisma.RisqueCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RisqueCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>[]
+        }
+        delete: {
+          args: Prisma.RisqueDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+        }
+        update: {
+          args: Prisma.RisqueUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+        }
+        deleteMany: {
+          args: Prisma.RisqueDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RisqueUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RisqueUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>[]
+        }
+        upsert: {
+          args: Prisma.RisqueUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+        }
+        aggregate: {
+          args: Prisma.RisqueAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRisque>
+        }
+        groupBy: {
+          args: Prisma.RisqueGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RisqueGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RisqueCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RisqueCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2180,6 +2255,30 @@ export const PlanificationDunningScalarFieldEnum = {
 export type PlanificationDunningScalarFieldEnum = (typeof PlanificationDunningScalarFieldEnum)[keyof typeof PlanificationDunningScalarFieldEnum]
 
 
+export const RisqueScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  titre: 'titre',
+  description: 'description',
+  categorie: 'categorie',
+  probabilite: 'probabilite',
+  impact: 'impact',
+  score: 'score',
+  mesuresControle: 'mesuresControle',
+  planTraitement: 'planTraitement',
+  statut: 'statut',
+  departementId: 'departementId',
+  responsableId: 'responsableId',
+  createurId: 'createurId',
+  dateIdentification: 'dateIdentification',
+  dateProchaineRevue: 'dateProchaineRevue',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RisqueScalarFieldEnum = (typeof RisqueScalarFieldEnum)[keyof typeof RisqueScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2466,6 +2565,34 @@ export type ListEnumTypeActionLogFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'CategorieRisque'
+ */
+export type EnumCategorieRisqueFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CategorieRisque'>
+    
+
+
+/**
+ * Reference to a field of type 'CategorieRisque[]'
+ */
+export type ListEnumCategorieRisqueFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CategorieRisque[]'>
+    
+
+
+/**
+ * Reference to a field of type 'StatutRisque'
+ */
+export type EnumStatutRisqueFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutRisque'>
+    
+
+
+/**
+ * Reference to a field of type 'StatutRisque[]'
+ */
+export type ListEnumStatutRisqueFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutRisque[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -2592,6 +2719,7 @@ export type GlobalOmitConfig = {
   pieceJointe?: Prisma.PieceJointeOmit
   notification?: Prisma.NotificationOmit
   planificationDunning?: Prisma.PlanificationDunningOmit
+  risque?: Prisma.RisqueOmit
 }
 
 /* Types for Logging */

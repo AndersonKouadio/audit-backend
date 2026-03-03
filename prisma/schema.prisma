@@ -105,6 +105,10 @@ model Utilisateur {
   actionsAssignees ActionPoint[] @relation("ProprietaireAction")
   riskChampionDe   Departement?  @relation("RiskChampionDepartement")
 
+  // --- Relations Risk Management ---
+  risquesResponsable Risque[] @relation("RisquesResponsable")
+  risquesCrees       Risque[] @relation("RisquesCrees")
+
   // --- Relations Système ---
   importsRealises ImportBatch[]
 
@@ -140,6 +144,7 @@ model Departement {
   auditsPrincipaux Audit[]      @relation("DepartementPrincipal")
   pointsConcernes  PointAudit[] @relation("DepartementConcerne")
   casFraude        CasFraude[]  @relation("DepartementFraude")
+  risques          Risque[]     @relation("RisquesDepartement")
 
   @@map("departements")
 }
@@ -611,4 +616,58 @@ model PlanificationDunning {
   nextRun DateTime?
 
   @@map("planifications_dunning")
+}
+
+// ============================================================================
+// 6. RISK MANAGEMENT
+// ============================================================================
+
+enum StatutRisque {
+  IDENTIFIE
+  EN_TRAITEMENT
+  ACCEPTE
+  CLOTURE
+}
+
+enum CategorieRisque {
+  OPERATIONNEL
+  FINANCIER
+  JURIDIQUE
+  REPUTATION
+  STRATEGIQUE
+  CONFORMITE
+  TECHNOLOGIQUE
+}
+
+model Risque {
+  id          String          @id @default(cuid())
+  reference   String          @unique
+  titre       String
+  description String          @db.Text
+  categorie   CategorieRisque
+  probabilite Int // 1-5
+  impact      Int // 1-5
+  score       Int // = probabilite * impact
+
+  mesuresControle String? @db.Text
+  planTraitement  String? @db.Text
+
+  statut StatutRisque @default(IDENTIFIE)
+
+  departementId String
+  departement   Departement @relation("RisquesDepartement", fields: [departementId], references: [id])
+
+  responsableId String?
+  responsable   Utilisateur? @relation("RisquesResponsable", fields: [responsableId], references: [id])
+
+  createurId String
+  createur   Utilisateur @relation("RisquesCrees", fields: [createurId], references: [id])
+
+  dateIdentification DateTime  @default(now())
+  dateProchaineRevue DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("risques")
 }

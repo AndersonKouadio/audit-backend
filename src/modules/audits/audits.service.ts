@@ -4,12 +4,23 @@ import { CreateAuditDto } from './dto/create-audit.dto';
 import { AuditQueryDto } from './dto/audit-query.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { UpdateAuditDto } from './dto/update-audit.dto';
+import { JournalAuditService } from '../journal-audit/journal-audit.service';
+import { TypeActionLog } from 'src/generated/prisma/enums';
+
+export interface UserContext {
+  id: string;
+  nom: string;
+  role: string;
+}
 
 @Injectable()
 export class AuditsService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly journalService: JournalAuditService,
+  ) { }
 
-  async create(dto: CreateAuditDto) {
+  async create(dto: CreateAuditDto, user?: UserContext) {
     // 1. Vérifier si la référence est unique
     const exists = await this.prisma.audit.findUnique({
       where: { reference: dto.reference },
@@ -22,7 +33,7 @@ export class AuditsService {
     // 2. Création avec relations
     const { equipeIds, ...data } = dto;
 
-    return this.prisma.audit.create({
+    const audit = await this.prisma.audit.create({
       data: {
         ...data,
         dateDebutPrevue: new Date(data.dateDebutPrevue),
@@ -37,6 +48,20 @@ export class AuditsService {
         equipe: { select: { nom: true, prenom: true } },
       },
     });
+
+    if (user) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role,
+        action: TypeActionLog.CREATION,
+        entiteType: 'AUDIT',
+        entiteId: audit.id,
+        entiteRef: audit.reference,
+      });
+    }
+
+    return audit;
   }
 
   async findAll(query: AuditQueryDto): Promise<PaginationResponseDto<any>> {
@@ -104,9 +129,9 @@ export class AuditsService {
     });
   }
 
-  async update(id: string, dto: UpdateAuditDto) {
+  async update(id: string, dto: UpdateAuditDto, user?: UserContext) {
     const { equipeIds, ...data } = dto;
-    return this.prisma.audit.update({
+    const audit = await this.prisma.audit.update({
       where: { id },
       data: {
         ...data,
@@ -119,9 +144,39 @@ export class AuditsService {
         }),
       },
     });
+
+    if (user) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role,
+        action: TypeActionLog.MODIFICATION,
+        entiteType: 'AUDIT',
+        entiteId: audit.id,
+        entiteRef: audit.reference,
+        details: { champs: Object.keys(data) },
+      });
+    }
+
+    return audit;
   }
 
-  async remove(id: string) {
-    return this.prisma.audit.delete({ where: { id } });
+  async remove(id: string, user?: UserContext) {
+    const audit = await this.prisma.audit.findUnique({ where: { id }, select: { reference: true } });
+    const result = await this.prisma.audit.delete({ where: { id } });
+
+    if (user && audit) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role,
+        action: TypeActionLog.SUPPRESSION,
+        entiteType: 'AUDIT',
+        entiteId: id,
+        entiteRef: audit.reference,
+      });
+    }
+
+    return result;
   }
 }

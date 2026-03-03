@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, UseGuards, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseGuards, Param, Patch, Delete, Req } from '@nestjs/common';
 import { AuditsService } from './audits.service';
 import { CreateAuditDto } from './dto/create-audit.dto';
 import { AuditQueryDto } from './dto/audit-query.dto';
@@ -19,8 +19,8 @@ export class AuditsController {
   @Post()
   @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT)
   @ApiOperation({ summary: "Créer et planifier une nouvelle mission d'audit" })
-  create(@Body() createAuditDto: CreateAuditDto) {
-    return this.auditsService.create(createAuditDto);
+  create(@Req() req, @Body() createAuditDto: CreateAuditDto) {
+    return this.auditsService.create(createAuditDto, req.user);
   }
 
   @Get()
@@ -37,14 +37,14 @@ export class AuditsController {
   @Patch(':id')
   @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT, RoleUtilisateur.CHEF_MISSION)
   @ApiOperation({ summary: "Modifier une mission d'audit" })
-  update(@Param('id') id: string, @Body() dto: UpdateAuditDto) {
-    return this.auditsService.update(id, dto);
+  update(@Req() req, @Param('id') id: string, @Body() dto: UpdateAuditDto) {
+    return this.auditsService.update(id, dto, req.user);
   }
 
   @Delete(':id')
   @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT)
   @ApiOperation({ summary: "Supprimer une mission d'audit" })
-  remove(@Param('id') id: string) {
-    return this.auditsService.remove(id);
+  remove(@Req() req, @Param('id') id: string) {
+    return this.auditsService.remove(id, req.user);
   }
 }

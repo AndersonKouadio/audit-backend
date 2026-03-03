@@ -132,3 +132,8 @@ export type Notification = Prisma.NotificationModel
  * 
  */
 export type PlanificationDunning = Prisma.PlanificationDunningModel
+/**
+ * Model Risque
+ * 
+ */
+export type Risque = Prisma.RisqueModel
