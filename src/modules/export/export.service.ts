@@ -3,6 +3,13 @@ import * as XLSX from 'xlsx';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { StatutPoint } from 'src/generated/prisma/enums';
 
+const NIVEAU_RISQUE = (score: number) => {
+  if (score <= 4) return 'Faible';
+  if (score <= 9) return 'Modéré';
+  if (score <= 16) return 'Élevé';
+  return 'Critique';
+};
+
 @Injectable()
 export class ExportService {
   constructor(private readonly prisma: PrismaService) {}
@@ -138,6 +145,41 @@ export class ExportService {
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Rapport Ageing');
+
+    return Buffer.from(XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }));
+  }
+
+  async exportRisques(): Promise<Buffer> {
+    const risques = await this.prisma.risque.findMany({
+      orderBy: { score: 'desc' },
+      include: {
+        departement: { select: { code: true, nom: true } },
+        responsable: { select: { nom: true, prenom: true } },
+      },
+      take: 5000,
+    });
+
+    const lignes = risques.map((r) => ({
+      Référence: r.reference,
+      Titre: r.titre,
+      Catégorie: r.categorie,
+      Probabilité: r.probabilite,
+      Impact: r.impact,
+      Score: r.score,
+      Niveau: NIVEAU_RISQUE(r.score),
+      Département: r.departement ? `${r.departement.code} - ${r.departement.nom}` : '',
+      Responsable: r.responsable ? `${r.responsable.prenom} ${r.responsable.nom}` : '',
+      Statut: r.statut,
+      'Date Révision': r.dateProchaineRevue
+        ? new Date(r.dateProchaineRevue).toLocaleDateString('fr-FR')
+        : '',
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(lignes);
+    ws['!cols'] = Object.keys(lignes[0] || {}).map(() => ({ wch: 20 }));
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Registre des Risques');
 
     return Buffer.from(XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }));
   }

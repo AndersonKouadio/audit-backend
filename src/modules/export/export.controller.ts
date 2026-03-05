@@ -58,4 +58,16 @@ export class ExportController {
     });
     res.end(buffer);
   }
+
+  @Get('risques')
+  @ApiOperation({ summary: 'Exporter le registre des risques en Excel' })
+  async exportRisques(@Res() res: Response) {
+    const buffer = await this.exportService.exportRisques();
+    res.set({
+      'Content-Type': XLSX_CONTENT_TYPE,
+      'Content-Disposition': `attachment; filename="registre-risques-${Date.now()}.xlsx"`,
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
+  }
 }

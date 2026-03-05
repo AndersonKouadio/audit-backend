@@ -15,6 +15,8 @@ export class CommentairesService {
       relationsEntite.pointAuditId = entiteId;
     } else if (typeEntite === 'POINT_FRAUDE') {
       relationsEntite.pointFraudeId = entiteId;
+    } else if (typeEntite === 'RISQUE') {
+      // Pas de FK Prisma pour les risques — typeEntite + entiteId suffisent
     }
 
     return this.prisma.commentaire.create({
