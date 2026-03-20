@@ -33,7 +33,6 @@ export type CommentaireMinAggregateOutputType = {
   creePar: string | null
   dateCreation: Date | null
   pointAuditId: string | null
-  pointFraudeId: string | null
 }
 
 export type CommentaireMaxAggregateOutputType = {
@@ -45,7 +44,6 @@ export type CommentaireMaxAggregateOutputType = {
   creePar: string | null
   dateCreation: Date | null
   pointAuditId: string | null
-  pointFraudeId: string | null
 }
 
 export type CommentaireCountAggregateOutputType = {
@@ -57,7 +55,6 @@ export type CommentaireCountAggregateOutputType = {
   creePar: number
   dateCreation: number
   pointAuditId: number
-  pointFraudeId: number
   _all: number
 }
 
@@ -71,7 +68,6 @@ export type CommentaireMinAggregateInputType = {
   creePar?: true
   dateCreation?: true
   pointAuditId?: true
-  pointFraudeId?: true
 }
 
 export type CommentaireMaxAggregateInputType = {
@@ -83,7 +79,6 @@ export type CommentaireMaxAggregateInputType = {
   creePar?: true
   dateCreation?: true
   pointAuditId?: true
-  pointFraudeId?: true
 }
 
 export type CommentaireCountAggregateInputType = {
@@ -95,7 +90,6 @@ export type CommentaireCountAggregateInputType = {
   creePar?: true
   dateCreation?: true
   pointAuditId?: true
-  pointFraudeId?: true
   _all?: true
 }
 
@@ -180,7 +174,6 @@ export type CommentaireGroupByOutputType = {
   creePar: string
   dateCreation: Date
   pointAuditId: string | null
-  pointFraudeId: string | null
   _count: CommentaireCountAggregateOutputType | null
   _min: CommentaireMinAggregateOutputType | null
   _max: CommentaireMaxAggregateOutputType | null
@@ -213,9 +206,7 @@ export type CommentaireWhereInput = {
   creePar?: Prisma.StringFilter<"Commentaire"> | string
   dateCreation?: Prisma.DateTimeFilter<"Commentaire"> | Date | string
   pointAuditId?: Prisma.StringNullableFilter<"Commentaire"> | string | null
-  pointFraudeId?: Prisma.StringNullableFilter<"Commentaire"> | string | null
   pointAudit?: Prisma.XOR<Prisma.PointAuditNullableScalarRelationFilter, Prisma.PointAuditWhereInput> | null
-  pointFraude?: Prisma.XOR<Prisma.PointFraudeNullableScalarRelationFilter, Prisma.PointFraudeWhereInput> | null
 }
 
 export type CommentaireOrderByWithRelationInput = {
@@ -227,9 +218,7 @@ export type CommentaireOrderByWithRelationInput = {
   creePar?: Prisma.SortOrder
   dateCreation?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrderInput | Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrderInput | Prisma.SortOrder
   pointAudit?: Prisma.PointAuditOrderByWithRelationInput
-  pointFraude?: Prisma.PointFraudeOrderByWithRelationInput
 }
 
 export type CommentaireWhereUniqueInput = Prisma.AtLeast<{
@@ -244,9 +233,7 @@ export type CommentaireWhereUniqueInput = Prisma.AtLeast<{
   creePar?: Prisma.StringFilter<"Commentaire"> | string
   dateCreation?: Prisma.DateTimeFilter<"Commentaire"> | Date | string
   pointAuditId?: Prisma.StringNullableFilter<"Commentaire"> | string | null
-  pointFraudeId?: Prisma.StringNullableFilter<"Commentaire"> | string | null
   pointAudit?: Prisma.XOR<Prisma.PointAuditNullableScalarRelationFilter, Prisma.PointAuditWhereInput> | null
-  pointFraude?: Prisma.XOR<Prisma.PointFraudeNullableScalarRelationFilter, Prisma.PointFraudeWhereInput> | null
 }, "id">
 
 export type CommentaireOrderByWithAggregationInput = {
@@ -258,7 +245,6 @@ export type CommentaireOrderByWithAggregationInput = {
   creePar?: Prisma.SortOrder
   dateCreation?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrderInput | Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CommentaireCountOrderByAggregateInput
   _max?: Prisma.CommentaireMaxOrderByAggregateInput
   _min?: Prisma.CommentaireMinOrderByAggregateInput
@@ -276,7 +262,6 @@ export type CommentaireScalarWhereWithAggregatesInput = {
   creePar?: Prisma.StringWithAggregatesFilter<"Commentaire"> | string
   dateCreation?: Prisma.DateTimeWithAggregatesFilter<"Commentaire"> | Date | string
   pointAuditId?: Prisma.StringNullableWithAggregatesFilter<"Commentaire"> | string | null
-  pointFraudeId?: Prisma.StringNullableWithAggregatesFilter<"Commentaire"> | string | null
 }
 
 export type CommentaireCreateInput = {
@@ -288,7 +273,6 @@ export type CommentaireCreateInput = {
   creePar: string
   dateCreation?: Date | string
   pointAudit?: Prisma.PointAuditCreateNestedOneWithoutCommentairesInput
-  pointFraude?: Prisma.PointFraudeCreateNestedOneWithoutCommentairesInput
 }
 
 export type CommentaireUncheckedCreateInput = {
@@ -300,7 +284,6 @@ export type CommentaireUncheckedCreateInput = {
   creePar: string
   dateCreation?: Date | string
   pointAuditId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type CommentaireUpdateInput = {
@@ -312,7 +295,6 @@ export type CommentaireUpdateInput = {
   creePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pointAudit?: Prisma.PointAuditUpdateOneWithoutCommentairesNestedInput
-  pointFraude?: Prisma.PointFraudeUpdateOneWithoutCommentairesNestedInput
 }
 
 export type CommentaireUncheckedUpdateInput = {
@@ -324,7 +306,6 @@ export type CommentaireUncheckedUpdateInput = {
   creePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CommentaireCreateManyInput = {
@@ -336,7 +317,6 @@ export type CommentaireCreateManyInput = {
   creePar: string
   dateCreation?: Date | string
   pointAuditId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type CommentaireUpdateManyMutationInput = {
@@ -358,7 +338,6 @@ export type CommentaireUncheckedUpdateManyInput = {
   creePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CommentaireListRelationFilter = {
@@ -380,7 +359,6 @@ export type CommentaireCountOrderByAggregateInput = {
   creePar?: Prisma.SortOrder
   dateCreation?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrder
 }
 
 export type CommentaireMaxOrderByAggregateInput = {
@@ -392,7 +370,6 @@ export type CommentaireMaxOrderByAggregateInput = {
   creePar?: Prisma.SortOrder
   dateCreation?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrder
 }
 
 export type CommentaireMinOrderByAggregateInput = {
@@ -404,7 +381,6 @@ export type CommentaireMinOrderByAggregateInput = {
   creePar?: Prisma.SortOrder
   dateCreation?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrder
 }
 
 export type CommentaireCreateNestedManyWithoutPointAuditInput = {
@@ -449,48 +425,6 @@ export type CommentaireUncheckedUpdateManyWithoutPointAuditNestedInput = {
   deleteMany?: Prisma.CommentaireScalarWhereInput | Prisma.CommentaireScalarWhereInput[]
 }
 
-export type CommentaireCreateNestedManyWithoutPointFraudeInput = {
-  create?: Prisma.XOR<Prisma.CommentaireCreateWithoutPointFraudeInput, Prisma.CommentaireUncheckedCreateWithoutPointFraudeInput> | Prisma.CommentaireCreateWithoutPointFraudeInput[] | Prisma.CommentaireUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.CommentaireCreateOrConnectWithoutPointFraudeInput | Prisma.CommentaireCreateOrConnectWithoutPointFraudeInput[]
-  createMany?: Prisma.CommentaireCreateManyPointFraudeInputEnvelope
-  connect?: Prisma.CommentaireWhereUniqueInput | Prisma.CommentaireWhereUniqueInput[]
-}
-
-export type CommentaireUncheckedCreateNestedManyWithoutPointFraudeInput = {
-  create?: Prisma.XOR<Prisma.CommentaireCreateWithoutPointFraudeInput, Prisma.CommentaireUncheckedCreateWithoutPointFraudeInput> | Prisma.CommentaireCreateWithoutPointFraudeInput[] | Prisma.CommentaireUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.CommentaireCreateOrConnectWithoutPointFraudeInput | Prisma.CommentaireCreateOrConnectWithoutPointFraudeInput[]
-  createMany?: Prisma.CommentaireCreateManyPointFraudeInputEnvelope
-  connect?: Prisma.CommentaireWhereUniqueInput | Prisma.CommentaireWhereUniqueInput[]
-}
-
-export type CommentaireUpdateManyWithoutPointFraudeNestedInput = {
-  create?: Prisma.XOR<Prisma.CommentaireCreateWithoutPointFraudeInput, Prisma.CommentaireUncheckedCreateWithoutPointFraudeInput> | Prisma.CommentaireCreateWithoutPointFraudeInput[] | Prisma.CommentaireUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.CommentaireCreateOrConnectWithoutPointFraudeInput | Prisma.CommentaireCreateOrConnectWithoutPointFraudeInput[]
-  upsert?: Prisma.CommentaireUpsertWithWhereUniqueWithoutPointFraudeInput | Prisma.CommentaireUpsertWithWhereUniqueWithoutPointFraudeInput[]
-  createMany?: Prisma.CommentaireCreateManyPointFraudeInputEnvelope
-  set?: Prisma.CommentaireWhereUniqueInput | Prisma.CommentaireWhereUniqueInput[]
-  disconnect?: Prisma.CommentaireWhereUniqueInput | Prisma.CommentaireWhereUniqueInput[]
-  delete?: Prisma.CommentaireWhereUniqueInput | Prisma.CommentaireWhereUniqueInput[]
-  connect?: Prisma.CommentaireWhereUniqueInput | Prisma.CommentaireWhereUniqueInput[]
-  update?: Prisma.CommentaireUpdateWithWhereUniqueWithoutPointFraudeInput | Prisma.CommentaireUpdateWithWhereUniqueWithoutPointFraudeInput[]
-  updateMany?: Prisma.CommentaireUpdateManyWithWhereWithoutPointFraudeInput | Prisma.CommentaireUpdateManyWithWhereWithoutPointFraudeInput[]
-  deleteMany?: Prisma.CommentaireScalarWhereInput | Prisma.CommentaireScalarWhereInput[]
-}
-
-export type CommentaireUncheckedUpdateManyWithoutPointFraudeNestedInput = {
-  create?: Prisma.XOR<Prisma.CommentaireCreateWithoutPointFraudeInput, Prisma.CommentaireUncheckedCreateWithoutPointFraudeInput> | Prisma.CommentaireCreateWithoutPointFraudeInput[] | Prisma.CommentaireUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.CommentaireCreateOrConnectWithoutPointFraudeInput | Prisma.CommentaireCreateOrConnectWithoutPointFraudeInput[]
-  upsert?: Prisma.CommentaireUpsertWithWhereUniqueWithoutPointFraudeInput | Prisma.CommentaireUpsertWithWhereUniqueWithoutPointFraudeInput[]
-  createMany?: Prisma.CommentaireCreateManyPointFraudeInputEnvelope
-  set?: Prisma.CommentaireWhereUniqueInput | Prisma.CommentaireWhereUniqueInput[]
-  disconnect?: Prisma.CommentaireWhereUniqueInput | Prisma.CommentaireWhereUniqueInput[]
-  delete?: Prisma.CommentaireWhereUniqueInput | Prisma.CommentaireWhereUniqueInput[]
-  connect?: Prisma.CommentaireWhereUniqueInput | Prisma.CommentaireWhereUniqueInput[]
-  update?: Prisma.CommentaireUpdateWithWhereUniqueWithoutPointFraudeInput | Prisma.CommentaireUpdateWithWhereUniqueWithoutPointFraudeInput[]
-  updateMany?: Prisma.CommentaireUpdateManyWithWhereWithoutPointFraudeInput | Prisma.CommentaireUpdateManyWithWhereWithoutPointFraudeInput[]
-  deleteMany?: Prisma.CommentaireScalarWhereInput | Prisma.CommentaireScalarWhereInput[]
-}
-
 export type CommentaireCreateWithoutPointAuditInput = {
   id?: string
   typeEntite: string
@@ -499,7 +433,6 @@ export type CommentaireCreateWithoutPointAuditInput = {
   estInterne?: boolean
   creePar: string
   dateCreation?: Date | string
-  pointFraude?: Prisma.PointFraudeCreateNestedOneWithoutCommentairesInput
 }
 
 export type CommentaireUncheckedCreateWithoutPointAuditInput = {
@@ -510,7 +443,6 @@ export type CommentaireUncheckedCreateWithoutPointAuditInput = {
   estInterne?: boolean
   creePar: string
   dateCreation?: Date | string
-  pointFraudeId?: string | null
 }
 
 export type CommentaireCreateOrConnectWithoutPointAuditInput = {
@@ -551,55 +483,6 @@ export type CommentaireScalarWhereInput = {
   creePar?: Prisma.StringFilter<"Commentaire"> | string
   dateCreation?: Prisma.DateTimeFilter<"Commentaire"> | Date | string
   pointAuditId?: Prisma.StringNullableFilter<"Commentaire"> | string | null
-  pointFraudeId?: Prisma.StringNullableFilter<"Commentaire"> | string | null
-}
-
-export type CommentaireCreateWithoutPointFraudeInput = {
-  id?: string
-  typeEntite: string
-  entiteId: string
-  texte: string
-  estInterne?: boolean
-  creePar: string
-  dateCreation?: Date | string
-  pointAudit?: Prisma.PointAuditCreateNestedOneWithoutCommentairesInput
-}
-
-export type CommentaireUncheckedCreateWithoutPointFraudeInput = {
-  id?: string
-  typeEntite: string
-  entiteId: string
-  texte: string
-  estInterne?: boolean
-  creePar: string
-  dateCreation?: Date | string
-  pointAuditId?: string | null
-}
-
-export type CommentaireCreateOrConnectWithoutPointFraudeInput = {
-  where: Prisma.CommentaireWhereUniqueInput
-  create: Prisma.XOR<Prisma.CommentaireCreateWithoutPointFraudeInput, Prisma.CommentaireUncheckedCreateWithoutPointFraudeInput>
-}
-
-export type CommentaireCreateManyPointFraudeInputEnvelope = {
-  data: Prisma.CommentaireCreateManyPointFraudeInput | Prisma.CommentaireCreateManyPointFraudeInput[]
-  skipDuplicates?: boolean
-}
-
-export type CommentaireUpsertWithWhereUniqueWithoutPointFraudeInput = {
-  where: Prisma.CommentaireWhereUniqueInput
-  update: Prisma.XOR<Prisma.CommentaireUpdateWithoutPointFraudeInput, Prisma.CommentaireUncheckedUpdateWithoutPointFraudeInput>
-  create: Prisma.XOR<Prisma.CommentaireCreateWithoutPointFraudeInput, Prisma.CommentaireUncheckedCreateWithoutPointFraudeInput>
-}
-
-export type CommentaireUpdateWithWhereUniqueWithoutPointFraudeInput = {
-  where: Prisma.CommentaireWhereUniqueInput
-  data: Prisma.XOR<Prisma.CommentaireUpdateWithoutPointFraudeInput, Prisma.CommentaireUncheckedUpdateWithoutPointFraudeInput>
-}
-
-export type CommentaireUpdateManyWithWhereWithoutPointFraudeInput = {
-  where: Prisma.CommentaireScalarWhereInput
-  data: Prisma.XOR<Prisma.CommentaireUpdateManyMutationInput, Prisma.CommentaireUncheckedUpdateManyWithoutPointFraudeInput>
 }
 
 export type CommentaireCreateManyPointAuditInput = {
@@ -610,7 +493,6 @@ export type CommentaireCreateManyPointAuditInput = {
   estInterne?: boolean
   creePar: string
   dateCreation?: Date | string
-  pointFraudeId?: string | null
 }
 
 export type CommentaireUpdateWithoutPointAuditInput = {
@@ -621,7 +503,6 @@ export type CommentaireUpdateWithoutPointAuditInput = {
   estInterne?: Prisma.BoolFieldUpdateOperationsInput | boolean
   creePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointFraude?: Prisma.PointFraudeUpdateOneWithoutCommentairesNestedInput
 }
 
 export type CommentaireUncheckedUpdateWithoutPointAuditInput = {
@@ -632,7 +513,6 @@ export type CommentaireUncheckedUpdateWithoutPointAuditInput = {
   estInterne?: Prisma.BoolFieldUpdateOperationsInput | boolean
   creePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CommentaireUncheckedUpdateManyWithoutPointAuditInput = {
@@ -643,51 +523,6 @@ export type CommentaireUncheckedUpdateManyWithoutPointAuditInput = {
   estInterne?: Prisma.BoolFieldUpdateOperationsInput | boolean
   creePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type CommentaireCreateManyPointFraudeInput = {
-  id?: string
-  typeEntite: string
-  entiteId: string
-  texte: string
-  estInterne?: boolean
-  creePar: string
-  dateCreation?: Date | string
-  pointAuditId?: string | null
-}
-
-export type CommentaireUpdateWithoutPointFraudeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  typeEntite?: Prisma.StringFieldUpdateOperationsInput | string
-  entiteId?: Prisma.StringFieldUpdateOperationsInput | string
-  texte?: Prisma.StringFieldUpdateOperationsInput | string
-  estInterne?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  creePar?: Prisma.StringFieldUpdateOperationsInput | string
-  dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointAudit?: Prisma.PointAuditUpdateOneWithoutCommentairesNestedInput
-}
-
-export type CommentaireUncheckedUpdateWithoutPointFraudeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  typeEntite?: Prisma.StringFieldUpdateOperationsInput | string
-  entiteId?: Prisma.StringFieldUpdateOperationsInput | string
-  texte?: Prisma.StringFieldUpdateOperationsInput | string
-  estInterne?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  creePar?: Prisma.StringFieldUpdateOperationsInput | string
-  dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type CommentaireUncheckedUpdateManyWithoutPointFraudeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  typeEntite?: Prisma.StringFieldUpdateOperationsInput | string
-  entiteId?: Prisma.StringFieldUpdateOperationsInput | string
-  texte?: Prisma.StringFieldUpdateOperationsInput | string
-  estInterne?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  creePar?: Prisma.StringFieldUpdateOperationsInput | string
-  dateCreation?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -701,9 +536,7 @@ export type CommentaireSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   creePar?: boolean
   dateCreation?: boolean
   pointAuditId?: boolean
-  pointFraudeId?: boolean
   pointAudit?: boolean | Prisma.Commentaire$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.Commentaire$pointFraudeArgs<ExtArgs>
 }, ExtArgs["result"]["commentaire"]>
 
 export type CommentaireSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -715,9 +548,7 @@ export type CommentaireSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   creePar?: boolean
   dateCreation?: boolean
   pointAuditId?: boolean
-  pointFraudeId?: boolean
   pointAudit?: boolean | Prisma.Commentaire$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.Commentaire$pointFraudeArgs<ExtArgs>
 }, ExtArgs["result"]["commentaire"]>
 
 export type CommentaireSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -729,9 +560,7 @@ export type CommentaireSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   creePar?: boolean
   dateCreation?: boolean
   pointAuditId?: boolean
-  pointFraudeId?: boolean
   pointAudit?: boolean | Prisma.Commentaire$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.Commentaire$pointFraudeArgs<ExtArgs>
 }, ExtArgs["result"]["commentaire"]>
 
 export type CommentaireSelectScalar = {
@@ -743,28 +572,23 @@ export type CommentaireSelectScalar = {
   creePar?: boolean
   dateCreation?: boolean
   pointAuditId?: boolean
-  pointFraudeId?: boolean
 }
 
-export type CommentaireOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "typeEntite" | "entiteId" | "texte" | "estInterne" | "creePar" | "dateCreation" | "pointAuditId" | "pointFraudeId", ExtArgs["result"]["commentaire"]>
+export type CommentaireOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "typeEntite" | "entiteId" | "texte" | "estInterne" | "creePar" | "dateCreation" | "pointAuditId", ExtArgs["result"]["commentaire"]>
 export type CommentaireInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pointAudit?: boolean | Prisma.Commentaire$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.Commentaire$pointFraudeArgs<ExtArgs>
 }
 export type CommentaireIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pointAudit?: boolean | Prisma.Commentaire$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.Commentaire$pointFraudeArgs<ExtArgs>
 }
 export type CommentaireIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pointAudit?: boolean | Prisma.Commentaire$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.Commentaire$pointFraudeArgs<ExtArgs>
 }
 
 export type $CommentairePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Commentaire"
   objects: {
     pointAudit: Prisma.$PointAuditPayload<ExtArgs> | null
-    pointFraude: Prisma.$PointFraudePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -775,7 +599,6 @@ export type $CommentairePayload<ExtArgs extends runtime.Types.Extensions.Interna
     creePar: string
     dateCreation: Date
     pointAuditId: string | null
-    pointFraudeId: string | null
   }, ExtArgs["result"]["commentaire"]>
   composites: {}
 }
@@ -1171,7 +994,6 @@ readonly fields: CommentaireFieldRefs;
 export interface Prisma__CommentaireClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   pointAudit<T extends Prisma.Commentaire$pointAuditArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Commentaire$pointAuditArgs<ExtArgs>>): Prisma.Prisma__PointAuditClient<runtime.Types.Result.GetResult<Prisma.$PointAuditPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  pointFraude<T extends Prisma.Commentaire$pointFraudeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Commentaire$pointFraudeArgs<ExtArgs>>): Prisma.Prisma__PointFraudeClient<runtime.Types.Result.GetResult<Prisma.$PointFraudePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1209,7 +1031,6 @@ export interface CommentaireFieldRefs {
   readonly creePar: Prisma.FieldRef<"Commentaire", 'String'>
   readonly dateCreation: Prisma.FieldRef<"Commentaire", 'DateTime'>
   readonly pointAuditId: Prisma.FieldRef<"Commentaire", 'String'>
-  readonly pointFraudeId: Prisma.FieldRef<"Commentaire", 'String'>
 }
     
 
@@ -1622,25 +1443,6 @@ export type Commentaire$pointAuditArgs<ExtArgs extends runtime.Types.Extensions.
    */
   include?: Prisma.PointAuditInclude<ExtArgs> | null
   where?: Prisma.PointAuditWhereInput
-}
-
-/**
- * Commentaire.pointFraude
- */
-export type Commentaire$pointFraudeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PointFraude
-   */
-  select?: Prisma.PointFraudeSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PointFraude
-   */
-  omit?: Prisma.PointFraudeOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PointFraudeInclude<ExtArgs> | null
-  where?: Prisma.PointFraudeWhereInput
 }
 
 /**

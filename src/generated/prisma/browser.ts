@@ -63,16 +63,6 @@ export type ActionPoint = Prisma.ActionPointModel
  */
 export type FormulaireAcceptationRisque = Prisma.FormulaireAcceptationRisqueModel
 /**
- * Model CasFraude
- * 
- */
-export type CasFraude = Prisma.CasFraudeModel
-/**
- * Model PointFraude
- * 
- */
-export type PointFraude = Prisma.PointFraudeModel
-/**
  * Model ImportBatch
  * 
  */
@@ -113,7 +103,7 @@ export type Notification = Prisma.NotificationModel
  */
 export type PlanificationDunning = Prisma.PlanificationDunningModel
 /**
- * Model Risque
+ * Model ParametresSysteme
  * 
  */
-export type Risque = Prisma.RisqueModel
+export type ParametresSysteme = Prisma.ParametresSystemeModel

@@ -54,7 +54,6 @@ export type SourceAudit = (typeof SourceAudit)[keyof typeof SourceAudit]
 export const StatutAudit = {
   PLANIFIE: 'PLANIFIE',
   EN_COURS: 'EN_COURS',
-  PRE_PROJET: 'PRE_PROJET',
   PUBLIE: 'PUBLIE',
   CLOTURE: 'CLOTURE',
   ARCHIVE: 'ARCHIVE'
@@ -82,15 +81,6 @@ export const StatutPoint = {
 } as const
 
 export type StatutPoint = (typeof StatutPoint)[keyof typeof StatutPoint]
-
-
-export const StatutCasFraude = {
-  EN_INVESTIGATION: 'EN_INVESTIGATION',
-  INVESTIGATION_TERMINEE: 'INVESTIGATION_TERMINEE',
-  CLOTURE: 'CLOTURE'
-} as const
-
-export type StatutCasFraude = (typeof StatutCasFraude)[keyof typeof StatutCasFraude]
 
 
 export const StatutImportBatch = {
@@ -127,26 +117,3 @@ export const TypeActionLog = {
 } as const
 
 export type TypeActionLog = (typeof TypeActionLog)[keyof typeof TypeActionLog]
-
-
-export const StatutRisque = {
-  IDENTIFIE: 'IDENTIFIE',
-  EN_TRAITEMENT: 'EN_TRAITEMENT',
-  ACCEPTE: 'ACCEPTE',
-  CLOTURE: 'CLOTURE'
-} as const
-
-export type StatutRisque = (typeof StatutRisque)[keyof typeof StatutRisque]
-
-
-export const CategorieRisque = {
-  OPERATIONNEL: 'OPERATIONNEL',
-  FINANCIER: 'FINANCIER',
-  JURIDIQUE: 'JURIDIQUE',
-  REPUTATION: 'REPUTATION',
-  STRATEGIQUE: 'STRATEGIQUE',
-  CONFORMITE: 'CONFORMITE',
-  TECHNOLOGIQUE: 'TECHNOLOGIQUE'
-} as const
-
-export type CategorieRisque = (typeof CategorieRisque)[keyof typeof CategorieRisque]

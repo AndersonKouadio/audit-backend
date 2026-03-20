@@ -97,20 +97,13 @@ model Utilisateur {
   auditsParticipation Audit[]      @relation("EquipeAudit")
   pointsCrees         PointAudit[] @relation("AuditeurCreateur")
 
-  // --- Relations FRM (Fraude) ---
-  casFraudeGeres    CasFraude[]   @relation("AuditeurFRM")
-  pointsFraudeGeres PointFraude[] @relation("AuditeurPointFraude")
-
   // --- Relations Métier (Business) ---
   actionsAssignees ActionPoint[] @relation("ProprietaireAction")
   riskChampionDe   Departement?  @relation("RiskChampionDepartement")
 
-  // --- Relations Risk Management ---
-  risquesResponsable Risque[] @relation("RisquesResponsable")
-  risquesCrees       Risque[] @relation("RisquesCrees")
-
   // --- Relations Système ---
   importsRealises ImportBatch[]
+  notifications   Notification[]
 
   dateCreation      DateTime  @default(now())
   dateMiseAJour     DateTime  @updatedAt
@@ -143,8 +136,6 @@ model Departement {
   // Scopes
   auditsPrincipaux Audit[]      @relation("DepartementPrincipal")
   pointsConcernes  PointAudit[] @relation("DepartementConcerne")
-  casFraude        CasFraude[]  @relation("DepartementFraude")
-  risques          Risque[]     @relation("RisquesDepartement")
 
   @@map("departements")
 }
@@ -164,12 +155,11 @@ enum SourceAudit {
 }
 
 enum StatutAudit {
-  PLANIFIE
-  EN_COURS // Fieldwork
-  PRE_PROJET // Draft
-  PUBLIE // Final (Active le Dunning)
-  CLOTURE // Terminée
-  ARCHIVE
+  PLANIFIE   // Mission créée, pas encore démarrée
+  EN_COURS   // Travaux de terrain actifs
+  PUBLIE     // Rapport final publié — déclenche le Dunning
+  CLOTURE    // Mission entièrement clôturée
+  ARCHIVE    // Archivée (lecture seule historique)
 }
 
 model Audit {
@@ -261,8 +251,16 @@ model PointAudit {
   dateResolution       DateTime?
   dateCPF              DateTime? // Date de passage en "En attente validation"
 
-  // Double Statut (Optionnel, ici unifié pour simplification, mais extensible)
-  statut StatutPoint @default(OUVERT)
+  // Double Statut : statut officiel (Audit) vs statut déclaré par la BU
+  statut   StatutPoint @default(OUVERT) // Statut officiel déterminé par l'équipe Audit (utilisé dans tous les rapports)
+  statutBu StatutPoint @default(OUVERT) // Statut déclaré par le Risk Champion / Action Owner (BU)
+
+  // Justification obligatoire lors du changement de statutBu par la BU
+  commentaireStatutBu String? @db.Text
+
+  // Champs de revue de clôture par le Manager Audit
+  revidePar   String?   // Nom du Manager qui a validé la clôture
+  revueLe     DateTime? // Date de revue de clôture
 
   // Suivi
   ageing     Int @default(0) // Jours de retard
@@ -339,69 +337,47 @@ model FormulaireAcceptationRisque {
 }
 
 // ============================================================================
-// 4. MODULE FRM (FRAUD RISK MANAGEMENT)
+// 4. MODULE FRM (FRAUD RISK MANAGEMENT) — DÉSACTIVÉ (tables conservées en DB)
 // ============================================================================
 
-enum StatutCasFraude {
-  EN_INVESTIGATION
-  INVESTIGATION_TERMINEE
-  CLOTURE
-}
+// enum StatutCasFraude {
+//   EN_INVESTIGATION
+//   INVESTIGATION_TERMINEE
+//   CLOTURE
+// }
 
-model CasFraude {
-  id          String @id @default(cuid())
-  numeroCas   String @unique // FRM-2026-00X
-  titre       String
-  description String @db.Text
+// model CasFraude {
+//   id          String @id @default(cuid())
+//   numeroCas   String @unique
+//   titre       String
+//   description String @db.Text
+//   departementId String
+//   dateSignalement DateTime
+//   coutImpact  Decimal? @db.Decimal(15, 2)
+//   statut      String @default("EN_INVESTIGATION")
+//   auditeurFRMId String
+//   points      PointFraude[]
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+//   @@map("cas_fraudes")
+// }
 
-  departementId String
-  departement   Departement @relation("DepartementFraude", fields: [departementId], references: [id])
-
-  dateSignalement DateTime
-  coutImpact      Decimal? @db.Decimal(15, 2)
-
-  statut StatutCasFraude @default(EN_INVESTIGATION)
-
-  auditeurFRMId String
-  auditeurFRM   Utilisateur @relation("AuditeurFRM", fields: [auditeurFRMId], references: [id])
-
-  points PointFraude[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("cas_fraudes")
-}
-
-model PointFraude {
-  id   String @id @default(cuid())
-  code String @unique
-
-  casId String
-  cas   CasFraude @relation(fields: [casId], references: [id], onDelete: Cascade)
-
-  titre          String
-  detail         String   @db.Text
-  recommandation String   @db.Text
-  coutImpact     Decimal? @db.Decimal(15, 2)
-
-  auditeurFRMId String
-  auditeurFRM   Utilisateur @relation("AuditeurPointFraude", fields: [auditeurFRMId], references: [id])
-
-  dateEcheance  DateTime
-  dateReporting DateTime? // Spécifique FRM
-
-  statut String @default("OUVERT")
-
-  historique    HistoriqueStatut[]
-  commentaires  Commentaire[]
-  piecesJointes PieceJointe[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("points_fraude")
-}
+// model PointFraude {
+//   id   String @id @default(cuid())
+//   code String @unique
+//   casId String
+//   titre String
+//   detail String @db.Text
+//   recommandation String @db.Text
+//   coutImpact Decimal? @db.Decimal(15, 2)
+//   auditeurFRMId String
+//   dateEcheance DateTime
+//   dateReporting DateTime?
+//   statut String @default("OUVERT")
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   @@map("points_fraude")
+// }
 
 // ============================================================================
 // 5. IMPORT BATCH & STAGING (SAS DE VALIDATION)
@@ -425,7 +401,7 @@ enum StatutLigneImport {
 model ImportBatch {
   id String @id @default(cuid())
 
-  typeModule String // "AUDIT_EXTERNE", "FRM"
+  typeModule String // "AUDIT_EXTERNE"
   nomFichier String
   urlFichier String
 
@@ -519,7 +495,7 @@ model JournalAudit {
 
 model HistoriqueStatut {
   id         String @id @default(cuid())
-  typeEntite String // "POINT_AUDIT", "POINT_FRAUDE"
+  typeEntite String // "POINT_AUDIT"
   entiteId   String
 
   statutPrecedent String?
@@ -532,9 +508,6 @@ model HistoriqueStatut {
   // Relations optionnelles pour intégrité
   pointAuditId String?
   pointAudit   PointAudit? @relation(fields: [pointAuditId], references: [id], onDelete: Cascade)
-
-  pointFraudeId String?
-  pointFraude   PointFraude? @relation(fields: [pointFraudeId], references: [id], onDelete: Cascade)
 
   @@index([entiteId])
   @@map("historique_statuts")
@@ -553,9 +526,6 @@ model Commentaire {
 
   pointAuditId String?
   pointAudit   PointAudit? @relation(fields: [pointAuditId], references: [id], onDelete: Cascade)
-
-  pointFraudeId String?
-  pointFraude   PointFraude? @relation(fields: [pointFraudeId], references: [id], onDelete: Cascade)
 
   @@index([entiteId])
   @@map("commentaires")
@@ -581,26 +551,36 @@ model PieceJointe {
   actionPointId String?
   actionPoint   ActionPoint? @relation(fields: [actionPointId], references: [id])
 
-  pointFraudeId String?
-  pointFraude   PointFraude? @relation(fields: [pointFraudeId], references: [id])
-
   @@map("pieces_jointes")
 }
 
 model Notification {
   id           String @id @default(cuid())
-  destinataire String // Email
+  destinataire String // Email destinataire
   sujet        String
   message      String @db.Text
 
-  type   String // "RELANCE", "INFO"
-  statut String // "EN_ATTENTE", "ENVOYE"
+  type   String // "RELANCE_DUNNING", "RETOUR_AUTO_CPF", "CHANGEMENT_STATUT", "ECHEANCE_PROCHE", "INFO"
+  statut String // "EN_ATTENTE", "ENVOYE", "ERREUR"
+
+  // Lien optionnel vers l'utilisateur (pour le centre de notifications in-app)
+  utilisateurId String?
+  utilisateur   Utilisateur? @relation(fields: [utilisateurId], references: [id], onDelete: SetNull)
+
+  // Statut de lecture (centre de notifications in-app)
+  lu          Boolean   @default(false)
+  dateLecture DateTime?
+
+  // Référence à l'entité concernée (lien direct dans la notif)
+  entiteType String? // "POINT_AUDIT", "ACTION_POINT", ...
+  entiteId   String?
 
   dateProgrammee DateTime?
   dateEnvoi      DateTime?
 
   createdAt DateTime @default(now())
 
+  @@index([utilisateurId, lu])
   @@map("notifications")
 }
 
@@ -618,56 +598,70 @@ model PlanificationDunning {
   @@map("planifications_dunning")
 }
 
-// ============================================================================
-// 6. RISK MANAGEMENT
-// ============================================================================
+// Table de configuration système (singleton — toujours un seul enregistrement)
+model ParametresSysteme {
+  id String @id @default("singleton")
 
-enum StatutRisque {
-  IDENTIFIE
-  EN_TRAITEMENT
-  ACCEPTE
-  CLOTURE
-}
+  // Notifications
+  emailNotificationsActives Boolean @default(true)
+  resumeQuotidienActif      Boolean @default(true)
 
-enum CategorieRisque {
-  OPERATIONNEL
-  FINANCIER
-  JURIDIQUE
-  REPUTATION
-  STRATEGIQUE
-  CONFORMITE
-  TECHNOLOGIQUE
-}
+  // Seuils Ageing (en jours)
+  seuilAgeingAttention Int @default(90)
+  seuilAgeingCritique  Int @default(180)
+  seuilAgeingBloquant  Int @default(365)
 
-model Risque {
-  id          String          @id @default(cuid())
-  reference   String          @unique
-  titre       String
-  description String          @db.Text
-  categorie   CategorieRisque
-  probabilite Int // 1-5
-  impact      Int // 1-5
-  score       Int // = probabilite * impact
+  // Configuration Dunning
+  dunningActif     Boolean @default(true)
+  dunningFrequence String  @default("HEBDOMADAIRE") // HEBDOMADAIRE | MENSUEL
 
-  mesuresControle String? @db.Text
-  planTraitement  String? @db.Text
+  // Session
+  sessionTimeoutMinutes Int @default(30)
 
-  statut StatutRisque @default(IDENTIFIE)
-
-  departementId String
-  departement   Departement @relation("RisquesDepartement", fields: [departementId], references: [id])
-
-  responsableId String?
-  responsable   Utilisateur? @relation("RisquesResponsable", fields: [responsableId], references: [id])
-
-  createurId String
-  createur   Utilisateur @relation("RisquesCrees", fields: [createurId], references: [id])
-
-  dateIdentification DateTime  @default(now())
-  dateProchaineRevue DateTime?
-
-  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("risques")
+  @@map("parametres_systeme")
 }
+
+// ============================================================================
+// 7. RISK MANAGEMENT — DÉSACTIVÉ (tables conservées en DB)
+// ============================================================================
+
+// enum StatutRisque {
+//   IDENTIFIE
+//   EN_TRAITEMENT
+//   ACCEPTE
+//   CLOTURE
+// }
+
+// enum CategorieRisque {
+//   OPERATIONNEL
+//   FINANCIER
+//   JURIDIQUE
+//   REPUTATION
+//   STRATEGIQUE
+//   CONFORMITE
+//   TECHNOLOGIQUE
+// }
+
+// model Risque {
+//   id          String @id @default(cuid())
+//   reference   String @unique
+//   titre       String
+//   description String @db.Text
+//   categorie   String
+//   probabilite Int // 1-5
+//   impact      Int // 1-5
+//   score       Int // = probabilite * impact
+//   mesuresControle String? @db.Text
+//   planTraitement  String? @db.Text
+//   statut      String @default("IDENTIFIE")
+//   departementId String
+//   responsableId String?
+//   createurId  String
+//   dateIdentification DateTime @default(now())
+//   dateProchaineRevue DateTime?
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+//   @@map("risques")
+// }

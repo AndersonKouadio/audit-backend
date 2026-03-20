@@ -20,7 +20,6 @@ export class DashboardService {
       pointsEnRetard,
       pointsEnValidation,
       pointsFermes,
-      totalCasFraude,
       pointsParStatut,
       topDepartements,
       pointsRecents,
@@ -41,7 +40,6 @@ export class DashboardService {
           statut: { in: [StatutPoint.FERME_RESOLU, StatutPoint.FERME_RISQUE_ACCEPTE] },
         },
       }),
-      this.prisma.casFraude.count(),
       // Ageing par statut
       this.prisma.pointAudit.groupBy({
         by: ['statut'],
@@ -100,7 +98,6 @@ export class DashboardService {
       pointsEnRetard,
       pointsEnValidation,
       pointsFermes,
-      totalCasFraude,
       ageingParStatut,
       ageingParDepartement: ageingParDepartement.sort((a, b) => b.total - a.total),
       evolutionMensuelle,

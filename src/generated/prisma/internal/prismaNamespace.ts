@@ -393,8 +393,6 @@ export const ModelName = {
   PointAudit: 'PointAudit',
   ActionPoint: 'ActionPoint',
   FormulaireAcceptationRisque: 'FormulaireAcceptationRisque',
-  CasFraude: 'CasFraude',
-  PointFraude: 'PointFraude',
   ImportBatch: 'ImportBatch',
   ImportLigneStaging: 'ImportLigneStaging',
   JournalAudit: 'JournalAudit',
@@ -403,7 +401,7 @@ export const ModelName = {
   PieceJointe: 'PieceJointe',
   Notification: 'Notification',
   PlanificationDunning: 'PlanificationDunning',
-  Risque: 'Risque'
+  ParametresSysteme: 'ParametresSysteme'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -419,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organisation" | "otpToken" | "counterOtp" | "utilisateur" | "departement" | "audit" | "pointAudit" | "actionPoint" | "formulaireAcceptationRisque" | "casFraude" | "pointFraude" | "importBatch" | "importLigneStaging" | "journalAudit" | "historiqueStatut" | "commentaire" | "pieceJointe" | "notification" | "planificationDunning" | "risque"
+    modelProps: "organisation" | "otpToken" | "counterOtp" | "utilisateur" | "departement" | "audit" | "pointAudit" | "actionPoint" | "formulaireAcceptationRisque" | "importBatch" | "importLigneStaging" | "journalAudit" | "historiqueStatut" | "commentaire" | "pieceJointe" | "notification" | "planificationDunning" | "parametresSysteme"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1089,154 +1087,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    CasFraude: {
-      payload: Prisma.$CasFraudePayload<ExtArgs>
-      fields: Prisma.CasFraudeFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.CasFraudeFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.CasFraudeFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload>
-        }
-        findFirst: {
-          args: Prisma.CasFraudeFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.CasFraudeFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload>
-        }
-        findMany: {
-          args: Prisma.CasFraudeFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload>[]
-        }
-        create: {
-          args: Prisma.CasFraudeCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload>
-        }
-        createMany: {
-          args: Prisma.CasFraudeCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.CasFraudeCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload>[]
-        }
-        delete: {
-          args: Prisma.CasFraudeDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload>
-        }
-        update: {
-          args: Prisma.CasFraudeUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload>
-        }
-        deleteMany: {
-          args: Prisma.CasFraudeDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.CasFraudeUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.CasFraudeUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload>[]
-        }
-        upsert: {
-          args: Prisma.CasFraudeUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CasFraudePayload>
-        }
-        aggregate: {
-          args: Prisma.CasFraudeAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateCasFraude>
-        }
-        groupBy: {
-          args: Prisma.CasFraudeGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.CasFraudeGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.CasFraudeCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.CasFraudeCountAggregateOutputType> | number
-        }
-      }
-    }
-    PointFraude: {
-      payload: Prisma.$PointFraudePayload<ExtArgs>
-      fields: Prisma.PointFraudeFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.PointFraudeFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.PointFraudeFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload>
-        }
-        findFirst: {
-          args: Prisma.PointFraudeFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.PointFraudeFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload>
-        }
-        findMany: {
-          args: Prisma.PointFraudeFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload>[]
-        }
-        create: {
-          args: Prisma.PointFraudeCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload>
-        }
-        createMany: {
-          args: Prisma.PointFraudeCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.PointFraudeCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload>[]
-        }
-        delete: {
-          args: Prisma.PointFraudeDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload>
-        }
-        update: {
-          args: Prisma.PointFraudeUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload>
-        }
-        deleteMany: {
-          args: Prisma.PointFraudeDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.PointFraudeUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.PointFraudeUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload>[]
-        }
-        upsert: {
-          args: Prisma.PointFraudeUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointFraudePayload>
-        }
-        aggregate: {
-          args: Prisma.PointFraudeAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregatePointFraude>
-        }
-        groupBy: {
-          args: Prisma.PointFraudeGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PointFraudeGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.PointFraudeCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PointFraudeCountAggregateOutputType> | number
-        }
-      }
-    }
     ImportBatch: {
       payload: Prisma.$ImportBatchPayload<ExtArgs>
       fields: Prisma.ImportBatchFieldRefs
@@ -1829,77 +1679,77 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    Risque: {
-      payload: Prisma.$RisquePayload<ExtArgs>
-      fields: Prisma.RisqueFieldRefs
+    ParametresSysteme: {
+      payload: Prisma.$ParametresSystemePayload<ExtArgs>
+      fields: Prisma.ParametresSystemeFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.RisqueFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload> | null
+          args: Prisma.ParametresSystemeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.RisqueFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+          args: Prisma.ParametresSystemeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload>
         }
         findFirst: {
-          args: Prisma.RisqueFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload> | null
+          args: Prisma.ParametresSystemeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.RisqueFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+          args: Prisma.ParametresSystemeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload>
         }
         findMany: {
-          args: Prisma.RisqueFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>[]
+          args: Prisma.ParametresSystemeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload>[]
         }
         create: {
-          args: Prisma.RisqueCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+          args: Prisma.ParametresSystemeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload>
         }
         createMany: {
-          args: Prisma.RisqueCreateManyArgs<ExtArgs>
+          args: Prisma.ParametresSystemeCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.RisqueCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>[]
+          args: Prisma.ParametresSystemeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload>[]
         }
         delete: {
-          args: Prisma.RisqueDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+          args: Prisma.ParametresSystemeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload>
         }
         update: {
-          args: Prisma.RisqueUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+          args: Prisma.ParametresSystemeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload>
         }
         deleteMany: {
-          args: Prisma.RisqueDeleteManyArgs<ExtArgs>
+          args: Prisma.ParametresSystemeDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.RisqueUpdateManyArgs<ExtArgs>
+          args: Prisma.ParametresSystemeUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.RisqueUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>[]
+          args: Prisma.ParametresSystemeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload>[]
         }
         upsert: {
-          args: Prisma.RisqueUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RisquePayload>
+          args: Prisma.ParametresSystemeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParametresSystemePayload>
         }
         aggregate: {
-          args: Prisma.RisqueAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateRisque>
+          args: Prisma.ParametresSystemeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateParametresSysteme>
         }
         groupBy: {
-          args: Prisma.RisqueGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.RisqueGroupByOutputType>[]
+          args: Prisma.ParametresSystemeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParametresSystemeGroupByOutputType>[]
         }
         count: {
-          args: Prisma.RisqueCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.RisqueCountAggregateOutputType> | number
+          args: Prisma.ParametresSystemeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParametresSystemeCountAggregateOutputType> | number
         }
       }
     }
@@ -2048,6 +1898,10 @@ export const PointAuditScalarFieldEnum = {
   dateResolution: 'dateResolution',
   dateCPF: 'dateCPF',
   statut: 'statut',
+  statutBu: 'statutBu',
+  commentaireStatutBu: 'commentaireStatutBu',
+  revidePar: 'revidePar',
+  revueLe: 'revueLe',
   ageing: 'ageing',
   nbRelances: 'nbRelances',
   createurId: 'createurId',
@@ -2090,42 +1944,6 @@ export const FormulaireAcceptationRisqueScalarFieldEnum = {
 } as const
 
 export type FormulaireAcceptationRisqueScalarFieldEnum = (typeof FormulaireAcceptationRisqueScalarFieldEnum)[keyof typeof FormulaireAcceptationRisqueScalarFieldEnum]
-
-
-export const CasFraudeScalarFieldEnum = {
-  id: 'id',
-  numeroCas: 'numeroCas',
-  titre: 'titre',
-  description: 'description',
-  departementId: 'departementId',
-  dateSignalement: 'dateSignalement',
-  coutImpact: 'coutImpact',
-  statut: 'statut',
-  auditeurFRMId: 'auditeurFRMId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CasFraudeScalarFieldEnum = (typeof CasFraudeScalarFieldEnum)[keyof typeof CasFraudeScalarFieldEnum]
-
-
-export const PointFraudeScalarFieldEnum = {
-  id: 'id',
-  code: 'code',
-  casId: 'casId',
-  titre: 'titre',
-  detail: 'detail',
-  recommandation: 'recommandation',
-  coutImpact: 'coutImpact',
-  auditeurFRMId: 'auditeurFRMId',
-  dateEcheance: 'dateEcheance',
-  dateReporting: 'dateReporting',
-  statut: 'statut',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type PointFraudeScalarFieldEnum = (typeof PointFraudeScalarFieldEnum)[keyof typeof PointFraudeScalarFieldEnum]
 
 
 export const ImportBatchScalarFieldEnum = {
@@ -2187,8 +2005,7 @@ export const HistoriqueStatutScalarFieldEnum = {
   commentaire: 'commentaire',
   modifiePar: 'modifiePar',
   dateModification: 'dateModification',
-  pointAuditId: 'pointAuditId',
-  pointFraudeId: 'pointFraudeId'
+  pointAuditId: 'pointAuditId'
 } as const
 
 export type HistoriqueStatutScalarFieldEnum = (typeof HistoriqueStatutScalarFieldEnum)[keyof typeof HistoriqueStatutScalarFieldEnum]
@@ -2202,8 +2019,7 @@ export const CommentaireScalarFieldEnum = {
   estInterne: 'estInterne',
   creePar: 'creePar',
   dateCreation: 'dateCreation',
-  pointAuditId: 'pointAuditId',
-  pointFraudeId: 'pointFraudeId'
+  pointAuditId: 'pointAuditId'
 } as const
 
 export type CommentaireScalarFieldEnum = (typeof CommentaireScalarFieldEnum)[keyof typeof CommentaireScalarFieldEnum]
@@ -2219,8 +2035,7 @@ export const PieceJointeScalarFieldEnum = {
   dateAjout: 'dateAjout',
   auditId: 'auditId',
   pointAuditId: 'pointAuditId',
-  actionPointId: 'actionPointId',
-  pointFraudeId: 'pointFraudeId'
+  actionPointId: 'actionPointId'
 } as const
 
 export type PieceJointeScalarFieldEnum = (typeof PieceJointeScalarFieldEnum)[keyof typeof PieceJointeScalarFieldEnum]
@@ -2233,6 +2048,11 @@ export const NotificationScalarFieldEnum = {
   message: 'message',
   type: 'type',
   statut: 'statut',
+  utilisateurId: 'utilisateurId',
+  lu: 'lu',
+  dateLecture: 'dateLecture',
+  entiteType: 'entiteType',
+  entiteId: 'entiteId',
   dateProgrammee: 'dateProgrammee',
   dateEnvoi: 'dateEnvoi',
   createdAt: 'createdAt'
@@ -2255,28 +2075,20 @@ export const PlanificationDunningScalarFieldEnum = {
 export type PlanificationDunningScalarFieldEnum = (typeof PlanificationDunningScalarFieldEnum)[keyof typeof PlanificationDunningScalarFieldEnum]
 
 
-export const RisqueScalarFieldEnum = {
+export const ParametresSystemeScalarFieldEnum = {
   id: 'id',
-  reference: 'reference',
-  titre: 'titre',
-  description: 'description',
-  categorie: 'categorie',
-  probabilite: 'probabilite',
-  impact: 'impact',
-  score: 'score',
-  mesuresControle: 'mesuresControle',
-  planTraitement: 'planTraitement',
-  statut: 'statut',
-  departementId: 'departementId',
-  responsableId: 'responsableId',
-  createurId: 'createurId',
-  dateIdentification: 'dateIdentification',
-  dateProchaineRevue: 'dateProchaineRevue',
-  createdAt: 'createdAt',
+  emailNotificationsActives: 'emailNotificationsActives',
+  resumeQuotidienActif: 'resumeQuotidienActif',
+  seuilAgeingAttention: 'seuilAgeingAttention',
+  seuilAgeingCritique: 'seuilAgeingCritique',
+  seuilAgeingBloquant: 'seuilAgeingBloquant',
+  dunningActif: 'dunningActif',
+  dunningFrequence: 'dunningFrequence',
+  sessionTimeoutMinutes: 'sessionTimeoutMinutes',
   updatedAt: 'updatedAt'
 } as const
 
-export type RisqueScalarFieldEnum = (typeof RisqueScalarFieldEnum)[keyof typeof RisqueScalarFieldEnum]
+export type ParametresSystemeScalarFieldEnum = (typeof ParametresSystemeScalarFieldEnum)[keyof typeof ParametresSystemeScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2481,34 +2293,6 @@ export type ListEnumStatutPointFieldRefInput<$PrismaModel> = FieldRefInputType<$
 
 
 /**
- * Reference to a field of type 'Decimal'
- */
-export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
-    
-
-
-/**
- * Reference to a field of type 'Decimal[]'
- */
-export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
-    
-
-
-/**
- * Reference to a field of type 'StatutCasFraude'
- */
-export type EnumStatutCasFraudeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutCasFraude'>
-    
-
-
-/**
- * Reference to a field of type 'StatutCasFraude[]'
- */
-export type ListEnumStatutCasFraudeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutCasFraude[]'>
-    
-
-
-/**
  * Reference to a field of type 'StatutImportBatch'
  */
 export type EnumStatutImportBatchFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutImportBatch'>
@@ -2561,34 +2345,6 @@ export type EnumTypeActionLogFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'TypeActionLog[]'
  */
 export type ListEnumTypeActionLogFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TypeActionLog[]'>
-    
-
-
-/**
- * Reference to a field of type 'CategorieRisque'
- */
-export type EnumCategorieRisqueFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CategorieRisque'>
-    
-
-
-/**
- * Reference to a field of type 'CategorieRisque[]'
- */
-export type ListEnumCategorieRisqueFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CategorieRisque[]'>
-    
-
-
-/**
- * Reference to a field of type 'StatutRisque'
- */
-export type EnumStatutRisqueFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutRisque'>
-    
-
-
-/**
- * Reference to a field of type 'StatutRisque[]'
- */
-export type ListEnumStatutRisqueFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutRisque[]'>
     
 
 
@@ -2709,8 +2465,6 @@ export type GlobalOmitConfig = {
   pointAudit?: Prisma.PointAuditOmit
   actionPoint?: Prisma.ActionPointOmit
   formulaireAcceptationRisque?: Prisma.FormulaireAcceptationRisqueOmit
-  casFraude?: Prisma.CasFraudeOmit
-  pointFraude?: Prisma.PointFraudeOmit
   importBatch?: Prisma.ImportBatchOmit
   importLigneStaging?: Prisma.ImportLigneStagingOmit
   journalAudit?: Prisma.JournalAuditOmit
@@ -2719,7 +2473,7 @@ export type GlobalOmitConfig = {
   pieceJointe?: Prisma.PieceJointeOmit
   notification?: Prisma.NotificationOmit
   planificationDunning?: Prisma.PlanificationDunningOmit
-  risque?: Prisma.RisqueOmit
+  parametresSysteme?: Prisma.ParametresSystemeOmit
 }
 
 /* Types for Logging */

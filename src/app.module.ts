@@ -8,14 +8,16 @@ import { UtilisateursModule } from 'src/modules/utilisateurs/utilisateurs.module
 import { AuditsModule } from 'src/modules/audits/audits.module';
 import { PointsAuditModule } from 'src/modules/points-audit/points-audit.module';
 import { ActionsPointsModule } from 'src/modules/actions-points/actions-points.module';
-import { CasFraudeModule } from 'src/modules/cas-fraude/cas-fraude.module';
-import { PointsFraudeModule } from 'src/modules/points-fraude/points-fraude.module';
 import { CommentairesModule } from 'src/modules/commentaires/commentaires.module';
 import { JournalAuditModule } from 'src/modules/journal-audit/journal-audit.module';
 import { DashboardModule } from 'src/modules/dashboard/dashboard.module';
 import { SchedulerModule } from 'src/modules/scheduler/scheduler.module';
 import { ExportModule } from 'src/modules/export/export.module';
-import { RisquesModule } from 'src/modules/risques/risques.module';
+import { EmailModule } from 'src/modules/mailer/email.module';
+import { NotificationsModule } from 'src/modules/notifications/notifications.module';
+import { PiecesJointesModule } from 'src/modules/pieces-jointes/pieces-jointes.module';
+import { FormulaireRafModule } from 'src/modules/formulaire-raf/formulaire-raf.module';
+import { ParametresSystemeModule } from 'src/modules/parametres-systeme/parametres-systeme.module';
 
 @Module({
   imports: [
@@ -40,24 +42,23 @@ import { RisquesModule } from 'src/modules/risques/risques.module';
     PointsAuditModule,
     ActionsPointsModule,
 
-    // 6. Modules Métiers - FRM (Fraud Risk Management)
-    CasFraudeModule,
-    PointsFraudeModule,
-
-    // 6b. Modules Métiers - Risk Management
-    RisquesModule,
-
-    // 7. Modules Transverses
+    // 6. Modules Transverses
     CommentairesModule,
     JournalAuditModule,
+    EmailModule,          // Global — Email SMTP (nodemailer)
+    NotificationsModule,  // Centre de notifications in-app + queue email
 
-    // 8. Dashboard & Analytics
+    PiecesJointesModule,       // Upload de fichiers (PDF, images, Excel, etc.)
+    FormulaireRafModule,       // Formulaires d'Acceptation du Risque (RAF)
+    ParametresSystemeModule,   // Configuration système (singleton)
+
+    // 7. Dashboard & Analytics
     DashboardModule,
 
-    // 9. Automatisation (Cron Jobs)
+    // 8. Automatisation (Cron Jobs)
     SchedulerModule,
 
-    // 10. Export
+    // 9. Export
     ExportModule,
   ],
   controllers: [],

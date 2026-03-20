@@ -52,6 +52,10 @@ export type PointAuditMinAggregateOutputType = {
   dateResolution: Date | null
   dateCPF: Date | null
   statut: $Enums.StatutPoint | null
+  statutBu: $Enums.StatutPoint | null
+  commentaireStatutBu: string | null
+  revidePar: string | null
+  revueLe: Date | null
   ageing: number | null
   nbRelances: number | null
   createurId: string | null
@@ -77,6 +81,10 @@ export type PointAuditMaxAggregateOutputType = {
   dateResolution: Date | null
   dateCPF: Date | null
   statut: $Enums.StatutPoint | null
+  statutBu: $Enums.StatutPoint | null
+  commentaireStatutBu: string | null
+  revidePar: string | null
+  revueLe: Date | null
   ageing: number | null
   nbRelances: number | null
   createurId: string | null
@@ -102,6 +110,10 @@ export type PointAuditCountAggregateOutputType = {
   dateResolution: number
   dateCPF: number
   statut: number
+  statutBu: number
+  commentaireStatutBu: number
+  revidePar: number
+  revueLe: number
   ageing: number
   nbRelances: number
   createurId: number
@@ -139,6 +151,10 @@ export type PointAuditMinAggregateInputType = {
   dateResolution?: true
   dateCPF?: true
   statut?: true
+  statutBu?: true
+  commentaireStatutBu?: true
+  revidePar?: true
+  revueLe?: true
   ageing?: true
   nbRelances?: true
   createurId?: true
@@ -164,6 +180,10 @@ export type PointAuditMaxAggregateInputType = {
   dateResolution?: true
   dateCPF?: true
   statut?: true
+  statutBu?: true
+  commentaireStatutBu?: true
+  revidePar?: true
+  revueLe?: true
   ageing?: true
   nbRelances?: true
   createurId?: true
@@ -189,6 +209,10 @@ export type PointAuditCountAggregateInputType = {
   dateResolution?: true
   dateCPF?: true
   statut?: true
+  statutBu?: true
+  commentaireStatutBu?: true
+  revidePar?: true
+  revueLe?: true
   ageing?: true
   nbRelances?: true
   createurId?: true
@@ -301,6 +325,10 @@ export type PointAuditGroupByOutputType = {
   dateResolution: Date | null
   dateCPF: Date | null
   statut: $Enums.StatutPoint
+  statutBu: $Enums.StatutPoint
+  commentaireStatutBu: string | null
+  revidePar: string | null
+  revueLe: Date | null
   ageing: number
   nbRelances: number
   createurId: string
@@ -349,6 +377,10 @@ export type PointAuditWhereInput = {
   dateResolution?: Prisma.DateTimeNullableFilter<"PointAudit"> | Date | string | null
   dateCPF?: Prisma.DateTimeNullableFilter<"PointAudit"> | Date | string | null
   statut?: Prisma.EnumStatutPointFilter<"PointAudit"> | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFilter<"PointAudit"> | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.StringNullableFilter<"PointAudit"> | string | null
+  revidePar?: Prisma.StringNullableFilter<"PointAudit"> | string | null
+  revueLe?: Prisma.DateTimeNullableFilter<"PointAudit"> | Date | string | null
   ageing?: Prisma.IntFilter<"PointAudit"> | number
   nbRelances?: Prisma.IntFilter<"PointAudit"> | number
   createurId?: Prisma.StringFilter<"PointAudit"> | string
@@ -382,6 +414,10 @@ export type PointAuditOrderByWithRelationInput = {
   dateResolution?: Prisma.SortOrderInput | Prisma.SortOrder
   dateCPF?: Prisma.SortOrderInput | Prisma.SortOrder
   statut?: Prisma.SortOrder
+  statutBu?: Prisma.SortOrder
+  commentaireStatutBu?: Prisma.SortOrderInput | Prisma.SortOrder
+  revidePar?: Prisma.SortOrderInput | Prisma.SortOrder
+  revueLe?: Prisma.SortOrderInput | Prisma.SortOrder
   ageing?: Prisma.SortOrder
   nbRelances?: Prisma.SortOrder
   createurId?: Prisma.SortOrder
@@ -419,6 +455,10 @@ export type PointAuditWhereUniqueInput = Prisma.AtLeast<{
   dateResolution?: Prisma.DateTimeNullableFilter<"PointAudit"> | Date | string | null
   dateCPF?: Prisma.DateTimeNullableFilter<"PointAudit"> | Date | string | null
   statut?: Prisma.EnumStatutPointFilter<"PointAudit"> | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFilter<"PointAudit"> | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.StringNullableFilter<"PointAudit"> | string | null
+  revidePar?: Prisma.StringNullableFilter<"PointAudit"> | string | null
+  revueLe?: Prisma.DateTimeNullableFilter<"PointAudit"> | Date | string | null
   ageing?: Prisma.IntFilter<"PointAudit"> | number
   nbRelances?: Prisma.IntFilter<"PointAudit"> | number
   createurId?: Prisma.StringFilter<"PointAudit"> | string
@@ -451,6 +491,10 @@ export type PointAuditOrderByWithAggregationInput = {
   dateResolution?: Prisma.SortOrderInput | Prisma.SortOrder
   dateCPF?: Prisma.SortOrderInput | Prisma.SortOrder
   statut?: Prisma.SortOrder
+  statutBu?: Prisma.SortOrder
+  commentaireStatutBu?: Prisma.SortOrderInput | Prisma.SortOrder
+  revidePar?: Prisma.SortOrderInput | Prisma.SortOrder
+  revueLe?: Prisma.SortOrderInput | Prisma.SortOrder
   ageing?: Prisma.SortOrder
   nbRelances?: Prisma.SortOrder
   createurId?: Prisma.SortOrder
@@ -484,6 +528,10 @@ export type PointAuditScalarWhereWithAggregatesInput = {
   dateResolution?: Prisma.DateTimeNullableWithAggregatesFilter<"PointAudit"> | Date | string | null
   dateCPF?: Prisma.DateTimeNullableWithAggregatesFilter<"PointAudit"> | Date | string | null
   statut?: Prisma.EnumStatutPointWithAggregatesFilter<"PointAudit"> | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointWithAggregatesFilter<"PointAudit"> | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.StringNullableWithAggregatesFilter<"PointAudit"> | string | null
+  revidePar?: Prisma.StringNullableWithAggregatesFilter<"PointAudit"> | string | null
+  revueLe?: Prisma.DateTimeNullableWithAggregatesFilter<"PointAudit"> | Date | string | null
   ageing?: Prisma.IntWithAggregatesFilter<"PointAudit"> | number
   nbRelances?: Prisma.IntWithAggregatesFilter<"PointAudit"> | number
   createurId?: Prisma.StringWithAggregatesFilter<"PointAudit"> | string
@@ -507,6 +555,10 @@ export type PointAuditCreateInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   sourceImportId?: string | null
@@ -538,6 +590,10 @@ export type PointAuditUncheckedCreateInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -565,6 +621,10 @@ export type PointAuditUpdateInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   sourceImportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -596,6 +656,10 @@ export type PointAuditUncheckedUpdateInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -625,6 +689,10 @@ export type PointAuditCreateManyInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -648,6 +716,10 @@ export type PointAuditUpdateManyMutationInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   sourceImportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -671,6 +743,10 @@ export type PointAuditUncheckedUpdateManyInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -706,6 +782,10 @@ export type PointAuditCountOrderByAggregateInput = {
   dateResolution?: Prisma.SortOrder
   dateCPF?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  statutBu?: Prisma.SortOrder
+  commentaireStatutBu?: Prisma.SortOrder
+  revidePar?: Prisma.SortOrder
+  revueLe?: Prisma.SortOrder
   ageing?: Prisma.SortOrder
   nbRelances?: Prisma.SortOrder
   createurId?: Prisma.SortOrder
@@ -736,6 +816,10 @@ export type PointAuditMaxOrderByAggregateInput = {
   dateResolution?: Prisma.SortOrder
   dateCPF?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  statutBu?: Prisma.SortOrder
+  commentaireStatutBu?: Prisma.SortOrder
+  revidePar?: Prisma.SortOrder
+  revueLe?: Prisma.SortOrder
   ageing?: Prisma.SortOrder
   nbRelances?: Prisma.SortOrder
   createurId?: Prisma.SortOrder
@@ -761,6 +845,10 @@ export type PointAuditMinOrderByAggregateInput = {
   dateResolution?: Prisma.SortOrder
   dateCPF?: Prisma.SortOrder
   statut?: Prisma.SortOrder
+  statutBu?: Prisma.SortOrder
+  commentaireStatutBu?: Prisma.SortOrder
+  revidePar?: Prisma.SortOrder
+  revueLe?: Prisma.SortOrder
   ageing?: Prisma.SortOrder
   nbRelances?: Prisma.SortOrder
   createurId?: Prisma.SortOrder
@@ -1037,6 +1125,10 @@ export type PointAuditCreateWithoutCreateurInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   sourceImportId?: string | null
@@ -1067,6 +1159,10 @@ export type PointAuditUncheckedCreateWithoutCreateurInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   formulaireRisqueId?: string | null
@@ -1124,6 +1220,10 @@ export type PointAuditScalarWhereInput = {
   dateResolution?: Prisma.DateTimeNullableFilter<"PointAudit"> | Date | string | null
   dateCPF?: Prisma.DateTimeNullableFilter<"PointAudit"> | Date | string | null
   statut?: Prisma.EnumStatutPointFilter<"PointAudit"> | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFilter<"PointAudit"> | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.StringNullableFilter<"PointAudit"> | string | null
+  revidePar?: Prisma.StringNullableFilter<"PointAudit"> | string | null
+  revueLe?: Prisma.DateTimeNullableFilter<"PointAudit"> | Date | string | null
   ageing?: Prisma.IntFilter<"PointAudit"> | number
   nbRelances?: Prisma.IntFilter<"PointAudit"> | number
   createurId?: Prisma.StringFilter<"PointAudit"> | string
@@ -1147,6 +1247,10 @@ export type PointAuditCreateWithoutDepartementInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   sourceImportId?: string | null
@@ -1176,6 +1280,10 @@ export type PointAuditUncheckedCreateWithoutDepartementInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -1229,6 +1337,10 @@ export type PointAuditCreateWithoutAuditInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   sourceImportId?: string | null
@@ -1258,6 +1370,10 @@ export type PointAuditUncheckedCreateWithoutAuditInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -1311,6 +1427,10 @@ export type PointAuditCreateWithoutActionsInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   sourceImportId?: string | null
@@ -1341,6 +1461,10 @@ export type PointAuditUncheckedCreateWithoutActionsInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -1383,6 +1507,10 @@ export type PointAuditUpdateWithoutActionsInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   sourceImportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1413,6 +1541,10 @@ export type PointAuditUncheckedUpdateWithoutActionsInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1439,6 +1571,10 @@ export type PointAuditCreateWithoutFormulaireRisqueInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   sourceImportId?: string | null
@@ -1469,6 +1605,10 @@ export type PointAuditUncheckedCreateWithoutFormulaireRisqueInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -1521,6 +1661,10 @@ export type PointAuditCreateWithoutHistoriqueInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   sourceImportId?: string | null
@@ -1551,6 +1695,10 @@ export type PointAuditUncheckedCreateWithoutHistoriqueInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -1593,6 +1741,10 @@ export type PointAuditUpdateWithoutHistoriqueInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   sourceImportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1623,6 +1775,10 @@ export type PointAuditUncheckedUpdateWithoutHistoriqueInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1649,6 +1805,10 @@ export type PointAuditCreateWithoutCommentairesInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   sourceImportId?: string | null
@@ -1679,6 +1839,10 @@ export type PointAuditUncheckedCreateWithoutCommentairesInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -1721,6 +1885,10 @@ export type PointAuditUpdateWithoutCommentairesInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   sourceImportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1751,6 +1919,10 @@ export type PointAuditUncheckedUpdateWithoutCommentairesInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1777,6 +1949,10 @@ export type PointAuditCreateWithoutPiecesJointesInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   sourceImportId?: string | null
@@ -1807,6 +1983,10 @@ export type PointAuditUncheckedCreateWithoutPiecesJointesInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -1849,6 +2029,10 @@ export type PointAuditUpdateWithoutPiecesJointesInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   sourceImportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1879,6 +2063,10 @@ export type PointAuditUncheckedUpdateWithoutPiecesJointesInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1907,6 +2095,10 @@ export type PointAuditCreateManyCreateurInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   formulaireRisqueId?: string | null
@@ -1929,6 +2121,10 @@ export type PointAuditUpdateWithoutCreateurInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   sourceImportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1959,6 +2155,10 @@ export type PointAuditUncheckedUpdateWithoutCreateurInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   formulaireRisqueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1987,6 +2187,10 @@ export type PointAuditUncheckedUpdateManyWithoutCreateurInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   formulaireRisqueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2010,6 +2214,10 @@ export type PointAuditCreateManyDepartementInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -2033,6 +2241,10 @@ export type PointAuditUpdateWithoutDepartementInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   sourceImportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2062,6 +2274,10 @@ export type PointAuditUncheckedUpdateWithoutDepartementInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2090,6 +2306,10 @@ export type PointAuditUncheckedUpdateManyWithoutDepartementInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2114,6 +2334,10 @@ export type PointAuditCreateManyAuditInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -2137,6 +2361,10 @@ export type PointAuditUpdateWithoutAuditInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   sourceImportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2166,6 +2394,10 @@ export type PointAuditUncheckedUpdateWithoutAuditInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2194,6 +2426,10 @@ export type PointAuditUncheckedUpdateManyWithoutAuditInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2219,6 +2455,10 @@ export type PointAuditCreateManyFormulaireRisqueInput = {
   dateResolution?: Date | string | null
   dateCPF?: Date | string | null
   statut?: $Enums.StatutPoint
+  statutBu?: $Enums.StatutPoint
+  commentaireStatutBu?: string | null
+  revidePar?: string | null
+  revueLe?: Date | string | null
   ageing?: number
   nbRelances?: number
   createurId: string
@@ -2241,6 +2481,10 @@ export type PointAuditUpdateWithoutFormulaireRisqueInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   sourceImportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2271,6 +2515,10 @@ export type PointAuditUncheckedUpdateWithoutFormulaireRisqueInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2299,6 +2547,10 @@ export type PointAuditUncheckedUpdateManyWithoutFormulaireRisqueInput = {
   dateResolution?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dateCPF?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   statut?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  statutBu?: Prisma.EnumStatutPointFieldUpdateOperationsInput | $Enums.StatutPoint
+  commentaireStatutBu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revidePar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revueLe?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ageing?: Prisma.IntFieldUpdateOperationsInput | number
   nbRelances?: Prisma.IntFieldUpdateOperationsInput | number
   createurId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2381,6 +2633,10 @@ export type PointAuditSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   dateResolution?: boolean
   dateCPF?: boolean
   statut?: boolean
+  statutBu?: boolean
+  commentaireStatutBu?: boolean
+  revidePar?: boolean
+  revueLe?: boolean
   ageing?: boolean
   nbRelances?: boolean
   createurId?: boolean
@@ -2415,6 +2671,10 @@ export type PointAuditSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   dateResolution?: boolean
   dateCPF?: boolean
   statut?: boolean
+  statutBu?: boolean
+  commentaireStatutBu?: boolean
+  revidePar?: boolean
+  revueLe?: boolean
   ageing?: boolean
   nbRelances?: boolean
   createurId?: boolean
@@ -2444,6 +2704,10 @@ export type PointAuditSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   dateResolution?: boolean
   dateCPF?: boolean
   statut?: boolean
+  statutBu?: boolean
+  commentaireStatutBu?: boolean
+  revidePar?: boolean
+  revueLe?: boolean
   ageing?: boolean
   nbRelances?: boolean
   createurId?: boolean
@@ -2473,6 +2737,10 @@ export type PointAuditSelectScalar = {
   dateResolution?: boolean
   dateCPF?: boolean
   statut?: boolean
+  statutBu?: boolean
+  commentaireStatutBu?: boolean
+  revidePar?: boolean
+  revueLe?: boolean
   ageing?: boolean
   nbRelances?: boolean
   createurId?: boolean
@@ -2482,7 +2750,7 @@ export type PointAuditSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PointAuditOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reference" | "auditId" | "departementId" | "titre" | "description" | "causes" | "consequences" | "recommandation" | "criticite" | "dateEcheanceInitiale" | "dateEcheanceActuelle" | "dateResolution" | "dateCPF" | "statut" | "ageing" | "nbRelances" | "createurId" | "formulaireRisqueId" | "sourceImportId" | "createdAt" | "updatedAt", ExtArgs["result"]["pointAudit"]>
+export type PointAuditOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reference" | "auditId" | "departementId" | "titre" | "description" | "causes" | "consequences" | "recommandation" | "criticite" | "dateEcheanceInitiale" | "dateEcheanceActuelle" | "dateResolution" | "dateCPF" | "statut" | "statutBu" | "commentaireStatutBu" | "revidePar" | "revueLe" | "ageing" | "nbRelances" | "createurId" | "formulaireRisqueId" | "sourceImportId" | "createdAt" | "updatedAt", ExtArgs["result"]["pointAudit"]>
 export type PointAuditInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   audit?: boolean | Prisma.AuditDefaultArgs<ExtArgs>
   departement?: boolean | Prisma.DepartementDefaultArgs<ExtArgs>
@@ -2535,6 +2803,10 @@ export type $PointAuditPayload<ExtArgs extends runtime.Types.Extensions.Internal
     dateResolution: Date | null
     dateCPF: Date | null
     statut: $Enums.StatutPoint
+    statutBu: $Enums.StatutPoint
+    commentaireStatutBu: string | null
+    revidePar: string | null
+    revueLe: Date | null
     ageing: number
     nbRelances: number
     createurId: string
@@ -2988,6 +3260,10 @@ export interface PointAuditFieldRefs {
   readonly dateResolution: Prisma.FieldRef<"PointAudit", 'DateTime'>
   readonly dateCPF: Prisma.FieldRef<"PointAudit", 'DateTime'>
   readonly statut: Prisma.FieldRef<"PointAudit", 'StatutPoint'>
+  readonly statutBu: Prisma.FieldRef<"PointAudit", 'StatutPoint'>
+  readonly commentaireStatutBu: Prisma.FieldRef<"PointAudit", 'String'>
+  readonly revidePar: Prisma.FieldRef<"PointAudit", 'String'>
+  readonly revueLe: Prisma.FieldRef<"PointAudit", 'DateTime'>
   readonly ageing: Prisma.FieldRef<"PointAudit", 'Int'>
   readonly nbRelances: Prisma.FieldRef<"PointAudit", 'Int'>
   readonly createurId: Prisma.FieldRef<"PointAudit", 'String'>

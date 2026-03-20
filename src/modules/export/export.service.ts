@@ -3,13 +3,6 @@ import * as XLSX from 'xlsx';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { StatutPoint } from 'src/generated/prisma/enums';
 
-const NIVEAU_RISQUE = (score: number) => {
-  if (score <= 4) return 'Faible';
-  if (score <= 9) return 'Modéré';
-  if (score <= 16) return 'Élevé';
-  return 'Critique';
-};
-
 @Injectable()
 export class ExportService {
   constructor(private readonly prisma: PrismaService) {}
@@ -64,41 +57,10 @@ export class ExportService {
     return Buffer.from(XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }));
   }
 
-  async exportCasFraude(filters?: { statut?: string; departementId?: string }): Promise<Buffer> {
-    const where: any = {};
-    if (filters?.statut) where.statut = filters.statut;
-    if (filters?.departementId) where.departementId = filters.departementId;
-
-    const cas = await this.prisma.casFraude.findMany({
-      where,
-      orderBy: { dateSignalement: 'desc' },
-      include: {
-        departement: { select: { code: true, nom: true } },
-        auditeurFRM: { select: { nom: true, prenom: true } },
-        _count: { select: { points: true } },
-      },
-      take: 5000,
-    });
-
-    const lignes = cas.map((c) => ({
-      'Numéro Cas': c.numeroCas,
-      Titre: c.titre,
-      Description: c.description,
-      Département: c.departement ? `${c.departement.code} - ${c.departement.nom}` : '',
-      'Date Signalement': new Date(c.dateSignalement).toLocaleDateString('fr-FR'),
-      'Coût Impact (FCFA)': c.coutImpact?.toString() || '',
-      Statut: c.statut,
-      'Auditeur FRM': c.auditeurFRM ? `${c.auditeurFRM.prenom} ${c.auditeurFRM.nom}` : '',
-      'Nb Points': c._count.points,
-      'Date Création': new Date(c.createdAt).toLocaleDateString('fr-FR'),
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(lignes);
-    ws['!cols'] = Object.keys(lignes[0] || {}).map(() => ({ wch: 22 }));
-
+  async exportCasFraude(): Promise<Buffer> {
+    // Module FRM supprimé — retourne un classeur vide
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Cas de Fraude FRM');
-
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Module FRM désactivé']]), 'FRM');
     return Buffer.from(XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }));
   }
 
@@ -150,37 +112,9 @@ export class ExportService {
   }
 
   async exportRisques(): Promise<Buffer> {
-    const risques = await this.prisma.risque.findMany({
-      orderBy: { score: 'desc' },
-      include: {
-        departement: { select: { code: true, nom: true } },
-        responsable: { select: { nom: true, prenom: true } },
-      },
-      take: 5000,
-    });
-
-    const lignes = risques.map((r) => ({
-      Référence: r.reference,
-      Titre: r.titre,
-      Catégorie: r.categorie,
-      Probabilité: r.probabilite,
-      Impact: r.impact,
-      Score: r.score,
-      Niveau: NIVEAU_RISQUE(r.score),
-      Département: r.departement ? `${r.departement.code} - ${r.departement.nom}` : '',
-      Responsable: r.responsable ? `${r.responsable.prenom} ${r.responsable.nom}` : '',
-      Statut: r.statut,
-      'Date Révision': r.dateProchaineRevue
-        ? new Date(r.dateProchaineRevue).toLocaleDateString('fr-FR')
-        : '',
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(lignes);
-    ws['!cols'] = Object.keys(lignes[0] || {}).map(() => ({ wch: 20 }));
-
+    // Module ERM supprimé — retourne un classeur vide
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Registre des Risques');
-
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Module ERM désactivé']]), 'ERM');
     return Buffer.from(XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }));
   }
 }

@@ -60,8 +60,6 @@ export const ModelName = {
   PointAudit: 'PointAudit',
   ActionPoint: 'ActionPoint',
   FormulaireAcceptationRisque: 'FormulaireAcceptationRisque',
-  CasFraude: 'CasFraude',
-  PointFraude: 'PointFraude',
   ImportBatch: 'ImportBatch',
   ImportLigneStaging: 'ImportLigneStaging',
   JournalAudit: 'JournalAudit',
@@ -70,7 +68,7 @@ export const ModelName = {
   PieceJointe: 'PieceJointe',
   Notification: 'Notification',
   PlanificationDunning: 'PlanificationDunning',
-  Risque: 'Risque'
+  ParametresSysteme: 'ParametresSysteme'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -195,6 +193,10 @@ export const PointAuditScalarFieldEnum = {
   dateResolution: 'dateResolution',
   dateCPF: 'dateCPF',
   statut: 'statut',
+  statutBu: 'statutBu',
+  commentaireStatutBu: 'commentaireStatutBu',
+  revidePar: 'revidePar',
+  revueLe: 'revueLe',
   ageing: 'ageing',
   nbRelances: 'nbRelances',
   createurId: 'createurId',
@@ -237,42 +239,6 @@ export const FormulaireAcceptationRisqueScalarFieldEnum = {
 } as const
 
 export type FormulaireAcceptationRisqueScalarFieldEnum = (typeof FormulaireAcceptationRisqueScalarFieldEnum)[keyof typeof FormulaireAcceptationRisqueScalarFieldEnum]
-
-
-export const CasFraudeScalarFieldEnum = {
-  id: 'id',
-  numeroCas: 'numeroCas',
-  titre: 'titre',
-  description: 'description',
-  departementId: 'departementId',
-  dateSignalement: 'dateSignalement',
-  coutImpact: 'coutImpact',
-  statut: 'statut',
-  auditeurFRMId: 'auditeurFRMId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CasFraudeScalarFieldEnum = (typeof CasFraudeScalarFieldEnum)[keyof typeof CasFraudeScalarFieldEnum]
-
-
-export const PointFraudeScalarFieldEnum = {
-  id: 'id',
-  code: 'code',
-  casId: 'casId',
-  titre: 'titre',
-  detail: 'detail',
-  recommandation: 'recommandation',
-  coutImpact: 'coutImpact',
-  auditeurFRMId: 'auditeurFRMId',
-  dateEcheance: 'dateEcheance',
-  dateReporting: 'dateReporting',
-  statut: 'statut',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type PointFraudeScalarFieldEnum = (typeof PointFraudeScalarFieldEnum)[keyof typeof PointFraudeScalarFieldEnum]
 
 
 export const ImportBatchScalarFieldEnum = {
@@ -334,8 +300,7 @@ export const HistoriqueStatutScalarFieldEnum = {
   commentaire: 'commentaire',
   modifiePar: 'modifiePar',
   dateModification: 'dateModification',
-  pointAuditId: 'pointAuditId',
-  pointFraudeId: 'pointFraudeId'
+  pointAuditId: 'pointAuditId'
 } as const
 
 export type HistoriqueStatutScalarFieldEnum = (typeof HistoriqueStatutScalarFieldEnum)[keyof typeof HistoriqueStatutScalarFieldEnum]
@@ -349,8 +314,7 @@ export const CommentaireScalarFieldEnum = {
   estInterne: 'estInterne',
   creePar: 'creePar',
   dateCreation: 'dateCreation',
-  pointAuditId: 'pointAuditId',
-  pointFraudeId: 'pointFraudeId'
+  pointAuditId: 'pointAuditId'
 } as const
 
 export type CommentaireScalarFieldEnum = (typeof CommentaireScalarFieldEnum)[keyof typeof CommentaireScalarFieldEnum]
@@ -366,8 +330,7 @@ export const PieceJointeScalarFieldEnum = {
   dateAjout: 'dateAjout',
   auditId: 'auditId',
   pointAuditId: 'pointAuditId',
-  actionPointId: 'actionPointId',
-  pointFraudeId: 'pointFraudeId'
+  actionPointId: 'actionPointId'
 } as const
 
 export type PieceJointeScalarFieldEnum = (typeof PieceJointeScalarFieldEnum)[keyof typeof PieceJointeScalarFieldEnum]
@@ -380,6 +343,11 @@ export const NotificationScalarFieldEnum = {
   message: 'message',
   type: 'type',
   statut: 'statut',
+  utilisateurId: 'utilisateurId',
+  lu: 'lu',
+  dateLecture: 'dateLecture',
+  entiteType: 'entiteType',
+  entiteId: 'entiteId',
   dateProgrammee: 'dateProgrammee',
   dateEnvoi: 'dateEnvoi',
   createdAt: 'createdAt'
@@ -402,28 +370,20 @@ export const PlanificationDunningScalarFieldEnum = {
 export type PlanificationDunningScalarFieldEnum = (typeof PlanificationDunningScalarFieldEnum)[keyof typeof PlanificationDunningScalarFieldEnum]
 
 
-export const RisqueScalarFieldEnum = {
+export const ParametresSystemeScalarFieldEnum = {
   id: 'id',
-  reference: 'reference',
-  titre: 'titre',
-  description: 'description',
-  categorie: 'categorie',
-  probabilite: 'probabilite',
-  impact: 'impact',
-  score: 'score',
-  mesuresControle: 'mesuresControle',
-  planTraitement: 'planTraitement',
-  statut: 'statut',
-  departementId: 'departementId',
-  responsableId: 'responsableId',
-  createurId: 'createurId',
-  dateIdentification: 'dateIdentification',
-  dateProchaineRevue: 'dateProchaineRevue',
-  createdAt: 'createdAt',
+  emailNotificationsActives: 'emailNotificationsActives',
+  resumeQuotidienActif: 'resumeQuotidienActif',
+  seuilAgeingAttention: 'seuilAgeingAttention',
+  seuilAgeingCritique: 'seuilAgeingCritique',
+  seuilAgeingBloquant: 'seuilAgeingBloquant',
+  dunningActif: 'dunningActif',
+  dunningFrequence: 'dunningFrequence',
+  sessionTimeoutMinutes: 'sessionTimeoutMinutes',
   updatedAt: 'updatedAt'
 } as const
 
-export type RisqueScalarFieldEnum = (typeof RisqueScalarFieldEnum)[keyof typeof RisqueScalarFieldEnum]
+export type ParametresSystemeScalarFieldEnum = (typeof ParametresSystemeScalarFieldEnum)[keyof typeof ParametresSystemeScalarFieldEnum]
 
 
 export const SortOrder = {

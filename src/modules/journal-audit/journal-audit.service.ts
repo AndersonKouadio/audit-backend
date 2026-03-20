@@ -41,17 +41,51 @@ export class JournalAuditService {
   }
 
   async findAll(query: JournalQueryDto): Promise<PaginationResponseDto<any>> {
-    const { page = 1, limit = 20, entiteType, entiteId, utilisateurId, action } = query;
+    const {
+      page = 1,
+      limit = 20,
+      entiteType,
+      entiteId,
+      utilisateurId,
+      action,
+      dateDebut,
+      dateFin,
+      search,
+    } = query;
     const skip = (page - 1) * limit;
 
-    const where: any = {
-      AND: [
-        entiteType ? { entiteType } : {},
-        entiteId ? { entiteId } : {},
-        utilisateurId ? { utilisateurId } : {},
-        action ? { action } : {},
-      ],
-    };
+    const andConditions: any[] = [];
+
+    if (entiteType) andConditions.push({ entiteType });
+    if (entiteId) andConditions.push({ entiteId });
+    if (utilisateurId) andConditions.push({ utilisateurId });
+    if (action) andConditions.push({ action });
+
+    // Filtre plage de dates
+    if (dateDebut || dateFin) {
+      const dateFilter: any = {};
+      if (dateDebut) dateFilter.gte = new Date(dateDebut);
+      if (dateFin) {
+        // Inclure toute la journée de fin
+        const fin = new Date(dateFin);
+        fin.setHours(23, 59, 59, 999);
+        dateFilter.lte = fin;
+      }
+      andConditions.push({ dateAction: dateFilter });
+    }
+
+    // Recherche libre sur utilisateurNom ou entiteRef
+    if (search) {
+      andConditions.push({
+        OR: [
+          { utilisateurNom: { contains: search, mode: 'insensitive' } },
+          { entiteRef: { contains: search, mode: 'insensitive' } },
+          { entiteType: { contains: search, mode: 'insensitive' } },
+        ],
+      });
+    }
+
+    const where: any = andConditions.length > 0 ? { AND: andConditions } : {};
 
     const [total, data] = await Promise.all([
       this.prisma.journalAudit.count({ where }),

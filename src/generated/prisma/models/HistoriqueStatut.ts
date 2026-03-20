@@ -34,7 +34,6 @@ export type HistoriqueStatutMinAggregateOutputType = {
   modifiePar: string | null
   dateModification: Date | null
   pointAuditId: string | null
-  pointFraudeId: string | null
 }
 
 export type HistoriqueStatutMaxAggregateOutputType = {
@@ -47,7 +46,6 @@ export type HistoriqueStatutMaxAggregateOutputType = {
   modifiePar: string | null
   dateModification: Date | null
   pointAuditId: string | null
-  pointFraudeId: string | null
 }
 
 export type HistoriqueStatutCountAggregateOutputType = {
@@ -60,7 +58,6 @@ export type HistoriqueStatutCountAggregateOutputType = {
   modifiePar: number
   dateModification: number
   pointAuditId: number
-  pointFraudeId: number
   _all: number
 }
 
@@ -75,7 +72,6 @@ export type HistoriqueStatutMinAggregateInputType = {
   modifiePar?: true
   dateModification?: true
   pointAuditId?: true
-  pointFraudeId?: true
 }
 
 export type HistoriqueStatutMaxAggregateInputType = {
@@ -88,7 +84,6 @@ export type HistoriqueStatutMaxAggregateInputType = {
   modifiePar?: true
   dateModification?: true
   pointAuditId?: true
-  pointFraudeId?: true
 }
 
 export type HistoriqueStatutCountAggregateInputType = {
@@ -101,7 +96,6 @@ export type HistoriqueStatutCountAggregateInputType = {
   modifiePar?: true
   dateModification?: true
   pointAuditId?: true
-  pointFraudeId?: true
   _all?: true
 }
 
@@ -187,7 +181,6 @@ export type HistoriqueStatutGroupByOutputType = {
   modifiePar: string
   dateModification: Date
   pointAuditId: string | null
-  pointFraudeId: string | null
   _count: HistoriqueStatutCountAggregateOutputType | null
   _min: HistoriqueStatutMinAggregateOutputType | null
   _max: HistoriqueStatutMaxAggregateOutputType | null
@@ -221,9 +214,7 @@ export type HistoriqueStatutWhereInput = {
   modifiePar?: Prisma.StringFilter<"HistoriqueStatut"> | string
   dateModification?: Prisma.DateTimeFilter<"HistoriqueStatut"> | Date | string
   pointAuditId?: Prisma.StringNullableFilter<"HistoriqueStatut"> | string | null
-  pointFraudeId?: Prisma.StringNullableFilter<"HistoriqueStatut"> | string | null
   pointAudit?: Prisma.XOR<Prisma.PointAuditNullableScalarRelationFilter, Prisma.PointAuditWhereInput> | null
-  pointFraude?: Prisma.XOR<Prisma.PointFraudeNullableScalarRelationFilter, Prisma.PointFraudeWhereInput> | null
 }
 
 export type HistoriqueStatutOrderByWithRelationInput = {
@@ -236,9 +227,7 @@ export type HistoriqueStatutOrderByWithRelationInput = {
   modifiePar?: Prisma.SortOrder
   dateModification?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrderInput | Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrderInput | Prisma.SortOrder
   pointAudit?: Prisma.PointAuditOrderByWithRelationInput
-  pointFraude?: Prisma.PointFraudeOrderByWithRelationInput
 }
 
 export type HistoriqueStatutWhereUniqueInput = Prisma.AtLeast<{
@@ -254,9 +243,7 @@ export type HistoriqueStatutWhereUniqueInput = Prisma.AtLeast<{
   modifiePar?: Prisma.StringFilter<"HistoriqueStatut"> | string
   dateModification?: Prisma.DateTimeFilter<"HistoriqueStatut"> | Date | string
   pointAuditId?: Prisma.StringNullableFilter<"HistoriqueStatut"> | string | null
-  pointFraudeId?: Prisma.StringNullableFilter<"HistoriqueStatut"> | string | null
   pointAudit?: Prisma.XOR<Prisma.PointAuditNullableScalarRelationFilter, Prisma.PointAuditWhereInput> | null
-  pointFraude?: Prisma.XOR<Prisma.PointFraudeNullableScalarRelationFilter, Prisma.PointFraudeWhereInput> | null
 }, "id">
 
 export type HistoriqueStatutOrderByWithAggregationInput = {
@@ -269,7 +256,6 @@ export type HistoriqueStatutOrderByWithAggregationInput = {
   modifiePar?: Prisma.SortOrder
   dateModification?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrderInput | Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.HistoriqueStatutCountOrderByAggregateInput
   _max?: Prisma.HistoriqueStatutMaxOrderByAggregateInput
   _min?: Prisma.HistoriqueStatutMinOrderByAggregateInput
@@ -288,7 +274,6 @@ export type HistoriqueStatutScalarWhereWithAggregatesInput = {
   modifiePar?: Prisma.StringWithAggregatesFilter<"HistoriqueStatut"> | string
   dateModification?: Prisma.DateTimeWithAggregatesFilter<"HistoriqueStatut"> | Date | string
   pointAuditId?: Prisma.StringNullableWithAggregatesFilter<"HistoriqueStatut"> | string | null
-  pointFraudeId?: Prisma.StringNullableWithAggregatesFilter<"HistoriqueStatut"> | string | null
 }
 
 export type HistoriqueStatutCreateInput = {
@@ -301,7 +286,6 @@ export type HistoriqueStatutCreateInput = {
   modifiePar: string
   dateModification?: Date | string
   pointAudit?: Prisma.PointAuditCreateNestedOneWithoutHistoriqueInput
-  pointFraude?: Prisma.PointFraudeCreateNestedOneWithoutHistoriqueInput
 }
 
 export type HistoriqueStatutUncheckedCreateInput = {
@@ -314,7 +298,6 @@ export type HistoriqueStatutUncheckedCreateInput = {
   modifiePar: string
   dateModification?: Date | string
   pointAuditId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type HistoriqueStatutUpdateInput = {
@@ -327,7 +310,6 @@ export type HistoriqueStatutUpdateInput = {
   modifiePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateModification?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pointAudit?: Prisma.PointAuditUpdateOneWithoutHistoriqueNestedInput
-  pointFraude?: Prisma.PointFraudeUpdateOneWithoutHistoriqueNestedInput
 }
 
 export type HistoriqueStatutUncheckedUpdateInput = {
@@ -340,7 +322,6 @@ export type HistoriqueStatutUncheckedUpdateInput = {
   modifiePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateModification?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type HistoriqueStatutCreateManyInput = {
@@ -353,7 +334,6 @@ export type HistoriqueStatutCreateManyInput = {
   modifiePar: string
   dateModification?: Date | string
   pointAuditId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type HistoriqueStatutUpdateManyMutationInput = {
@@ -377,7 +357,6 @@ export type HistoriqueStatutUncheckedUpdateManyInput = {
   modifiePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateModification?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type HistoriqueStatutListRelationFilter = {
@@ -400,7 +379,6 @@ export type HistoriqueStatutCountOrderByAggregateInput = {
   modifiePar?: Prisma.SortOrder
   dateModification?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrder
 }
 
 export type HistoriqueStatutMaxOrderByAggregateInput = {
@@ -413,7 +391,6 @@ export type HistoriqueStatutMaxOrderByAggregateInput = {
   modifiePar?: Prisma.SortOrder
   dateModification?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrder
 }
 
 export type HistoriqueStatutMinOrderByAggregateInput = {
@@ -426,7 +403,6 @@ export type HistoriqueStatutMinOrderByAggregateInput = {
   modifiePar?: Prisma.SortOrder
   dateModification?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrder
 }
 
 export type HistoriqueStatutCreateNestedManyWithoutPointAuditInput = {
@@ -471,48 +447,6 @@ export type HistoriqueStatutUncheckedUpdateManyWithoutPointAuditNestedInput = {
   deleteMany?: Prisma.HistoriqueStatutScalarWhereInput | Prisma.HistoriqueStatutScalarWhereInput[]
 }
 
-export type HistoriqueStatutCreateNestedManyWithoutPointFraudeInput = {
-  create?: Prisma.XOR<Prisma.HistoriqueStatutCreateWithoutPointFraudeInput, Prisma.HistoriqueStatutUncheckedCreateWithoutPointFraudeInput> | Prisma.HistoriqueStatutCreateWithoutPointFraudeInput[] | Prisma.HistoriqueStatutUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.HistoriqueStatutCreateOrConnectWithoutPointFraudeInput | Prisma.HistoriqueStatutCreateOrConnectWithoutPointFraudeInput[]
-  createMany?: Prisma.HistoriqueStatutCreateManyPointFraudeInputEnvelope
-  connect?: Prisma.HistoriqueStatutWhereUniqueInput | Prisma.HistoriqueStatutWhereUniqueInput[]
-}
-
-export type HistoriqueStatutUncheckedCreateNestedManyWithoutPointFraudeInput = {
-  create?: Prisma.XOR<Prisma.HistoriqueStatutCreateWithoutPointFraudeInput, Prisma.HistoriqueStatutUncheckedCreateWithoutPointFraudeInput> | Prisma.HistoriqueStatutCreateWithoutPointFraudeInput[] | Prisma.HistoriqueStatutUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.HistoriqueStatutCreateOrConnectWithoutPointFraudeInput | Prisma.HistoriqueStatutCreateOrConnectWithoutPointFraudeInput[]
-  createMany?: Prisma.HistoriqueStatutCreateManyPointFraudeInputEnvelope
-  connect?: Prisma.HistoriqueStatutWhereUniqueInput | Prisma.HistoriqueStatutWhereUniqueInput[]
-}
-
-export type HistoriqueStatutUpdateManyWithoutPointFraudeNestedInput = {
-  create?: Prisma.XOR<Prisma.HistoriqueStatutCreateWithoutPointFraudeInput, Prisma.HistoriqueStatutUncheckedCreateWithoutPointFraudeInput> | Prisma.HistoriqueStatutCreateWithoutPointFraudeInput[] | Prisma.HistoriqueStatutUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.HistoriqueStatutCreateOrConnectWithoutPointFraudeInput | Prisma.HistoriqueStatutCreateOrConnectWithoutPointFraudeInput[]
-  upsert?: Prisma.HistoriqueStatutUpsertWithWhereUniqueWithoutPointFraudeInput | Prisma.HistoriqueStatutUpsertWithWhereUniqueWithoutPointFraudeInput[]
-  createMany?: Prisma.HistoriqueStatutCreateManyPointFraudeInputEnvelope
-  set?: Prisma.HistoriqueStatutWhereUniqueInput | Prisma.HistoriqueStatutWhereUniqueInput[]
-  disconnect?: Prisma.HistoriqueStatutWhereUniqueInput | Prisma.HistoriqueStatutWhereUniqueInput[]
-  delete?: Prisma.HistoriqueStatutWhereUniqueInput | Prisma.HistoriqueStatutWhereUniqueInput[]
-  connect?: Prisma.HistoriqueStatutWhereUniqueInput | Prisma.HistoriqueStatutWhereUniqueInput[]
-  update?: Prisma.HistoriqueStatutUpdateWithWhereUniqueWithoutPointFraudeInput | Prisma.HistoriqueStatutUpdateWithWhereUniqueWithoutPointFraudeInput[]
-  updateMany?: Prisma.HistoriqueStatutUpdateManyWithWhereWithoutPointFraudeInput | Prisma.HistoriqueStatutUpdateManyWithWhereWithoutPointFraudeInput[]
-  deleteMany?: Prisma.HistoriqueStatutScalarWhereInput | Prisma.HistoriqueStatutScalarWhereInput[]
-}
-
-export type HistoriqueStatutUncheckedUpdateManyWithoutPointFraudeNestedInput = {
-  create?: Prisma.XOR<Prisma.HistoriqueStatutCreateWithoutPointFraudeInput, Prisma.HistoriqueStatutUncheckedCreateWithoutPointFraudeInput> | Prisma.HistoriqueStatutCreateWithoutPointFraudeInput[] | Prisma.HistoriqueStatutUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.HistoriqueStatutCreateOrConnectWithoutPointFraudeInput | Prisma.HistoriqueStatutCreateOrConnectWithoutPointFraudeInput[]
-  upsert?: Prisma.HistoriqueStatutUpsertWithWhereUniqueWithoutPointFraudeInput | Prisma.HistoriqueStatutUpsertWithWhereUniqueWithoutPointFraudeInput[]
-  createMany?: Prisma.HistoriqueStatutCreateManyPointFraudeInputEnvelope
-  set?: Prisma.HistoriqueStatutWhereUniqueInput | Prisma.HistoriqueStatutWhereUniqueInput[]
-  disconnect?: Prisma.HistoriqueStatutWhereUniqueInput | Prisma.HistoriqueStatutWhereUniqueInput[]
-  delete?: Prisma.HistoriqueStatutWhereUniqueInput | Prisma.HistoriqueStatutWhereUniqueInput[]
-  connect?: Prisma.HistoriqueStatutWhereUniqueInput | Prisma.HistoriqueStatutWhereUniqueInput[]
-  update?: Prisma.HistoriqueStatutUpdateWithWhereUniqueWithoutPointFraudeInput | Prisma.HistoriqueStatutUpdateWithWhereUniqueWithoutPointFraudeInput[]
-  updateMany?: Prisma.HistoriqueStatutUpdateManyWithWhereWithoutPointFraudeInput | Prisma.HistoriqueStatutUpdateManyWithWhereWithoutPointFraudeInput[]
-  deleteMany?: Prisma.HistoriqueStatutScalarWhereInput | Prisma.HistoriqueStatutScalarWhereInput[]
-}
-
 export type HistoriqueStatutCreateWithoutPointAuditInput = {
   id?: string
   typeEntite: string
@@ -522,7 +456,6 @@ export type HistoriqueStatutCreateWithoutPointAuditInput = {
   commentaire?: string | null
   modifiePar: string
   dateModification?: Date | string
-  pointFraude?: Prisma.PointFraudeCreateNestedOneWithoutHistoriqueInput
 }
 
 export type HistoriqueStatutUncheckedCreateWithoutPointAuditInput = {
@@ -534,7 +467,6 @@ export type HistoriqueStatutUncheckedCreateWithoutPointAuditInput = {
   commentaire?: string | null
   modifiePar: string
   dateModification?: Date | string
-  pointFraudeId?: string | null
 }
 
 export type HistoriqueStatutCreateOrConnectWithoutPointAuditInput = {
@@ -576,57 +508,6 @@ export type HistoriqueStatutScalarWhereInput = {
   modifiePar?: Prisma.StringFilter<"HistoriqueStatut"> | string
   dateModification?: Prisma.DateTimeFilter<"HistoriqueStatut"> | Date | string
   pointAuditId?: Prisma.StringNullableFilter<"HistoriqueStatut"> | string | null
-  pointFraudeId?: Prisma.StringNullableFilter<"HistoriqueStatut"> | string | null
-}
-
-export type HistoriqueStatutCreateWithoutPointFraudeInput = {
-  id?: string
-  typeEntite: string
-  entiteId: string
-  statutPrecedent?: string | null
-  nouveauStatut?: string | null
-  commentaire?: string | null
-  modifiePar: string
-  dateModification?: Date | string
-  pointAudit?: Prisma.PointAuditCreateNestedOneWithoutHistoriqueInput
-}
-
-export type HistoriqueStatutUncheckedCreateWithoutPointFraudeInput = {
-  id?: string
-  typeEntite: string
-  entiteId: string
-  statutPrecedent?: string | null
-  nouveauStatut?: string | null
-  commentaire?: string | null
-  modifiePar: string
-  dateModification?: Date | string
-  pointAuditId?: string | null
-}
-
-export type HistoriqueStatutCreateOrConnectWithoutPointFraudeInput = {
-  where: Prisma.HistoriqueStatutWhereUniqueInput
-  create: Prisma.XOR<Prisma.HistoriqueStatutCreateWithoutPointFraudeInput, Prisma.HistoriqueStatutUncheckedCreateWithoutPointFraudeInput>
-}
-
-export type HistoriqueStatutCreateManyPointFraudeInputEnvelope = {
-  data: Prisma.HistoriqueStatutCreateManyPointFraudeInput | Prisma.HistoriqueStatutCreateManyPointFraudeInput[]
-  skipDuplicates?: boolean
-}
-
-export type HistoriqueStatutUpsertWithWhereUniqueWithoutPointFraudeInput = {
-  where: Prisma.HistoriqueStatutWhereUniqueInput
-  update: Prisma.XOR<Prisma.HistoriqueStatutUpdateWithoutPointFraudeInput, Prisma.HistoriqueStatutUncheckedUpdateWithoutPointFraudeInput>
-  create: Prisma.XOR<Prisma.HistoriqueStatutCreateWithoutPointFraudeInput, Prisma.HistoriqueStatutUncheckedCreateWithoutPointFraudeInput>
-}
-
-export type HistoriqueStatutUpdateWithWhereUniqueWithoutPointFraudeInput = {
-  where: Prisma.HistoriqueStatutWhereUniqueInput
-  data: Prisma.XOR<Prisma.HistoriqueStatutUpdateWithoutPointFraudeInput, Prisma.HistoriqueStatutUncheckedUpdateWithoutPointFraudeInput>
-}
-
-export type HistoriqueStatutUpdateManyWithWhereWithoutPointFraudeInput = {
-  where: Prisma.HistoriqueStatutScalarWhereInput
-  data: Prisma.XOR<Prisma.HistoriqueStatutUpdateManyMutationInput, Prisma.HistoriqueStatutUncheckedUpdateManyWithoutPointFraudeInput>
 }
 
 export type HistoriqueStatutCreateManyPointAuditInput = {
@@ -638,7 +519,6 @@ export type HistoriqueStatutCreateManyPointAuditInput = {
   commentaire?: string | null
   modifiePar: string
   dateModification?: Date | string
-  pointFraudeId?: string | null
 }
 
 export type HistoriqueStatutUpdateWithoutPointAuditInput = {
@@ -650,7 +530,6 @@ export type HistoriqueStatutUpdateWithoutPointAuditInput = {
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   modifiePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateModification?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointFraude?: Prisma.PointFraudeUpdateOneWithoutHistoriqueNestedInput
 }
 
 export type HistoriqueStatutUncheckedUpdateWithoutPointAuditInput = {
@@ -662,7 +541,6 @@ export type HistoriqueStatutUncheckedUpdateWithoutPointAuditInput = {
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   modifiePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateModification?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type HistoriqueStatutUncheckedUpdateManyWithoutPointAuditInput = {
@@ -674,55 +552,6 @@ export type HistoriqueStatutUncheckedUpdateManyWithoutPointAuditInput = {
   commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   modifiePar?: Prisma.StringFieldUpdateOperationsInput | string
   dateModification?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type HistoriqueStatutCreateManyPointFraudeInput = {
-  id?: string
-  typeEntite: string
-  entiteId: string
-  statutPrecedent?: string | null
-  nouveauStatut?: string | null
-  commentaire?: string | null
-  modifiePar: string
-  dateModification?: Date | string
-  pointAuditId?: string | null
-}
-
-export type HistoriqueStatutUpdateWithoutPointFraudeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  typeEntite?: Prisma.StringFieldUpdateOperationsInput | string
-  entiteId?: Prisma.StringFieldUpdateOperationsInput | string
-  statutPrecedent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nouveauStatut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiePar?: Prisma.StringFieldUpdateOperationsInput | string
-  dateModification?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointAudit?: Prisma.PointAuditUpdateOneWithoutHistoriqueNestedInput
-}
-
-export type HistoriqueStatutUncheckedUpdateWithoutPointFraudeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  typeEntite?: Prisma.StringFieldUpdateOperationsInput | string
-  entiteId?: Prisma.StringFieldUpdateOperationsInput | string
-  statutPrecedent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nouveauStatut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiePar?: Prisma.StringFieldUpdateOperationsInput | string
-  dateModification?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type HistoriqueStatutUncheckedUpdateManyWithoutPointFraudeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  typeEntite?: Prisma.StringFieldUpdateOperationsInput | string
-  entiteId?: Prisma.StringFieldUpdateOperationsInput | string
-  statutPrecedent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nouveauStatut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  commentaire?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  modifiePar?: Prisma.StringFieldUpdateOperationsInput | string
-  dateModification?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -737,9 +566,7 @@ export type HistoriqueStatutSelect<ExtArgs extends runtime.Types.Extensions.Inte
   modifiePar?: boolean
   dateModification?: boolean
   pointAuditId?: boolean
-  pointFraudeId?: boolean
   pointAudit?: boolean | Prisma.HistoriqueStatut$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.HistoriqueStatut$pointFraudeArgs<ExtArgs>
 }, ExtArgs["result"]["historiqueStatut"]>
 
 export type HistoriqueStatutSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -752,9 +579,7 @@ export type HistoriqueStatutSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   modifiePar?: boolean
   dateModification?: boolean
   pointAuditId?: boolean
-  pointFraudeId?: boolean
   pointAudit?: boolean | Prisma.HistoriqueStatut$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.HistoriqueStatut$pointFraudeArgs<ExtArgs>
 }, ExtArgs["result"]["historiqueStatut"]>
 
 export type HistoriqueStatutSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -767,9 +592,7 @@ export type HistoriqueStatutSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   modifiePar?: boolean
   dateModification?: boolean
   pointAuditId?: boolean
-  pointFraudeId?: boolean
   pointAudit?: boolean | Prisma.HistoriqueStatut$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.HistoriqueStatut$pointFraudeArgs<ExtArgs>
 }, ExtArgs["result"]["historiqueStatut"]>
 
 export type HistoriqueStatutSelectScalar = {
@@ -782,28 +605,23 @@ export type HistoriqueStatutSelectScalar = {
   modifiePar?: boolean
   dateModification?: boolean
   pointAuditId?: boolean
-  pointFraudeId?: boolean
 }
 
-export type HistoriqueStatutOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "typeEntite" | "entiteId" | "statutPrecedent" | "nouveauStatut" | "commentaire" | "modifiePar" | "dateModification" | "pointAuditId" | "pointFraudeId", ExtArgs["result"]["historiqueStatut"]>
+export type HistoriqueStatutOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "typeEntite" | "entiteId" | "statutPrecedent" | "nouveauStatut" | "commentaire" | "modifiePar" | "dateModification" | "pointAuditId", ExtArgs["result"]["historiqueStatut"]>
 export type HistoriqueStatutInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pointAudit?: boolean | Prisma.HistoriqueStatut$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.HistoriqueStatut$pointFraudeArgs<ExtArgs>
 }
 export type HistoriqueStatutIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pointAudit?: boolean | Prisma.HistoriqueStatut$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.HistoriqueStatut$pointFraudeArgs<ExtArgs>
 }
 export type HistoriqueStatutIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pointAudit?: boolean | Prisma.HistoriqueStatut$pointAuditArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.HistoriqueStatut$pointFraudeArgs<ExtArgs>
 }
 
 export type $HistoriqueStatutPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "HistoriqueStatut"
   objects: {
     pointAudit: Prisma.$PointAuditPayload<ExtArgs> | null
-    pointFraude: Prisma.$PointFraudePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -815,7 +633,6 @@ export type $HistoriqueStatutPayload<ExtArgs extends runtime.Types.Extensions.In
     modifiePar: string
     dateModification: Date
     pointAuditId: string | null
-    pointFraudeId: string | null
   }, ExtArgs["result"]["historiqueStatut"]>
   composites: {}
 }
@@ -1211,7 +1028,6 @@ readonly fields: HistoriqueStatutFieldRefs;
 export interface Prisma__HistoriqueStatutClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   pointAudit<T extends Prisma.HistoriqueStatut$pointAuditArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HistoriqueStatut$pointAuditArgs<ExtArgs>>): Prisma.Prisma__PointAuditClient<runtime.Types.Result.GetResult<Prisma.$PointAuditPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  pointFraude<T extends Prisma.HistoriqueStatut$pointFraudeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HistoriqueStatut$pointFraudeArgs<ExtArgs>>): Prisma.Prisma__PointFraudeClient<runtime.Types.Result.GetResult<Prisma.$PointFraudePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1250,7 +1066,6 @@ export interface HistoriqueStatutFieldRefs {
   readonly modifiePar: Prisma.FieldRef<"HistoriqueStatut", 'String'>
   readonly dateModification: Prisma.FieldRef<"HistoriqueStatut", 'DateTime'>
   readonly pointAuditId: Prisma.FieldRef<"HistoriqueStatut", 'String'>
-  readonly pointFraudeId: Prisma.FieldRef<"HistoriqueStatut", 'String'>
 }
     
 
@@ -1663,25 +1478,6 @@ export type HistoriqueStatut$pointAuditArgs<ExtArgs extends runtime.Types.Extens
    */
   include?: Prisma.PointAuditInclude<ExtArgs> | null
   where?: Prisma.PointAuditWhereInput
-}
-
-/**
- * HistoriqueStatut.pointFraude
- */
-export type HistoriqueStatut$pointFraudeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PointFraude
-   */
-  select?: Prisma.PointFraudeSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PointFraude
-   */
-  omit?: Prisma.PointFraudeOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PointFraudeInclude<ExtArgs> | null
-  where?: Prisma.PointFraudeWhereInput
 }
 
 /**

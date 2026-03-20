@@ -45,7 +45,6 @@ export type PieceJointeMinAggregateOutputType = {
   auditId: string | null
   pointAuditId: string | null
   actionPointId: string | null
-  pointFraudeId: string | null
 }
 
 export type PieceJointeMaxAggregateOutputType = {
@@ -59,7 +58,6 @@ export type PieceJointeMaxAggregateOutputType = {
   auditId: string | null
   pointAuditId: string | null
   actionPointId: string | null
-  pointFraudeId: string | null
 }
 
 export type PieceJointeCountAggregateOutputType = {
@@ -73,7 +71,6 @@ export type PieceJointeCountAggregateOutputType = {
   auditId: number
   pointAuditId: number
   actionPointId: number
-  pointFraudeId: number
   _all: number
 }
 
@@ -97,7 +94,6 @@ export type PieceJointeMinAggregateInputType = {
   auditId?: true
   pointAuditId?: true
   actionPointId?: true
-  pointFraudeId?: true
 }
 
 export type PieceJointeMaxAggregateInputType = {
@@ -111,7 +107,6 @@ export type PieceJointeMaxAggregateInputType = {
   auditId?: true
   pointAuditId?: true
   actionPointId?: true
-  pointFraudeId?: true
 }
 
 export type PieceJointeCountAggregateInputType = {
@@ -125,7 +120,6 @@ export type PieceJointeCountAggregateInputType = {
   auditId?: true
   pointAuditId?: true
   actionPointId?: true
-  pointFraudeId?: true
   _all?: true
 }
 
@@ -226,7 +220,6 @@ export type PieceJointeGroupByOutputType = {
   auditId: string | null
   pointAuditId: string | null
   actionPointId: string | null
-  pointFraudeId: string | null
   _count: PieceJointeCountAggregateOutputType | null
   _avg: PieceJointeAvgAggregateOutputType | null
   _sum: PieceJointeSumAggregateOutputType | null
@@ -263,11 +256,9 @@ export type PieceJointeWhereInput = {
   auditId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
   pointAuditId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
   actionPointId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
-  pointFraudeId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
   audit?: Prisma.XOR<Prisma.AuditNullableScalarRelationFilter, Prisma.AuditWhereInput> | null
   pointAudit?: Prisma.XOR<Prisma.PointAuditNullableScalarRelationFilter, Prisma.PointAuditWhereInput> | null
   actionPoint?: Prisma.XOR<Prisma.ActionPointNullableScalarRelationFilter, Prisma.ActionPointWhereInput> | null
-  pointFraude?: Prisma.XOR<Prisma.PointFraudeNullableScalarRelationFilter, Prisma.PointFraudeWhereInput> | null
 }
 
 export type PieceJointeOrderByWithRelationInput = {
@@ -281,11 +272,9 @@ export type PieceJointeOrderByWithRelationInput = {
   auditId?: Prisma.SortOrderInput | Prisma.SortOrder
   pointAuditId?: Prisma.SortOrderInput | Prisma.SortOrder
   actionPointId?: Prisma.SortOrderInput | Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrderInput | Prisma.SortOrder
   audit?: Prisma.AuditOrderByWithRelationInput
   pointAudit?: Prisma.PointAuditOrderByWithRelationInput
   actionPoint?: Prisma.ActionPointOrderByWithRelationInput
-  pointFraude?: Prisma.PointFraudeOrderByWithRelationInput
 }
 
 export type PieceJointeWhereUniqueInput = Prisma.AtLeast<{
@@ -302,11 +291,9 @@ export type PieceJointeWhereUniqueInput = Prisma.AtLeast<{
   auditId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
   pointAuditId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
   actionPointId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
-  pointFraudeId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
   audit?: Prisma.XOR<Prisma.AuditNullableScalarRelationFilter, Prisma.AuditWhereInput> | null
   pointAudit?: Prisma.XOR<Prisma.PointAuditNullableScalarRelationFilter, Prisma.PointAuditWhereInput> | null
   actionPoint?: Prisma.XOR<Prisma.ActionPointNullableScalarRelationFilter, Prisma.ActionPointWhereInput> | null
-  pointFraude?: Prisma.XOR<Prisma.PointFraudeNullableScalarRelationFilter, Prisma.PointFraudeWhereInput> | null
 }, "id">
 
 export type PieceJointeOrderByWithAggregationInput = {
@@ -320,7 +307,6 @@ export type PieceJointeOrderByWithAggregationInput = {
   auditId?: Prisma.SortOrderInput | Prisma.SortOrder
   pointAuditId?: Prisma.SortOrderInput | Prisma.SortOrder
   actionPointId?: Prisma.SortOrderInput | Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PieceJointeCountOrderByAggregateInput
   _avg?: Prisma.PieceJointeAvgOrderByAggregateInput
   _max?: Prisma.PieceJointeMaxOrderByAggregateInput
@@ -342,7 +328,6 @@ export type PieceJointeScalarWhereWithAggregatesInput = {
   auditId?: Prisma.StringNullableWithAggregatesFilter<"PieceJointe"> | string | null
   pointAuditId?: Prisma.StringNullableWithAggregatesFilter<"PieceJointe"> | string | null
   actionPointId?: Prisma.StringNullableWithAggregatesFilter<"PieceJointe"> | string | null
-  pointFraudeId?: Prisma.StringNullableWithAggregatesFilter<"PieceJointe"> | string | null
 }
 
 export type PieceJointeCreateInput = {
@@ -356,7 +341,6 @@ export type PieceJointeCreateInput = {
   audit?: Prisma.AuditCreateNestedOneWithoutPiecesJointesInput
   pointAudit?: Prisma.PointAuditCreateNestedOneWithoutPiecesJointesInput
   actionPoint?: Prisma.ActionPointCreateNestedOneWithoutPiecesJointesInput
-  pointFraude?: Prisma.PointFraudeCreateNestedOneWithoutPiecesJointesInput
 }
 
 export type PieceJointeUncheckedCreateInput = {
@@ -370,7 +354,6 @@ export type PieceJointeUncheckedCreateInput = {
   auditId?: string | null
   pointAuditId?: string | null
   actionPointId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type PieceJointeUpdateInput = {
@@ -384,7 +367,6 @@ export type PieceJointeUpdateInput = {
   audit?: Prisma.AuditUpdateOneWithoutPiecesJointesNestedInput
   pointAudit?: Prisma.PointAuditUpdateOneWithoutPiecesJointesNestedInput
   actionPoint?: Prisma.ActionPointUpdateOneWithoutPiecesJointesNestedInput
-  pointFraude?: Prisma.PointFraudeUpdateOneWithoutPiecesJointesNestedInput
 }
 
 export type PieceJointeUncheckedUpdateInput = {
@@ -398,7 +380,6 @@ export type PieceJointeUncheckedUpdateInput = {
   auditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PieceJointeCreateManyInput = {
@@ -412,7 +393,6 @@ export type PieceJointeCreateManyInput = {
   auditId?: string | null
   pointAuditId?: string | null
   actionPointId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type PieceJointeUpdateManyMutationInput = {
@@ -436,7 +416,6 @@ export type PieceJointeUncheckedUpdateManyInput = {
   auditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PieceJointeListRelationFilter = {
@@ -460,7 +439,6 @@ export type PieceJointeCountOrderByAggregateInput = {
   auditId?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrder
   actionPointId?: Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrder
 }
 
 export type PieceJointeAvgOrderByAggregateInput = {
@@ -478,7 +456,6 @@ export type PieceJointeMaxOrderByAggregateInput = {
   auditId?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrder
   actionPointId?: Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrder
 }
 
 export type PieceJointeMinOrderByAggregateInput = {
@@ -492,7 +469,6 @@ export type PieceJointeMinOrderByAggregateInput = {
   auditId?: Prisma.SortOrder
   pointAuditId?: Prisma.SortOrder
   actionPointId?: Prisma.SortOrder
-  pointFraudeId?: Prisma.SortOrder
 }
 
 export type PieceJointeSumOrderByAggregateInput = {
@@ -625,48 +601,6 @@ export type PieceJointeUncheckedUpdateManyWithoutActionPointNestedInput = {
   deleteMany?: Prisma.PieceJointeScalarWhereInput | Prisma.PieceJointeScalarWhereInput[]
 }
 
-export type PieceJointeCreateNestedManyWithoutPointFraudeInput = {
-  create?: Prisma.XOR<Prisma.PieceJointeCreateWithoutPointFraudeInput, Prisma.PieceJointeUncheckedCreateWithoutPointFraudeInput> | Prisma.PieceJointeCreateWithoutPointFraudeInput[] | Prisma.PieceJointeUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.PieceJointeCreateOrConnectWithoutPointFraudeInput | Prisma.PieceJointeCreateOrConnectWithoutPointFraudeInput[]
-  createMany?: Prisma.PieceJointeCreateManyPointFraudeInputEnvelope
-  connect?: Prisma.PieceJointeWhereUniqueInput | Prisma.PieceJointeWhereUniqueInput[]
-}
-
-export type PieceJointeUncheckedCreateNestedManyWithoutPointFraudeInput = {
-  create?: Prisma.XOR<Prisma.PieceJointeCreateWithoutPointFraudeInput, Prisma.PieceJointeUncheckedCreateWithoutPointFraudeInput> | Prisma.PieceJointeCreateWithoutPointFraudeInput[] | Prisma.PieceJointeUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.PieceJointeCreateOrConnectWithoutPointFraudeInput | Prisma.PieceJointeCreateOrConnectWithoutPointFraudeInput[]
-  createMany?: Prisma.PieceJointeCreateManyPointFraudeInputEnvelope
-  connect?: Prisma.PieceJointeWhereUniqueInput | Prisma.PieceJointeWhereUniqueInput[]
-}
-
-export type PieceJointeUpdateManyWithoutPointFraudeNestedInput = {
-  create?: Prisma.XOR<Prisma.PieceJointeCreateWithoutPointFraudeInput, Prisma.PieceJointeUncheckedCreateWithoutPointFraudeInput> | Prisma.PieceJointeCreateWithoutPointFraudeInput[] | Prisma.PieceJointeUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.PieceJointeCreateOrConnectWithoutPointFraudeInput | Prisma.PieceJointeCreateOrConnectWithoutPointFraudeInput[]
-  upsert?: Prisma.PieceJointeUpsertWithWhereUniqueWithoutPointFraudeInput | Prisma.PieceJointeUpsertWithWhereUniqueWithoutPointFraudeInput[]
-  createMany?: Prisma.PieceJointeCreateManyPointFraudeInputEnvelope
-  set?: Prisma.PieceJointeWhereUniqueInput | Prisma.PieceJointeWhereUniqueInput[]
-  disconnect?: Prisma.PieceJointeWhereUniqueInput | Prisma.PieceJointeWhereUniqueInput[]
-  delete?: Prisma.PieceJointeWhereUniqueInput | Prisma.PieceJointeWhereUniqueInput[]
-  connect?: Prisma.PieceJointeWhereUniqueInput | Prisma.PieceJointeWhereUniqueInput[]
-  update?: Prisma.PieceJointeUpdateWithWhereUniqueWithoutPointFraudeInput | Prisma.PieceJointeUpdateWithWhereUniqueWithoutPointFraudeInput[]
-  updateMany?: Prisma.PieceJointeUpdateManyWithWhereWithoutPointFraudeInput | Prisma.PieceJointeUpdateManyWithWhereWithoutPointFraudeInput[]
-  deleteMany?: Prisma.PieceJointeScalarWhereInput | Prisma.PieceJointeScalarWhereInput[]
-}
-
-export type PieceJointeUncheckedUpdateManyWithoutPointFraudeNestedInput = {
-  create?: Prisma.XOR<Prisma.PieceJointeCreateWithoutPointFraudeInput, Prisma.PieceJointeUncheckedCreateWithoutPointFraudeInput> | Prisma.PieceJointeCreateWithoutPointFraudeInput[] | Prisma.PieceJointeUncheckedCreateWithoutPointFraudeInput[]
-  connectOrCreate?: Prisma.PieceJointeCreateOrConnectWithoutPointFraudeInput | Prisma.PieceJointeCreateOrConnectWithoutPointFraudeInput[]
-  upsert?: Prisma.PieceJointeUpsertWithWhereUniqueWithoutPointFraudeInput | Prisma.PieceJointeUpsertWithWhereUniqueWithoutPointFraudeInput[]
-  createMany?: Prisma.PieceJointeCreateManyPointFraudeInputEnvelope
-  set?: Prisma.PieceJointeWhereUniqueInput | Prisma.PieceJointeWhereUniqueInput[]
-  disconnect?: Prisma.PieceJointeWhereUniqueInput | Prisma.PieceJointeWhereUniqueInput[]
-  delete?: Prisma.PieceJointeWhereUniqueInput | Prisma.PieceJointeWhereUniqueInput[]
-  connect?: Prisma.PieceJointeWhereUniqueInput | Prisma.PieceJointeWhereUniqueInput[]
-  update?: Prisma.PieceJointeUpdateWithWhereUniqueWithoutPointFraudeInput | Prisma.PieceJointeUpdateWithWhereUniqueWithoutPointFraudeInput[]
-  updateMany?: Prisma.PieceJointeUpdateManyWithWhereWithoutPointFraudeInput | Prisma.PieceJointeUpdateManyWithWhereWithoutPointFraudeInput[]
-  deleteMany?: Prisma.PieceJointeScalarWhereInput | Prisma.PieceJointeScalarWhereInput[]
-}
-
 export type PieceJointeCreateWithoutAuditInput = {
   id?: string
   nomFichier: string
@@ -677,7 +611,6 @@ export type PieceJointeCreateWithoutAuditInput = {
   dateAjout?: Date | string
   pointAudit?: Prisma.PointAuditCreateNestedOneWithoutPiecesJointesInput
   actionPoint?: Prisma.ActionPointCreateNestedOneWithoutPiecesJointesInput
-  pointFraude?: Prisma.PointFraudeCreateNestedOneWithoutPiecesJointesInput
 }
 
 export type PieceJointeUncheckedCreateWithoutAuditInput = {
@@ -690,7 +623,6 @@ export type PieceJointeUncheckedCreateWithoutAuditInput = {
   dateAjout?: Date | string
   pointAuditId?: string | null
   actionPointId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type PieceJointeCreateOrConnectWithoutAuditInput = {
@@ -733,7 +665,6 @@ export type PieceJointeScalarWhereInput = {
   auditId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
   pointAuditId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
   actionPointId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
-  pointFraudeId?: Prisma.StringNullableFilter<"PieceJointe"> | string | null
 }
 
 export type PieceJointeCreateWithoutPointAuditInput = {
@@ -746,7 +677,6 @@ export type PieceJointeCreateWithoutPointAuditInput = {
   dateAjout?: Date | string
   audit?: Prisma.AuditCreateNestedOneWithoutPiecesJointesInput
   actionPoint?: Prisma.ActionPointCreateNestedOneWithoutPiecesJointesInput
-  pointFraude?: Prisma.PointFraudeCreateNestedOneWithoutPiecesJointesInput
 }
 
 export type PieceJointeUncheckedCreateWithoutPointAuditInput = {
@@ -759,7 +689,6 @@ export type PieceJointeUncheckedCreateWithoutPointAuditInput = {
   dateAjout?: Date | string
   auditId?: string | null
   actionPointId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type PieceJointeCreateOrConnectWithoutPointAuditInput = {
@@ -798,7 +727,6 @@ export type PieceJointeCreateWithoutActionPointInput = {
   dateAjout?: Date | string
   audit?: Prisma.AuditCreateNestedOneWithoutPiecesJointesInput
   pointAudit?: Prisma.PointAuditCreateNestedOneWithoutPiecesJointesInput
-  pointFraude?: Prisma.PointFraudeCreateNestedOneWithoutPiecesJointesInput
 }
 
 export type PieceJointeUncheckedCreateWithoutActionPointInput = {
@@ -811,7 +739,6 @@ export type PieceJointeUncheckedCreateWithoutActionPointInput = {
   dateAjout?: Date | string
   auditId?: string | null
   pointAuditId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type PieceJointeCreateOrConnectWithoutActionPointInput = {
@@ -840,58 +767,6 @@ export type PieceJointeUpdateManyWithWhereWithoutActionPointInput = {
   data: Prisma.XOR<Prisma.PieceJointeUpdateManyMutationInput, Prisma.PieceJointeUncheckedUpdateManyWithoutActionPointInput>
 }
 
-export type PieceJointeCreateWithoutPointFraudeInput = {
-  id?: string
-  nomFichier: string
-  urlFichier: string
-  typeMime: string
-  taille: number
-  televerseePar: string
-  dateAjout?: Date | string
-  audit?: Prisma.AuditCreateNestedOneWithoutPiecesJointesInput
-  pointAudit?: Prisma.PointAuditCreateNestedOneWithoutPiecesJointesInput
-  actionPoint?: Prisma.ActionPointCreateNestedOneWithoutPiecesJointesInput
-}
-
-export type PieceJointeUncheckedCreateWithoutPointFraudeInput = {
-  id?: string
-  nomFichier: string
-  urlFichier: string
-  typeMime: string
-  taille: number
-  televerseePar: string
-  dateAjout?: Date | string
-  auditId?: string | null
-  pointAuditId?: string | null
-  actionPointId?: string | null
-}
-
-export type PieceJointeCreateOrConnectWithoutPointFraudeInput = {
-  where: Prisma.PieceJointeWhereUniqueInput
-  create: Prisma.XOR<Prisma.PieceJointeCreateWithoutPointFraudeInput, Prisma.PieceJointeUncheckedCreateWithoutPointFraudeInput>
-}
-
-export type PieceJointeCreateManyPointFraudeInputEnvelope = {
-  data: Prisma.PieceJointeCreateManyPointFraudeInput | Prisma.PieceJointeCreateManyPointFraudeInput[]
-  skipDuplicates?: boolean
-}
-
-export type PieceJointeUpsertWithWhereUniqueWithoutPointFraudeInput = {
-  where: Prisma.PieceJointeWhereUniqueInput
-  update: Prisma.XOR<Prisma.PieceJointeUpdateWithoutPointFraudeInput, Prisma.PieceJointeUncheckedUpdateWithoutPointFraudeInput>
-  create: Prisma.XOR<Prisma.PieceJointeCreateWithoutPointFraudeInput, Prisma.PieceJointeUncheckedCreateWithoutPointFraudeInput>
-}
-
-export type PieceJointeUpdateWithWhereUniqueWithoutPointFraudeInput = {
-  where: Prisma.PieceJointeWhereUniqueInput
-  data: Prisma.XOR<Prisma.PieceJointeUpdateWithoutPointFraudeInput, Prisma.PieceJointeUncheckedUpdateWithoutPointFraudeInput>
-}
-
-export type PieceJointeUpdateManyWithWhereWithoutPointFraudeInput = {
-  where: Prisma.PieceJointeScalarWhereInput
-  data: Prisma.XOR<Prisma.PieceJointeUpdateManyMutationInput, Prisma.PieceJointeUncheckedUpdateManyWithoutPointFraudeInput>
-}
-
 export type PieceJointeCreateManyAuditInput = {
   id?: string
   nomFichier: string
@@ -902,7 +777,6 @@ export type PieceJointeCreateManyAuditInput = {
   dateAjout?: Date | string
   pointAuditId?: string | null
   actionPointId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type PieceJointeUpdateWithoutAuditInput = {
@@ -915,7 +789,6 @@ export type PieceJointeUpdateWithoutAuditInput = {
   dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pointAudit?: Prisma.PointAuditUpdateOneWithoutPiecesJointesNestedInput
   actionPoint?: Prisma.ActionPointUpdateOneWithoutPiecesJointesNestedInput
-  pointFraude?: Prisma.PointFraudeUpdateOneWithoutPiecesJointesNestedInput
 }
 
 export type PieceJointeUncheckedUpdateWithoutAuditInput = {
@@ -928,7 +801,6 @@ export type PieceJointeUncheckedUpdateWithoutAuditInput = {
   dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PieceJointeUncheckedUpdateManyWithoutAuditInput = {
@@ -941,7 +813,6 @@ export type PieceJointeUncheckedUpdateManyWithoutAuditInput = {
   dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PieceJointeCreateManyPointAuditInput = {
@@ -954,7 +825,6 @@ export type PieceJointeCreateManyPointAuditInput = {
   dateAjout?: Date | string
   auditId?: string | null
   actionPointId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type PieceJointeUpdateWithoutPointAuditInput = {
@@ -967,7 +837,6 @@ export type PieceJointeUpdateWithoutPointAuditInput = {
   dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   audit?: Prisma.AuditUpdateOneWithoutPiecesJointesNestedInput
   actionPoint?: Prisma.ActionPointUpdateOneWithoutPiecesJointesNestedInput
-  pointFraude?: Prisma.PointFraudeUpdateOneWithoutPiecesJointesNestedInput
 }
 
 export type PieceJointeUncheckedUpdateWithoutPointAuditInput = {
@@ -980,7 +849,6 @@ export type PieceJointeUncheckedUpdateWithoutPointAuditInput = {
   dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   auditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PieceJointeUncheckedUpdateManyWithoutPointAuditInput = {
@@ -993,7 +861,6 @@ export type PieceJointeUncheckedUpdateManyWithoutPointAuditInput = {
   dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   auditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PieceJointeCreateManyActionPointInput = {
@@ -1006,7 +873,6 @@ export type PieceJointeCreateManyActionPointInput = {
   dateAjout?: Date | string
   auditId?: string | null
   pointAuditId?: string | null
-  pointFraudeId?: string | null
 }
 
 export type PieceJointeUpdateWithoutActionPointInput = {
@@ -1019,7 +885,6 @@ export type PieceJointeUpdateWithoutActionPointInput = {
   dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   audit?: Prisma.AuditUpdateOneWithoutPiecesJointesNestedInput
   pointAudit?: Prisma.PointAuditUpdateOneWithoutPiecesJointesNestedInput
-  pointFraude?: Prisma.PointFraudeUpdateOneWithoutPiecesJointesNestedInput
 }
 
 export type PieceJointeUncheckedUpdateWithoutActionPointInput = {
@@ -1032,7 +897,6 @@ export type PieceJointeUncheckedUpdateWithoutActionPointInput = {
   dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   auditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PieceJointeUncheckedUpdateManyWithoutActionPointInput = {
@@ -1045,59 +909,6 @@ export type PieceJointeUncheckedUpdateManyWithoutActionPointInput = {
   dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   auditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointFraudeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type PieceJointeCreateManyPointFraudeInput = {
-  id?: string
-  nomFichier: string
-  urlFichier: string
-  typeMime: string
-  taille: number
-  televerseePar: string
-  dateAjout?: Date | string
-  auditId?: string | null
-  pointAuditId?: string | null
-  actionPointId?: string | null
-}
-
-export type PieceJointeUpdateWithoutPointFraudeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  nomFichier?: Prisma.StringFieldUpdateOperationsInput | string
-  urlFichier?: Prisma.StringFieldUpdateOperationsInput | string
-  typeMime?: Prisma.StringFieldUpdateOperationsInput | string
-  taille?: Prisma.IntFieldUpdateOperationsInput | number
-  televerseePar?: Prisma.StringFieldUpdateOperationsInput | string
-  dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  audit?: Prisma.AuditUpdateOneWithoutPiecesJointesNestedInput
-  pointAudit?: Prisma.PointAuditUpdateOneWithoutPiecesJointesNestedInput
-  actionPoint?: Prisma.ActionPointUpdateOneWithoutPiecesJointesNestedInput
-}
-
-export type PieceJointeUncheckedUpdateWithoutPointFraudeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  nomFichier?: Prisma.StringFieldUpdateOperationsInput | string
-  urlFichier?: Prisma.StringFieldUpdateOperationsInput | string
-  typeMime?: Prisma.StringFieldUpdateOperationsInput | string
-  taille?: Prisma.IntFieldUpdateOperationsInput | number
-  televerseePar?: Prisma.StringFieldUpdateOperationsInput | string
-  dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  auditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  actionPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type PieceJointeUncheckedUpdateManyWithoutPointFraudeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  nomFichier?: Prisma.StringFieldUpdateOperationsInput | string
-  urlFichier?: Prisma.StringFieldUpdateOperationsInput | string
-  typeMime?: Prisma.StringFieldUpdateOperationsInput | string
-  taille?: Prisma.IntFieldUpdateOperationsInput | number
-  televerseePar?: Prisma.StringFieldUpdateOperationsInput | string
-  dateAjout?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  auditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pointAuditId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  actionPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1113,11 +924,9 @@ export type PieceJointeSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   auditId?: boolean
   pointAuditId?: boolean
   actionPointId?: boolean
-  pointFraudeId?: boolean
   audit?: boolean | Prisma.PieceJointe$auditArgs<ExtArgs>
   pointAudit?: boolean | Prisma.PieceJointe$pointAuditArgs<ExtArgs>
   actionPoint?: boolean | Prisma.PieceJointe$actionPointArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.PieceJointe$pointFraudeArgs<ExtArgs>
 }, ExtArgs["result"]["pieceJointe"]>
 
 export type PieceJointeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1131,11 +940,9 @@ export type PieceJointeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   auditId?: boolean
   pointAuditId?: boolean
   actionPointId?: boolean
-  pointFraudeId?: boolean
   audit?: boolean | Prisma.PieceJointe$auditArgs<ExtArgs>
   pointAudit?: boolean | Prisma.PieceJointe$pointAuditArgs<ExtArgs>
   actionPoint?: boolean | Prisma.PieceJointe$actionPointArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.PieceJointe$pointFraudeArgs<ExtArgs>
 }, ExtArgs["result"]["pieceJointe"]>
 
 export type PieceJointeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1149,11 +956,9 @@ export type PieceJointeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   auditId?: boolean
   pointAuditId?: boolean
   actionPointId?: boolean
-  pointFraudeId?: boolean
   audit?: boolean | Prisma.PieceJointe$auditArgs<ExtArgs>
   pointAudit?: boolean | Prisma.PieceJointe$pointAuditArgs<ExtArgs>
   actionPoint?: boolean | Prisma.PieceJointe$actionPointArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.PieceJointe$pointFraudeArgs<ExtArgs>
 }, ExtArgs["result"]["pieceJointe"]>
 
 export type PieceJointeSelectScalar = {
@@ -1167,27 +972,23 @@ export type PieceJointeSelectScalar = {
   auditId?: boolean
   pointAuditId?: boolean
   actionPointId?: boolean
-  pointFraudeId?: boolean
 }
 
-export type PieceJointeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nomFichier" | "urlFichier" | "typeMime" | "taille" | "televerseePar" | "dateAjout" | "auditId" | "pointAuditId" | "actionPointId" | "pointFraudeId", ExtArgs["result"]["pieceJointe"]>
+export type PieceJointeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nomFichier" | "urlFichier" | "typeMime" | "taille" | "televerseePar" | "dateAjout" | "auditId" | "pointAuditId" | "actionPointId", ExtArgs["result"]["pieceJointe"]>
 export type PieceJointeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   audit?: boolean | Prisma.PieceJointe$auditArgs<ExtArgs>
   pointAudit?: boolean | Prisma.PieceJointe$pointAuditArgs<ExtArgs>
   actionPoint?: boolean | Prisma.PieceJointe$actionPointArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.PieceJointe$pointFraudeArgs<ExtArgs>
 }
 export type PieceJointeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   audit?: boolean | Prisma.PieceJointe$auditArgs<ExtArgs>
   pointAudit?: boolean | Prisma.PieceJointe$pointAuditArgs<ExtArgs>
   actionPoint?: boolean | Prisma.PieceJointe$actionPointArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.PieceJointe$pointFraudeArgs<ExtArgs>
 }
 export type PieceJointeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   audit?: boolean | Prisma.PieceJointe$auditArgs<ExtArgs>
   pointAudit?: boolean | Prisma.PieceJointe$pointAuditArgs<ExtArgs>
   actionPoint?: boolean | Prisma.PieceJointe$actionPointArgs<ExtArgs>
-  pointFraude?: boolean | Prisma.PieceJointe$pointFraudeArgs<ExtArgs>
 }
 
 export type $PieceJointePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1196,7 +997,6 @@ export type $PieceJointePayload<ExtArgs extends runtime.Types.Extensions.Interna
     audit: Prisma.$AuditPayload<ExtArgs> | null
     pointAudit: Prisma.$PointAuditPayload<ExtArgs> | null
     actionPoint: Prisma.$ActionPointPayload<ExtArgs> | null
-    pointFraude: Prisma.$PointFraudePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1209,7 +1009,6 @@ export type $PieceJointePayload<ExtArgs extends runtime.Types.Extensions.Interna
     auditId: string | null
     pointAuditId: string | null
     actionPointId: string | null
-    pointFraudeId: string | null
   }, ExtArgs["result"]["pieceJointe"]>
   composites: {}
 }
@@ -1607,7 +1406,6 @@ export interface Prisma__PieceJointeClient<T, Null = never, ExtArgs extends runt
   audit<T extends Prisma.PieceJointe$auditArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PieceJointe$auditArgs<ExtArgs>>): Prisma.Prisma__AuditClient<runtime.Types.Result.GetResult<Prisma.$AuditPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   pointAudit<T extends Prisma.PieceJointe$pointAuditArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PieceJointe$pointAuditArgs<ExtArgs>>): Prisma.Prisma__PointAuditClient<runtime.Types.Result.GetResult<Prisma.$PointAuditPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   actionPoint<T extends Prisma.PieceJointe$actionPointArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PieceJointe$actionPointArgs<ExtArgs>>): Prisma.Prisma__ActionPointClient<runtime.Types.Result.GetResult<Prisma.$ActionPointPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  pointFraude<T extends Prisma.PieceJointe$pointFraudeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PieceJointe$pointFraudeArgs<ExtArgs>>): Prisma.Prisma__PointFraudeClient<runtime.Types.Result.GetResult<Prisma.$PointFraudePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1647,7 +1445,6 @@ export interface PieceJointeFieldRefs {
   readonly auditId: Prisma.FieldRef<"PieceJointe", 'String'>
   readonly pointAuditId: Prisma.FieldRef<"PieceJointe", 'String'>
   readonly actionPointId: Prisma.FieldRef<"PieceJointe", 'String'>
-  readonly pointFraudeId: Prisma.FieldRef<"PieceJointe", 'String'>
 }
     
 
@@ -2098,25 +1895,6 @@ export type PieceJointe$actionPointArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.ActionPointInclude<ExtArgs> | null
   where?: Prisma.ActionPointWhereInput
-}
-
-/**
- * PieceJointe.pointFraude
- */
-export type PieceJointe$pointFraudeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PointFraude
-   */
-  select?: Prisma.PointFraudeSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PointFraude
-   */
-  omit?: Prisma.PointFraudeOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PointFraudeInclude<ExtArgs> | null
-  where?: Prisma.PointFraudeWhereInput
 }
 
 /**

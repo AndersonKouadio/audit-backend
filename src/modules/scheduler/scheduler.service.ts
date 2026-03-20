@@ -2,17 +2,25 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { StatutPoint } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { EmailService } from 'src/modules/mailer/email.service';
+import { NotificationsService } from 'src/modules/notifications/notifications.service';
+import { ParametresSystemeService } from 'src/modules/parametres-systeme/parametres-systeme.service';
 
 @Injectable()
 export class SchedulerService {
   private readonly logger = new Logger(SchedulerService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+    private readonly notificationsService: NotificationsService,
+    private readonly parametresService: ParametresSystemeService,
+  ) {}
 
-  /**
-   * Chaque lundi à 8h00 :
-   * Retour automatique CPF → OPEN pour les points en attente depuis > 30 jours
-   */
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CRON 1 : Retour automatique CPF → OUVERT (lundi 8h00)
+  // ═══════════════════════════════════════════════════════════════════════════
+
   @Cron('0 8 * * 1', { name: 'cpf-auto-revert', timeZone: 'Africa/Abidjan' })
   async handleCpfAutoRevert() {
     this.logger.log('🔄 Cron CPF → OPEN : démarrage...');
@@ -20,7 +28,6 @@ export class SchedulerService {
     const ilYa30Jours = new Date();
     ilYa30Jours.setDate(ilYa30Jours.getDate() - 30);
 
-    // Trouver tous les points EN_ATTENTE_VALIDATION depuis plus de 30 jours
     const pointsExpires = await this.prisma.pointAudit.findMany({
       where: {
         statut: StatutPoint.EN_ATTENTE_VALIDATION,
@@ -36,19 +43,15 @@ export class SchedulerService {
 
     this.logger.log(`⚠️ ${pointsExpires.length} point(s) à réinitialiser.`);
 
-    // Transaction : mettre à jour + créer historique + créer notifications
     await this.prisma.$transaction(async (tx) => {
       for (const point of pointsExpires) {
         // 1. Remettre au statut OUVERT
         await tx.pointAudit.update({
           where: { id: point.id },
-          data: {
-            statut: StatutPoint.OUVERT,
-            dateCPF: null,
-          },
+          data: { statut: StatutPoint.OUVERT, dateCPF: null },
         });
 
-        // 2. Créer une entrée d'historique
+        // 2. Historique
         await tx.historiqueStatut.create({
           data: {
             typeEntite: 'POINT_AUDIT',
@@ -60,34 +63,50 @@ export class SchedulerService {
             pointAuditId: point.id,
           },
         });
-
-        // 3. Créer une notification
-        await tx.notification.create({
-          data: {
-            destinataire: 'team-audit@organisation.ci',
-            sujet: `Retour automatique — Point ${point.reference}`,
-            message: `Le point d'audit ${point.reference} a été automatiquement remis au statut OUVERT après 30 jours sans validation.`,
-            type: 'RETOUR_AUTO_CPF',
-            statut: 'EN_ATTENTE',
-          },
-        });
       }
+    });
+
+    // 3. Email et notification vers l'équipe Audit
+    const teamEmail = process.env.AUDIT_TEAM_EMAIL ?? 'team-audit@organisation.ci';
+    const emailHtml = this.emailService.buildRetourCpfTemplate({
+      reference: pointsExpires.map((p) => p.reference).join(', '),
+    });
+
+    await this.emailService.sendEmail({
+      to: teamEmail,
+      subject: `[AUTO] ${pointsExpires.length} point(s) remis à OUVERT après 30 jours CPF`,
+      html: emailHtml,
+    });
+
+    // Notification in-app pour l'équipe
+    await this.notificationsService.creer({
+      destinataire: teamEmail,
+      sujet: `[AUTO] ${pointsExpires.length} point(s) remis à OUVERT`,
+      message: `${pointsExpires.length} point(s) ont été automatiquement remis au statut OUVERT : ${pointsExpires.map((p) => p.reference).join(', ')}`,
+      type: 'RETOUR_AUTO_CPF',
+      entiteType: 'POINT_AUDIT',
     });
 
     this.logger.log(`✅ ${pointsExpires.length} point(s) remis à OUVERT.`);
   }
 
-  /**
-   * Chaque lundi à 9h00 :
-   * Envoi des relances dunning pour les points en retard
-   */
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CRON 2 : Relances Dunning (lundi 9h00)
+  // ═══════════════════════════════════════════════════════════════════════════
+
   @Cron('0 9 * * 1', { name: 'dunning-relances', timeZone: 'Africa/Abidjan' })
   async handleDunningRelances() {
+    // Vérifier que le dunning est activé dans les paramètres système
+    const params = await this.parametresService.obtenir();
+    if (!params.dunningActif) {
+      this.logger.log('⏭️  Cron Dunning : désactivé dans les paramètres système. Ignoré.');
+      return;
+    }
+
     this.logger.log('📧 Cron Dunning : démarrage...');
 
     const maintenant = new Date();
 
-    // Trouver les planifications actives dont le nextRun est passé
     const planifications = await this.prisma.planificationDunning.findMany({
       where: {
         actif: true,
@@ -96,7 +115,6 @@ export class SchedulerService {
     });
 
     for (const plan of planifications) {
-      // Points en retard concernés
       const pointsEnRetard = await this.prisma.pointAudit.findMany({
         where: {
           statut: StatutPoint.OUVERT,
@@ -104,29 +122,48 @@ export class SchedulerService {
         },
         include: {
           departement: { select: { nom: true, code: true } },
-          createur: { select: { email: true, nom: true, prenom: true } },
+          createur: { select: { id: true, email: true, nom: true, prenom: true } },
         },
         take: 50,
       });
 
-      if (pointsEnRetard.length > 0) {
-        // Créer les notifications de relance
-        await this.prisma.$transaction(
-          pointsEnRetard.map((point) =>
-            this.prisma.notification.create({
-              data: {
-                destinataire: point.createur.email,
-                sujet: `[RELANCE] Point d'audit en retard — ${point.reference}`,
-                message: `Le point d'audit "${point.titre}" (${point.reference}) est en retard. Échéance initiale : ${point.dateEcheanceActuelle.toLocaleDateString('fr-FR')}. Merci de mettre à jour le statut.`,
-                type: 'RELANCE_DUNNING',
-                statut: 'EN_ATTENTE',
-              },
-            }),
-          ),
-        );
+      let relancesEnvoyees = 0;
+
+      for (const point of pointsEnRetard) {
+        const emailHtml = this.emailService.buildRelanceTemplate({
+          reference: point.reference,
+          titre: point.titre,
+          dateEcheance: point.dateEcheanceActuelle.toLocaleDateString('fr-FR'),
+          destinataire: point.createur.email,
+        });
+
+        const ok = await this.emailService.sendEmail({
+          to: point.createur.email,
+          subject: `[RELANCE] Point d'audit en retard — ${point.reference}`,
+          html: emailHtml,
+        });
+
+        if (ok) relancesEnvoyees++;
+
+        // Notification in-app liée à l'utilisateur
+        await this.notificationsService.creer({
+          destinataire: point.createur.email,
+          sujet: `[RELANCE] Point d'audit en retard — ${point.reference}`,
+          message: `Le constat "${point.titre}" (${point.reference}) est en retard. Échéance dépassée : ${point.dateEcheanceActuelle.toLocaleDateString('fr-FR')}.`,
+          type: 'RELANCE_DUNNING',
+          utilisateurId: point.createur.id,
+          entiteType: 'POINT_AUDIT',
+          entiteId: point.id,
+        });
+
+        // Incrémenter le compteur de relances
+        await this.prisma.pointAudit.update({
+          where: { id: point.id },
+          data: { nbRelances: { increment: 1 } },
+        });
       }
 
-      // Calculer la prochaine exécution
+      // Prochaine exécution
       const prochainRun = new Date(maintenant);
       if (plan.frequence === 'HEBDOMADAIRE') {
         prochainRun.setDate(prochainRun.getDate() + 7);
@@ -140,14 +177,15 @@ export class SchedulerService {
       });
 
       this.logger.log(
-        `✅ Dunning plan ${plan.id} : ${pointsEnRetard.length} relances créées.`,
+        `✅ Dunning plan ${plan.id} : ${relancesEnvoyees}/${pointsEnRetard.length} relances envoyées.`,
       );
     }
   }
 
-  /**
-   * Chaque jour à minuit : mise à jour de l'ageing des points
-   */
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CRON 3 : Mise à jour de l'ageing (tous les jours à minuit)
+  // ═══════════════════════════════════════════════════════════════════════════
+
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { name: 'ageing-update', timeZone: 'Africa/Abidjan' })
   async handleAgeingUpdate() {
     const maintenant = new Date();
@@ -163,7 +201,6 @@ export class SchedulerService {
     for (const point of pointsOuverts) {
       const diffMs = maintenant.getTime() - point.dateEcheanceActuelle.getTime();
       const ageing = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
       await this.prisma.pointAudit.update({
         where: { id: point.id },
         data: { ageing },
@@ -171,5 +208,78 @@ export class SchedulerService {
     }
 
     this.logger.log(`✅ Ageing mis à jour pour ${pointsOuverts.length} point(s).`);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CRON 4 : Traiter la file d'attente email (toutes les 15 min)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  @Cron('*/15 * * * *', { name: 'email-queue', timeZone: 'Africa/Abidjan' })
+  async handleEmailQueue() {
+    const { envoyes, erreurs } = await this.notificationsService.traiterFileAttente();
+    if (envoyes > 0 || erreurs > 0) {
+      this.logger.log(`📧 File email : ${envoyes} envoyé(s), ${erreurs} erreur(s).`);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CRON 5 : Résumé quotidien (Daily Digest) — chaque jour à 08h00
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  @Cron('0 8 * * *', { name: 'daily-digest', timeZone: 'Africa/Abidjan' })
+  async handleDailyDigest() {
+    const params = await this.parametresService.obtenir();
+
+    if (!params.resumeQuotidienActif) {
+      this.logger.log('⏭️  Cron Daily Digest : désactivé dans les paramètres système. Ignoré.');
+      return;
+    }
+
+    this.logger.log('📊 Cron Daily Digest : démarrage...');
+
+    const maintenant = new Date();
+
+    // Calculer les KPIs en parallèle
+    const [totalPoints, pointsEnRetard, pointsEnValidation, pointsFermes] = await Promise.all([
+      this.prisma.pointAudit.count(),
+      this.prisma.pointAudit.count({
+        where: {
+          statut: StatutPoint.OUVERT,
+          dateEcheanceActuelle: { lt: maintenant },
+        },
+      }),
+      this.prisma.pointAudit.count({
+        where: { statut: StatutPoint.EN_ATTENTE_VALIDATION },
+      }),
+      this.prisma.pointAudit.count({
+        where: {
+          statut: { in: [StatutPoint.FERME_RESOLU, StatutPoint.FERME_RISQUE_ACCEPTE] },
+        },
+      }),
+    ]);
+
+    const dateLabel = maintenant.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+
+    const teamEmail = process.env.AUDIT_TEAM_EMAIL ?? 'team-audit@organisation.ci';
+    const html = this.emailService.buildDailyDigestTemplate({
+      totalPoints,
+      pointsEnRetard,
+      pointsEnValidation,
+      pointsFermes,
+      date: dateLabel,
+    });
+
+    await this.emailService.sendEmail({
+      to: teamEmail,
+      subject: `[Digest] Résumé quotidien Audit — ${dateLabel}`,
+      html,
+    });
+
+    this.logger.log(`✅ Daily Digest envoyé à ${teamEmail} (${totalPoints} points, ${pointsEnRetard} en retard).`);
   }
 }

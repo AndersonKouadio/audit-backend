@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { TypeActionLog } from 'src/generated/prisma/enums';
 
@@ -9,4 +9,10 @@ export class JournalQueryDto {
   @IsOptional() @IsString() entiteId?: string;
   @IsOptional() @IsString() utilisateurId?: string;
   @IsOptional() @IsEnum(TypeActionLog) action?: TypeActionLog;
+  /** Début de la plage de dates (ISO 8601) */
+  @IsOptional() @IsDateString() dateDebut?: string;
+  /** Fin de la plage de dates (ISO 8601) */
+  @IsOptional() @IsDateString() dateFin?: string;
+  /** Recherche libre sur utilisateurNom ou entiteRef */
+  @IsOptional() @IsString() search?: string;
 }

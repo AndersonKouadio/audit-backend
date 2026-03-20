@@ -38,7 +38,7 @@ export class ExportController {
     @Query('departementId') departementId: string,
     @Res() res: Response,
   ) {
-    const buffer = await this.exportService.exportCasFraude({ statut, departementId });
+    const buffer = await this.exportService.exportCasFraude();
     res.set({
       'Content-Type': XLSX_CONTENT_TYPE,
       'Content-Disposition': `attachment; filename="cas-fraude-${Date.now()}.xlsx"`,
