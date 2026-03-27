@@ -216,6 +216,9 @@ export class DashboardService {
         where: {
           statut: { notIn: ['TERMINE', 'ANNULEE'] as any },
           dateEcheance: { lt: maintenant },
+          ...(departementFilter.departementId
+            ? { pointAudit: { departementId: departementFilter.departementId } }
+            : {}),
         },
         include: {
           pointAudit: { select: { id: true, reference: true } },
