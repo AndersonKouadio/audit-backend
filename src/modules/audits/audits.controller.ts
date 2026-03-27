@@ -6,6 +6,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 import { RoleUtilisateur } from 'src/generated/prisma/enums';
 import { UpdateAuditDto } from './dto/update-audit.dto';
 
@@ -24,12 +25,15 @@ export class AuditsController {
   }
 
   @Get()
+  @Public()
   @ApiOperation({ summary: 'Liste paginée des audits avec filtres' })
   findAll(@Query() query: AuditQueryDto) {
     return this.auditsService.findAll(query);
   }
+
   @Get(':id')
-  @ApiOperation({ summary: 'Liste paginée des audits avec filtres' })
+  @Public()
+  @ApiOperation({ summary: "Détails d'une mission d'audit" })
   findOne(@Param('id') id: string) {
     return this.auditsService.findOne(id);
   }

@@ -17,6 +17,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody, ApiProperty } from '@nes
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 import { RoleUtilisateur, StatutPoint } from 'src/generated/prisma/enums';
 import { UpdatePointsAuditDto } from './dto/update-points-audit.dto';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
@@ -79,6 +80,7 @@ export class PointsAuditController {
   // ── Liste paginée ─────────────────────────────────────────────────────────
 
   @Get()
+  @Public()
   @ApiOperation({ summary: 'Liste paginée des points avec filtres' })
   findAll(@Query() query: PointQueryDto) {
     return this.pointsAuditService.findAll(query);
@@ -87,6 +89,7 @@ export class PointsAuditController {
   // ── Détail ────────────────────────────────────────────────────────────────
 
   @Get(':id')
+  @Public()
   @ApiOperation({ summary: "Détails complets d'un point (avec actions, commentaires, historique)" })
   findOne(@Param('id') id: string) {
     return this.pointsAuditService.findOne(id);

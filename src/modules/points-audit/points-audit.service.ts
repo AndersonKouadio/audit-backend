@@ -90,8 +90,8 @@ export class PointsAuditService {
       );
     }
 
-    // BUG-DATA-003 : Référence unique par mission (F-XXX dans le contexte de la mission)
-    const count = await this.prisma.pointAudit.count({ where: { auditId: dto.auditId } });
+    // Référence globalement unique (contrainte @unique sur le modèle)
+    const count = await this.prisma.pointAudit.count();
     const reference = `F-${(count + 1).toString().padStart(3, '0')}`;
 
     const point = await this.prisma.pointAudit.create({
