@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { StatutPoint, StatutAudit, StatutUtilisateur } from 'src/generated/prisma/enums';
+import { RoleUtilisateur, StatutPoint, StatutAudit, StatutUtilisateur } from 'src/generated/prisma/enums';
+
+// Rôles BU : leurs alertes sont filtrées par département
+const ROLES_BU: string[] = [
+  RoleUtilisateur.RISK_CHAMPION,
+  RoleUtilisateur.MANAGER_METIER,
+  RoleUtilisateur.EMPLOYE_METIER,
+];
 
 @Injectable()
 export class DashboardService {
@@ -164,12 +171,24 @@ export class DashboardService {
       .sort((a, b) => b.tauxCloture - a.tauxCloture);
   }
 
-  async getAlerts(_utilisateurId: string) {
+  async getAlerts(utilisateurId: string, role?: string) {
     const maintenant = new Date();
     const dans7Jours = new Date(maintenant);
     dans7Jours.setDate(dans7Jours.getDate() + 7);
     const ilYa7Jours = new Date(maintenant);
     ilYa7Jours.setDate(ilYa7Jours.getDate() - 7);
+
+    // BUG-DATA-005 : Filtrer par département pour les rôles BU
+    let departementFilter: { departementId?: string } = {};
+    if (role && ROLES_BU.includes(role)) {
+      const utilisateur = await this.prisma.utilisateur.findUnique({
+        where: { id: utilisateurId },
+        select: { departementId: true },
+      });
+      if (utilisateur?.departementId) {
+        departementFilter = { departementId: utilisateur.departementId };
+      }
+    }
 
     const [
       pointsEnRetard,
@@ -179,6 +198,7 @@ export class DashboardService {
     ] = await Promise.all([
       this.prisma.pointAudit.findMany({
         where: {
+          ...departementFilter,
           statut: StatutPoint.OUVERT,
           dateEcheanceActuelle: { lt: maintenant },
         },
@@ -205,6 +225,7 @@ export class DashboardService {
       }),
       this.prisma.pointAudit.findMany({
         where: {
+          ...departementFilter,
           statut: StatutPoint.EN_ATTENTE_VALIDATION,
           updatedAt: { lt: ilYa7Jours },
         },
@@ -220,6 +241,7 @@ export class DashboardService {
       }),
       this.prisma.pointAudit.findMany({
         where: {
+          ...departementFilter,
           statut: StatutPoint.OUVERT,
           dateEcheanceActuelle: {
             gte: maintenant,

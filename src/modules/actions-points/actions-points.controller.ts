@@ -16,6 +16,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 import { RoleUtilisateur } from 'src/generated/prisma/enums';
 
 @ApiTags('Actions Correctives')
@@ -37,6 +38,7 @@ export class ActionsPointsController {
   }
 
   @Get()
+  @Public()
   @ApiOperation({
     summary: 'Lister les actions (par point, responsable ou statut)',
   })

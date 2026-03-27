@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -164,11 +165,29 @@ export class FormulaireRafService {
 
   // ─── Approuver un formulaire RAF ──────────────────────────────────────────
 
-  async approuver(id: string, dto: ApprouverRafDto) {
+  async approuver(id: string, dto: ApprouverRafDto, user?: { role: string; nom: string }) {
     const raf = await this.prisma.formulaireAcceptationRisque.findUnique({
       where: { id },
     });
     if (!raf) throw new NotFoundException('Formulaire RAF introuvable.');
+
+    // Vérification du rôle par niveau d'approbation
+    if (user) {
+      const rolesHod = [RoleUtilisateur.MANAGER_METIER, RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT];
+      const rolesGmCeoComite = [RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT, RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT];
+      const roleMap: Record<string, string[]> = {
+        HOD: rolesHod,
+        GM: rolesGmCeoComite,
+        CEO: rolesGmCeoComite,
+        COMITE: rolesGmCeoComite,
+      };
+      const allowed = roleMap[dto.niveau] ?? [];
+      if (!allowed.includes(user.role as RoleUtilisateur)) {
+        throw new ForbiddenException(
+          `Le niveau d'approbation "${dto.niveau}" requiert l'un des rôles suivants : ${allowed.join(', ')}.`,
+        );
+      }
+    }
 
     const updateData: any = {};
 

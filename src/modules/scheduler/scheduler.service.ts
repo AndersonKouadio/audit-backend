@@ -45,10 +45,15 @@ export class SchedulerService {
 
     await this.prisma.$transaction(async (tx) => {
       for (const point of pointsExpires) {
-        // 1. Remettre au statut OUVERT
+        // 1. Remettre au statut OUVERT + réinitialiser le statut BU
         await tx.pointAudit.update({
           where: { id: point.id },
-          data: { statut: StatutPoint.OUVERT, dateCPF: null },
+          data: {
+            statut: StatutPoint.OUVERT,
+            dateCPF: null,
+            statutBu: StatutPoint.OUVERT,
+            commentaireStatutBu: null,
+          } as any,
         });
 
         // 2. Historique

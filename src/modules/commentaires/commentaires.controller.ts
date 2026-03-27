@@ -2,12 +2,14 @@ import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nes
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Public } from 'src/auth/decorators/public.decorator';
 import { CommentairesService } from './commentaires.service';
 import { CreateCommentaireDto } from './dto/create-commentaire.dto';
 
 @ApiTags('Commentaires')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
+@Public()
 @Controller('commentaires')
 export class CommentairesController {
   constructor(private readonly commentairesService: CommentairesService) {}

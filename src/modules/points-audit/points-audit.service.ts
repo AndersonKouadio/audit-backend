@@ -12,12 +12,13 @@ import { UpdatePointsAuditDto } from './dto/update-points-audit.dto';
 import { PointAudit } from 'src/generated/prisma/client';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import { RoleUtilisateur, StatutPoint, TypeActionLog } from 'src/generated/prisma/enums';
+import { RoleUtilisateur, StatutAudit, StatutPoint, TypeActionLog } from 'src/generated/prisma/enums';
 
 export interface UserContext {
   id: string;
   nom: string;
   role: string;
+  departementId?: string;
 }
 
 // ─── Constantes de rôles ───────────────────────────────────────────────────
@@ -42,6 +43,19 @@ const STATUTS_AUTORISES_BU: StatutPoint[] = [
   StatutPoint.OUVERT,
   StatutPoint.EN_ATTENTE_VALIDATION,
 ];
+
+// Machine d'état : transitions autorisées par statut officiel
+const TRANSITIONS_AUTORISEES: Partial<Record<StatutPoint, StatutPoint[]>> = {
+  [StatutPoint.OUVERT]: [StatutPoint.EN_ATTENTE_VALIDATION, StatutPoint.OBSOLETE],
+  [StatutPoint.EN_ATTENTE_VALIDATION]: [
+    StatutPoint.FERME_RESOLU,
+    StatutPoint.FERME_RISQUE_ACCEPTE,
+    StatutPoint.OUVERT, // rejet CPF par l'auditeur
+  ],
+  [StatutPoint.FERME_RESOLU]: [StatutPoint.OUVERT], // réouverture par Manager uniquement (contrôlé côté controller)
+  [StatutPoint.FERME_RISQUE_ACCEPTE]: [StatutPoint.OUVERT],
+  [StatutPoint.OBSOLETE]: [],
+};
 
 // Libellés lisibles pour les statuts de point d'audit
 const STATUT_POINT_LABELS: Partial<Record<string, string>> = {
@@ -68,7 +82,16 @@ export class PointsAuditService {
     const audit = await this.prisma.audit.findUnique({ where: { id: dto.auditId } });
     if (!audit) throw new NotFoundException("Mission d'audit introuvable.");
 
-    const count = await this.prisma.pointAudit.count();
+    // BUG-BL-005 : Bloquer la création sur une mission PLANIFIE
+    if (audit.statut === StatutAudit.PLANIFIE) {
+      throw new BadRequestException(
+        "Impossible d'ajouter un constat sur une mission au statut PLANIFIE. " +
+        "Démarrez la mission (EN_COURS) avant d'y enregistrer des constats.",
+      );
+    }
+
+    // BUG-DATA-003 : Référence unique par mission (F-XXX dans le contexte de la mission)
+    const count = await this.prisma.pointAudit.count({ where: { auditId: dto.auditId } });
     const reference = `F-${(count + 1).toString().padStart(3, '0')}`;
 
     const point = await this.prisma.pointAudit.create({
@@ -276,6 +299,16 @@ export class PointsAuditService {
     const existing = await this.prisma.pointAudit.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException("Point d'audit introuvable.");
 
+    // Vérifier que le point appartient au département de l'utilisateur BU (RISK_CHAMPION, EMPLOYE_METIER)
+    // MANAGER_METIER a accès à tous les points de son département
+    if (user.departementId && user.role !== RoleUtilisateur.ADMIN) {
+      if (existing.departementId !== user.departementId) {
+        throw new ForbiddenException(
+          "Vous ne pouvez déclarer le statut BU que pour les points de votre département.",
+        );
+      }
+    }
+
     const existingAny = existing as any;
 
     // Enregistrer l'historique si le statutBu change
@@ -330,25 +363,79 @@ export class PointsAuditService {
     const existing = await this.prisma.pointAudit.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException("Point d'audit introuvable.");
 
+    // ── Machine d'état : valider la transition ─────────────────────────────
+    const transitionsAutorisees = TRANSITIONS_AUTORISEES[existing.statut] ?? [];
+    if (statut !== existing.statut && !transitionsAutorisees.includes(statut)) {
+      throw new BadRequestException(
+        `Transition non autorisée : ${existing.statut} → ${statut}. ` +
+        `Transitions possibles : ${transitionsAutorisees.join(', ') || 'aucune'}.`,
+      );
+    }
+
+    // ── BUG-BL-008 : Clôture réservée aux managers audit ──────────────────
+    const ROLES_CLOTURE: string[] = [
+      RoleUtilisateur.ADMIN,
+      RoleUtilisateur.DIRECTEUR_AUDIT,
+      RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
+      RoleUtilisateur.CHEF_MISSION,
+      RoleUtilisateur.AUDITEUR_SENIOR,
+    ];
+    const EST_CLOTURE = statut === StatutPoint.FERME_RESOLU || statut === StatutPoint.FERME_RISQUE_ACCEPTE;
+    if (EST_CLOTURE && !ROLES_CLOTURE.includes(user.role)) {
+      throw new ForbiddenException(
+        "Seuls les auditeurs seniors et supérieurs peuvent clore un point d'audit.",
+      );
+    }
+
+    // ── Validation : FERME_RISQUE_ACCEPTE nécessite un RAF validé ──────────
+    if (statut === StatutPoint.FERME_RISQUE_ACCEPTE) {
+      const rafId = formulaireRisqueId ?? (existing as any).formulaireRisqueId;
+      if (!rafId) {
+        throw new BadRequestException(
+          "Un formulaire RAF validé (formulaireRisqueId) est obligatoire pour clore un point en 'Risque Accepté'.",
+        );
+      }
+      const raf = await this.prisma.formulaireAcceptationRisque.findUnique({ where: { id: rafId } });
+      if (!raf) {
+        throw new BadRequestException('Formulaire RAF introuvable.');
+      }
+      // Vérifier que le RAF est entièrement validé (Comité Audit)
+      if (!raf.validePar_ComiteAudit) {
+        throw new BadRequestException(
+          "Le formulaire RAF doit être validé par le Comité d'Audit avant de pouvoir clore le point en 'Risque Accepté'.",
+        );
+      }
+    }
+
     const data: any = { statut };
 
-    // Auto-dates
+    // ── Auto-dates selon le nouveau statut ─────────────────────────────────
     if (statut === StatutPoint.EN_ATTENTE_VALIDATION && !existing.dateCPF) {
       data.dateCPF = new Date();
     }
-    if (
-      (statut === StatutPoint.FERME_RESOLU || statut === StatutPoint.FERME_RISQUE_ACCEPTE) &&
-      !existing.dateResolution
-    ) {
+    if (statut === StatutPoint.FERME_RESOLU || statut === StatutPoint.FERME_RISQUE_ACCEPTE) {
       data.dateResolution = new Date();
     }
 
-    // Lier le formulaire RAF si fourni (statut FERME_RISQUE_ACCEPTE)
+    // ── Réinitialisation lors de la réouverture ────────────────────────────
+    if (statut === StatutPoint.OUVERT && existing.statut !== StatutPoint.OUVERT) {
+      data.dateResolution = null;
+      data.revidePar = null;
+      data.revueLe = null;
+      // Si on rejette un CPF, remettre le statutBu à OUVERT et effacer le commentaire
+      if ((existing as any).statutBu === StatutPoint.EN_ATTENTE_VALIDATION) {
+        data.statutBu = StatutPoint.OUVERT;
+        data.commentaireStatutBu = null;
+        data.dateCPF = null;
+      }
+    }
+
+    // ── Lier le formulaire RAF ─────────────────────────────────────────────
     if (statut === StatutPoint.FERME_RISQUE_ACCEPTE && formulaireRisqueId) {
       data.formulaireRisqueId = formulaireRisqueId;
     }
 
-    // Revue de clôture (Manager Audit)
+    // ── Revue de clôture (Manager Audit) ───────────────────────────────────
     const ROLES_MANAGER: string[] = [
       RoleUtilisateur.CHEF_MISSION,
       RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,

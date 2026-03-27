@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { RoleUtilisateur } from 'src/generated/prisma/enums';
@@ -34,18 +35,21 @@ export class DepartementsController {
   }
 
   @Get('liste')
+  @Public()
   @ApiOperation({ summary: 'Liste paginée des départements (pour tableaux)' })
   findAllPaginated(@Query() query: DeptQueryDto) {
     return this.departementsService.findAllPaginated(query);
   }
 
   @Get('arbre')
+  @Public()
   @ApiOperation({ summary: 'Organigramme complet (vue hiérarchique)' })
   findTree() {
     return this.departementsService.findAllTree();
   }
 
   @Get(':id')
+  @Public()
   @ApiOperation({ summary: "Détails d'un département" })
   findOne(@Param('id') id: string) {
     return this.departementsService.findOne(id);
