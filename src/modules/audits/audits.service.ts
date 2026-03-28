@@ -73,6 +73,7 @@ export class AuditsService {
       statut,
       annee,
       departementId,
+      actif,
     } = query;
     const skip = (page - 1) * limit;
 
@@ -90,6 +91,7 @@ export class AuditsService {
         statut ? { statut } : {},
         annee ? { anneeFiscale: annee } : {},
         departementId ? { departementId } : {},
+        actif ? { statut: { notIn: ['CLOTURE', 'ARCHIVE'] } } : {},
       ],
     };
 
