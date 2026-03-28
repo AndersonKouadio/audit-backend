@@ -40,6 +40,14 @@ RUN bunx prisma generate
 # Copy built application
 COPY --from=builder /app/dist ./dist
 
+# Prisma config pour les migrations en production
+RUN echo 'const { defineConfig, env } = require("prisma/config");\
+module.exports = defineConfig({\
+  schema: "prisma/schema.prisma",\
+  migrations: { seed: "node dist/prisma/seed.js" },\
+  datasource: { url: env("DATABASE_URL") },\
+});' > prisma.config.js
+
 # Create uploads directory
 RUN mkdir -p /app/uploads
 
