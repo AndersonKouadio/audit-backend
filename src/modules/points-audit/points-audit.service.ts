@@ -121,6 +121,43 @@ export class PointsAuditService {
       });
     }
 
+    // Notifier le Risk Champion + Manager du département concerné par le point
+    try {
+      const dept = await this.prisma.departement.findUnique({
+        where: { id: point.departementId },
+        include: {
+          riskChampion: { select: { id: true, email: true } },
+          employes: {
+            where: { role: RoleUtilisateur.MANAGER_METIER },
+            select: { id: true, email: true },
+          },
+        },
+      });
+
+      const destinataires = new Map<string, { id: string; email: string }>();
+      if (dept?.riskChampion) {
+        destinataires.set(dept.riskChampion.id, dept.riskChampion);
+      }
+      for (const m of dept?.employes ?? []) {
+        destinataires.set(m.id, m);
+      }
+
+      for (const dest of destinataires.values()) {
+        await this.notificationsService.creer({
+          destinataire: dest.email,
+          utilisateurId: dest.id,
+          sujet: `[NOUVEAU CONSTAT] ${point.reference} - ${point.titre}`,
+          message: `Un nouveau constat d'audit (${point.reference}) a été créé et concerne votre département. Veuillez consulter le détail et planifier les actions correctives.`,
+          type: 'NOUVEAU_POINT',
+          entiteType: 'POINT_AUDIT',
+          entiteId: point.id,
+        });
+      }
+    } catch (err) {
+      // Best-effort : la création réussit même si les notifs échouent
+      console.error('[points-audit] Échec notif création point:', err);
+    }
+
     return point;
   }
 

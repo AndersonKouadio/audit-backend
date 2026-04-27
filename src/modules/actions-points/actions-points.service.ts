@@ -11,6 +11,7 @@ import {
   ROLES_AUDIT_SENIOR_PLUS,
 } from 'src/auth/constants/roles-matrix';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 export interface UserContext {
   id: string;
@@ -24,6 +25,7 @@ export class ActionsPointsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly journalService: JournalAuditService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(dto: CreateActionPointDto, user?: UserContext) {
@@ -54,6 +56,25 @@ export class ActionsPointsService {
         entiteId: action.id,
         entiteRef: action.description?.slice(0, 80) ?? action.id,
       });
+    }
+
+    // Notifier le responsable assigné de cette action
+    try {
+      if (action.responsable?.email) {
+        await this.notificationsService.creer({
+          destinataire: action.responsable.email,
+          utilisateurId: action.responsableId,
+          sujet: `[ACTION ASSIGNÉE] ${action.description?.slice(0, 60)}`,
+          message: `Une action corrective vous a été assignée. Échéance : ${new Date(
+            action.dateEcheance,
+          ).toLocaleDateString('fr-FR')}.`,
+          type: 'ACTION_ASSIGNEE',
+          entiteType: 'ACTION_POINT',
+          entiteId: action.id,
+        });
+      }
+    } catch (err) {
+      console.error('[actions-points] Échec notif assignation action:', err);
     }
 
     return action;

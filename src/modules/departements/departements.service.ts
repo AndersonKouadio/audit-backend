@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateDepartementDto } from './dto/create-departement.dto';
@@ -28,6 +29,14 @@ export class DepartementsService {
       });
       if (!parent)
         throw new NotFoundException('Département parent introuvable.');
+    }
+
+    if (dto.riskChampionId) {
+      const champion = await this.prisma.utilisateur.findUnique({
+        where: { id: dto.riskChampionId },
+      });
+      if (!champion)
+        throw new NotFoundException('Risk Champion (utilisateur) introuvable.');
     }
 
     return this.prisma.departement.create({ data: dto });
@@ -122,6 +131,14 @@ export class DepartementsService {
   }
 
   async update(id: string, dto: UpdateDepartementDto) {
+    if (dto.riskChampionId) {
+      const champion = await this.prisma.utilisateur.findUnique({
+        where: { id: dto.riskChampionId },
+      });
+      if (!champion)
+        throw new NotFoundException('Risk Champion (utilisateur) introuvable.');
+    }
+
     return this.prisma.departement.update({
       where: { id },
       data: dto,
@@ -129,8 +146,32 @@ export class DepartementsService {
   }
 
   async remove(id: string) {
-    // Attention : On ne peut pas supprimer s'il y a des enfants ou des utilisateurs
-    // Prisma gère ça via les contraintes, mais un try/catch propre serait mieux ici
-    return this.prisma.departement.delete({ where: { id } });
+    const dept = await this.prisma.departement.findUnique({
+      where: { id },
+      include: {
+        _count: { select: { employes: true, sousDepartements: true } },
+      },
+    });
+    if (!dept) throw new NotFoundException(`Département #${id} introuvable`);
+
+    if (dept._count.sousDepartements > 0) {
+      throw new BadRequestException(
+        'Impossible de supprimer : ce département a des sous-départements. Supprimez-les d\'abord.',
+      );
+    }
+
+    if (dept._count.employes > 0) {
+      throw new BadRequestException(
+        `Impossible de supprimer : ${dept._count.employes} utilisateur(s) sont rattaché(s) à ce département.`,
+      );
+    }
+
+    try {
+      return await this.prisma.departement.delete({ where: { id } });
+    } catch (err) {
+      throw new BadRequestException(
+        `Suppression impossible : contraintes en base (${(err as Error).message}).`,
+      );
+    }
   }
 }
