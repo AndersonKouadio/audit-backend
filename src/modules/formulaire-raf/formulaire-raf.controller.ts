@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -132,5 +133,22 @@ export class FormulaireRafController {
     @Param('pointAuditId') pointAuditId: string,
   ) {
     return this.rafService.lierPointAudit(id, pointAuditId);
+  }
+
+  // ── Annuler / supprimer un formulaire RAF ─────────────────────────────────
+
+  @Delete(':id')
+  @Roles(
+    RoleUtilisateur.ADMIN,
+    RoleUtilisateur.DIRECTEUR_AUDIT,
+  )
+  @ApiOperation({
+    summary: 'Annuler un formulaire RAF',
+    description:
+      "Suppression réservée à l'ADMIN ou DIRECTEUR_AUDIT. " +
+      "Un RAF déjà validé (Comité d'Audit) ne peut pas être supprimé.",
+  })
+  remove(@Req() req, @Param('id') id: string) {
+    return this.rafService.remove(id, req.user);
   }
 }

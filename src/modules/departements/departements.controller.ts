@@ -11,9 +11,9 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Public } from 'src/auth/decorators/public.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { ROLES_LECTURE_GLOBALE } from 'src/auth/constants/roles-matrix';
 import { RoleUtilisateur } from 'src/generated/prisma/enums';
 import { DepartementsService } from './departements.service';
 import { CreateDepartementDto } from './dto/create-departement.dto';
@@ -28,35 +28,43 @@ export class DepartementsController {
   constructor(private readonly departementsService: DepartementsService) {}
 
   @Post()
-  @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT)
+  @Roles(
+    RoleUtilisateur.ADMIN,
+    RoleUtilisateur.DIRECTEUR_AUDIT,
+    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
+  )
   @ApiOperation({ summary: 'Créer un nouveau département' })
   create(@Body() createDepartementDto: CreateDepartementDto) {
     return this.departementsService.create(createDepartementDto);
   }
 
   @Get('liste')
-  @Public()
+  @Roles(...ROLES_LECTURE_GLOBALE)
   @ApiOperation({ summary: 'Liste paginée des départements (pour tableaux)' })
   findAllPaginated(@Query() query: DeptQueryDto) {
     return this.departementsService.findAllPaginated(query);
   }
 
   @Get('arbre')
-  @Public()
+  @Roles(...ROLES_LECTURE_GLOBALE)
   @ApiOperation({ summary: 'Organigramme complet (vue hiérarchique)' })
   findTree() {
     return this.departementsService.findAllTree();
   }
 
   @Get(':id')
-  @Public()
+  @Roles(...ROLES_LECTURE_GLOBALE)
   @ApiOperation({ summary: "Détails d'un département" })
   findOne(@Param('id') id: string) {
     return this.departementsService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles(RoleUtilisateur.ADMIN)
+  @Roles(
+    RoleUtilisateur.ADMIN,
+    RoleUtilisateur.DIRECTEUR_AUDIT,
+    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
+  )
   @ApiOperation({ summary: 'Modifier un département' })
   update(
     @Param('id') id: string,
@@ -66,7 +74,7 @@ export class DepartementsController {
   }
 
   @Delete(':id')
-  @Roles(RoleUtilisateur.ADMIN)
+  @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT)
   @ApiOperation({ summary: 'Supprimer un département' })
   remove(@Param('id') id: string) {
     return this.departementsService.remove(id);

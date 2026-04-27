@@ -33,8 +33,8 @@ export class ActionsPointsController {
   @Post()
   @Roles(...ROLES_AUDIT_SENIOR_PLUS)
   @ApiOperation({ summary: 'Assigner une nouvelle action corrective' })
-  create(@Body() dto: CreateActionPointDto) {
-    return this.actionsPointsService.create(dto);
+  create(@Req() req, @Body() dto: CreateActionPointDto) {
+    return this.actionsPointsService.create(dto, req.user);
   }
 
   @Get()
@@ -73,7 +73,7 @@ export class ActionsPointsController {
     RoleUtilisateur.AUDITEUR_SENIOR,
   )
   @ApiOperation({ summary: 'Supprimer une action corrective' })
-  remove(@Param('id') id: string) {
-    return this.actionsPointsService.remove(id);
+  remove(@Req() req, @Param('id') id: string) {
+    return this.actionsPointsService.remove(id, req.user);
   }
 }

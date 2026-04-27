@@ -36,6 +36,16 @@ export class SetupOrganisationDto {
   @IsString()
   adresse?: string;
 
+  @ApiProperty({ example: 'https://sentinel.com', required: false })
+  @IsOptional()
+  @IsString()
+  siteWeb?: string;
+
+  @ApiProperty({ example: '/uploads/logo-xxx.png', required: false })
+  @IsOptional()
+  @IsString()
+  logoUrl?: string;
+
   // Permet de créer les départements de base (Audit, IT, RH...) lors du setup
   @ApiProperty({ type: [CreateDepartementInitialDto] })
   @IsOptional()

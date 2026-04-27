@@ -3,13 +3,14 @@ import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateActionPointDto } from './dto/create-actions-point.dto';
 import { UpdateActionPointDto } from './dto/update-actions-point.dto';
-import { RoleUtilisateur } from 'src/generated/prisma/enums';
+import { RoleUtilisateur, TypeActionLog } from 'src/generated/prisma/enums';
 import {
   isPrivilegedRole,
   isBURole,
   isAuditTeamRole,
   ROLES_AUDIT_SENIOR_PLUS,
 } from 'src/auth/constants/roles-matrix';
+import { JournalAuditService } from '../journal-audit/journal-audit.service';
 
 export interface UserContext {
   id: string;
@@ -20,15 +21,18 @@ export interface UserContext {
 
 @Injectable()
 export class ActionsPointsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly journalService: JournalAuditService,
+  ) {}
 
-  async create(dto: CreateActionPointDto) {
+  async create(dto: CreateActionPointDto, user?: UserContext) {
     const point = await this.prisma.pointAudit.findUnique({
       where: { id: dto.pointAuditId },
     });
     if (!point) throw new NotFoundException("Point d'audit introuvable.");
 
-    return this.prisma.actionPoint.create({
+    const action = await this.prisma.actionPoint.create({
       data: {
         ...dto,
         statut: 'A_FAIRE',
@@ -39,6 +43,20 @@ export class ActionsPointsService {
         responsable: { select: { nom: true, prenom: true, email: true } },
       },
     });
+
+    if (user) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role as string,
+        action: TypeActionLog.CREATION,
+        entiteType: 'ACTION_POINT',
+        entiteId: action.id,
+        entiteRef: action.description?.slice(0, 80) ?? action.id,
+      });
+    }
+
+    return action;
   }
 
   async findAll(query: any, user?: UserContext): Promise<PaginationResponseDto<any>> {
@@ -171,18 +189,47 @@ export class ActionsPointsService {
       dto.statut = 'EN_COURS';
     }
 
-    return this.prisma.actionPoint.update({
+    const updated = await this.prisma.actionPoint.update({
       where: { id },
       data: {
         ...dto,
         ...(dto.dateEcheance && { dateEcheance: new Date(dto.dateEcheance) }),
       },
     });
+
+    if (user) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role as string,
+        action: TypeActionLog.MODIFICATION,
+        entiteType: 'ACTION_POINT',
+        entiteId: id,
+        entiteRef: updated.description?.slice(0, 80) ?? updated.id,
+        details: { champs: Object.keys(dto) },
+      });
+    }
+
+    return updated;
   }
 
-  async remove(id: string) {
+  async remove(id: string, user?: UserContext) {
     const existing = await this.prisma.actionPoint.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException('Action introuvable.');
-    return this.prisma.actionPoint.delete({ where: { id } });
+    const result = await this.prisma.actionPoint.delete({ where: { id } });
+
+    if (user) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role as string,
+        action: TypeActionLog.SUPPRESSION,
+        entiteType: 'ACTION_POINT',
+        entiteId: id,
+        entiteRef: existing.description?.slice(0, 80) ?? existing.id,
+      });
+    }
+
+    return result;
   }
 }

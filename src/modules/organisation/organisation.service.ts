@@ -33,7 +33,8 @@ export class OrganisationService {
           nom: dto.nom,
           matricule: dto.matricule,
           adresse: dto.adresse,
-          // logoUrl: dto,
+          siteWeb: dto.siteWeb,
+          logoUrl: dto.logoUrl,
           estConfiguree: true,
         },
       });
@@ -67,7 +68,8 @@ export class OrganisationService {
         nom: dto.nom,
         matricule: dto.matricule,
         adresse: dto.adresse,
-        // logoUrl: dto,
+        siteWeb: dto.siteWeb,
+        logoUrl: dto.logoUrl,
         estConfiguree: true,
       },
     });

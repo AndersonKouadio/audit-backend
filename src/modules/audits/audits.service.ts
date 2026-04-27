@@ -5,12 +5,21 @@ import { AuditQueryDto } from './dto/audit-query.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { UpdateAuditDto } from './dto/update-audit.dto';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
-import { TypeActionLog, RoleUtilisateur } from 'src/generated/prisma/enums';
+import { TypeActionLog, RoleUtilisateur, StatutAudit } from 'src/generated/prisma/enums';
 import {
   isPrivilegedRole,
   isBURole,
   isAuditTeamRole,
 } from 'src/auth/constants/roles-matrix';
+
+// Machine d'état des transitions de statut audit
+const TRANSITIONS_AUDIT: Partial<Record<StatutAudit, StatutAudit[]>> = {
+  [StatutAudit.PLANIFIE]: [StatutAudit.EN_COURS],
+  [StatutAudit.EN_COURS]: [StatutAudit.PUBLIE, StatutAudit.PLANIFIE],
+  [StatutAudit.PUBLIE]: [StatutAudit.CLOTURE],
+  [StatutAudit.CLOTURE]: [StatutAudit.ARCHIVE],
+  [StatutAudit.ARCHIVE]: [], // état final
+};
 
 export interface UserContext {
   id: string;
@@ -192,6 +201,20 @@ export class AuditsService {
   }
 
   async update(id: string, dto: UpdateAuditDto, user?: UserContext) {
+    const existing = await this.prisma.audit.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException(`Audit ${id} introuvable`);
+
+    // ---- VALIDATION DES TRANSITIONS DE STATUT ----
+    if (dto.statut && dto.statut !== existing.statut) {
+      const transitions = TRANSITIONS_AUDIT[existing.statut as StatutAudit] ?? [];
+      if (!transitions.includes(dto.statut as StatutAudit)) {
+        throw new ForbiddenException(
+          `Transition de statut invalide : ${existing.statut} → ${dto.statut}. ` +
+            `Transitions autorisées : ${transitions.join(', ') || '(aucune)'}.`,
+        );
+      }
+    }
+
     const { equipeIds, ...data } = dto;
     const audit = await this.prisma.audit.update({
       where: { id },
@@ -240,5 +263,62 @@ export class AuditsService {
     }
 
     return result;
+  }
+
+  // ─── Gestion de l'équipe ──────────────────────────────────────────────────
+
+  async addTeamMember(auditId: string, userId: string, user?: UserContext) {
+    const audit = await this.prisma.audit.findUnique({ where: { id: auditId } });
+    if (!audit) throw new NotFoundException('Audit introuvable');
+
+    const member = await this.prisma.utilisateur.findUnique({ where: { id: userId } });
+    if (!member) throw new NotFoundException('Utilisateur introuvable');
+
+    const updated = await this.prisma.audit.update({
+      where: { id: auditId },
+      data: { equipe: { connect: { id: userId } } },
+      include: { equipe: { select: { id: true, nom: true, prenom: true, role: true } } },
+    });
+
+    if (user) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role,
+        action: TypeActionLog.MODIFICATION,
+        entiteType: 'AUDIT',
+        entiteId: auditId,
+        entiteRef: audit.reference,
+        details: { action: 'add_team_member', memberId: userId },
+      });
+    }
+
+    return updated;
+  }
+
+  async removeTeamMember(auditId: string, userId: string, user?: UserContext) {
+    const audit = await this.prisma.audit.findUnique({ where: { id: auditId } });
+    if (!audit) throw new NotFoundException('Audit introuvable');
+
+    const updated = await this.prisma.audit.update({
+      where: { id: auditId },
+      data: { equipe: { disconnect: { id: userId } } },
+      include: { equipe: { select: { id: true, nom: true, prenom: true, role: true } } },
+    });
+
+    if (user) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role,
+        action: TypeActionLog.MODIFICATION,
+        entiteType: 'AUDIT',
+        entiteId: auditId,
+        entiteRef: audit.reference,
+        details: { action: 'remove_team_member', memberId: userId },
+      });
+    }
+
+    return updated;
   }
 }

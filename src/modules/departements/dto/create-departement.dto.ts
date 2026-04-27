@@ -24,4 +24,12 @@ export class CreateDepartementDto {
   @IsOptional()
   @IsString()
   parentId?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'ID utilisateur du Risk Champion du département',
+  })
+  @IsOptional()
+  @IsString()
+  riskChampionId?: string;
 }

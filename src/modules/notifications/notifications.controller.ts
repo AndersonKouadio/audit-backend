@@ -10,10 +10,13 @@ import {
 import { NotificationsService } from './notifications.service';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ROLES_AUTHENTIFIE } from 'src/auth/constants/roles-matrix';
 
 @ApiTags('Notifications')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('notifications')
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
@@ -21,6 +24,7 @@ export class NotificationsController {
   // ── Liste des notifications de l'utilisateur connecté ─────────────────────
 
   @Get()
+  @Roles(...ROLES_AUTHENTIFIE)
   @ApiOperation({ summary: "Liste des notifications de l'utilisateur connecté" })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -41,6 +45,7 @@ export class NotificationsController {
   // ── Compteur de notifications non lues ─────────────────────────────────────
 
   @Get('count')
+  @Roles(...ROLES_AUTHENTIFIE)
   @ApiOperation({ summary: 'Nombre de notifications non lues' })
   async countUnread(@Req() req) {
     const count = await this.notificationsService.compterNonLues(req.user.id);
@@ -50,6 +55,7 @@ export class NotificationsController {
   // ── Marquer une notification comme lue ─────────────────────────────────────
 
   @Patch(':id/lue')
+  @Roles(...ROLES_AUTHENTIFIE)
   @ApiOperation({ summary: 'Marquer une notification comme lue' })
   marquerLue(@Req() req, @Param('id') id: string) {
     return this.notificationsService.marquerLue(id, req.user.id);
@@ -58,6 +64,7 @@ export class NotificationsController {
   // ── Marquer toutes les notifications comme lues ─────────────────────────────
 
   @Patch('tout-lire')
+  @Roles(...ROLES_AUTHENTIFIE)
   @ApiOperation({ summary: 'Marquer toutes les notifications comme lues' })
   marquerToutesLues(@Req() req) {
     return this.notificationsService.marquerToutesLues(req.user.id);

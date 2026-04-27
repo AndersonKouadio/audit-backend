@@ -23,6 +23,17 @@ export class SchedulerService {
 
   @Cron('0 8 * * 1', { name: 'cpf-auto-revert', timeZone: 'Africa/Abidjan' })
   async handleCpfAutoRevert() {
+    try {
+      await this._handleCpfAutoRevertImpl();
+    } catch (err) {
+      this.logger.error(
+        `❌ Cron cpf-auto-revert a échoué : ${(err as Error).message}`,
+        (err as Error).stack,
+      );
+    }
+  }
+
+  private async _handleCpfAutoRevertImpl() {
     this.logger.log('🔄 Cron CPF → OPEN : démarrage...');
 
     const ilYa30Jours = new Date();
@@ -101,6 +112,17 @@ export class SchedulerService {
 
   @Cron('0 9 * * 1', { name: 'dunning-relances', timeZone: 'Africa/Abidjan' })
   async handleDunningRelances() {
+    try {
+      await this._handleDunningRelancesImpl();
+    } catch (err) {
+      this.logger.error(
+        `❌ Cron dunning-relances a échoué : ${(err as Error).message}`,
+        (err as Error).stack,
+      );
+    }
+  }
+
+  private async _handleDunningRelancesImpl() {
     // Vérifier que le dunning est activé dans les paramètres système
     const params = await this.parametresService.obtenir();
     if (!params.dunningActif) {
@@ -193,6 +215,17 @@ export class SchedulerService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { name: 'ageing-update', timeZone: 'Africa/Abidjan' })
   async handleAgeingUpdate() {
+    try {
+      await this._handleAgeingUpdateImpl();
+    } catch (err) {
+      this.logger.error(
+        `❌ Cron ageing-update a échoué : ${(err as Error).message}`,
+        (err as Error).stack,
+      );
+    }
+  }
+
+  private async _handleAgeingUpdateImpl() {
     const maintenant = new Date();
 
     const pointsOuverts = await this.prisma.pointAudit.findMany({
@@ -221,9 +254,16 @@ export class SchedulerService {
 
   @Cron('*/15 * * * *', { name: 'email-queue', timeZone: 'Africa/Abidjan' })
   async handleEmailQueue() {
-    const { envoyes, erreurs } = await this.notificationsService.traiterFileAttente();
-    if (envoyes > 0 || erreurs > 0) {
-      this.logger.log(`📧 File email : ${envoyes} envoyé(s), ${erreurs} erreur(s).`);
+    try {
+      const { envoyes, erreurs } = await this.notificationsService.traiterFileAttente();
+      if (envoyes > 0 || erreurs > 0) {
+        this.logger.log(`📧 File email : ${envoyes} envoyé(s), ${erreurs} erreur(s).`);
+      }
+    } catch (err) {
+      this.logger.error(
+        `❌ Cron email-queue a échoué : ${(err as Error).message}`,
+        (err as Error).stack,
+      );
     }
   }
 
@@ -233,6 +273,17 @@ export class SchedulerService {
 
   @Cron('0 8 * * *', { name: 'daily-digest', timeZone: 'Africa/Abidjan' })
   async handleDailyDigest() {
+    try {
+      await this._handleDailyDigestImpl();
+    } catch (err) {
+      this.logger.error(
+        `❌ Cron daily-digest a échoué : ${(err as Error).message}`,
+        (err as Error).stack,
+      );
+    }
+  }
+
+  private async _handleDailyDigestImpl() {
     const params = await this.parametresService.obtenir();
 
     if (!params.resumeQuotidienActif) {

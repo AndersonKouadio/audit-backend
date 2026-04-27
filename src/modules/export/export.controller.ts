@@ -4,19 +4,13 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { RoleUtilisateur } from 'src/generated/prisma/enums';
+import {
+  ROLES_EXPORT_OPERATIONNEL,
+  ROLES_EXPORT_SENSIBLE,
+} from 'src/auth/constants/roles-matrix';
 import { ExportService } from './export.service';
 
 const XLSX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-
-const ROLES_EXPORT = [
-  RoleUtilisateur.ADMIN,
-  RoleUtilisateur.DIRECTEUR_AUDIT,
-  RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
-  RoleUtilisateur.CHEF_MISSION,
-  RoleUtilisateur.AUDITEUR_SENIOR,
-  RoleUtilisateur.AUDITEUR_JUNIOR,
-];
 
 @ApiTags('Export Excel')
 @ApiBearerAuth()
@@ -26,7 +20,7 @@ export class ExportController {
   constructor(private readonly exportService: ExportService) {}
 
   @Get('points-audit')
-  @Roles(...ROLES_EXPORT)
+  @Roles(...ROLES_EXPORT_OPERATIONNEL)
   @ApiOperation({ summary: "Exporter les points d'audit en Excel" })
   async exportPointsAudit(
     @Query('auditId') auditId: string,
@@ -44,7 +38,7 @@ export class ExportController {
   }
 
   @Get('cas-fraude')
-  @Roles(...ROLES_EXPORT)
+  @Roles(...ROLES_EXPORT_SENSIBLE)
   @ApiOperation({ summary: 'Exporter les cas de fraude (FRM) en Excel' })
   async exportCasFraude(
     @Query('statut') statut: string,
@@ -61,7 +55,7 @@ export class ExportController {
   }
 
   @Get('ageing')
-  @Roles(...ROLES_EXPORT)
+  @Roles(...ROLES_EXPORT_OPERATIONNEL)
   @ApiOperation({ summary: "Rapport d'ageing des points en retard" })
   async exportAgeing(@Res() res: Response) {
     const buffer = await this.exportService.exportAgeing();
@@ -74,7 +68,7 @@ export class ExportController {
   }
 
   @Get('risques')
-  @Roles(...ROLES_EXPORT)
+  @Roles(...ROLES_EXPORT_SENSIBLE)
   @ApiOperation({ summary: 'Exporter le registre des risques en Excel' })
   async exportRisques(@Res() res: Response) {
     const buffer = await this.exportService.exportRisques();

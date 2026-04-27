@@ -13,7 +13,9 @@ const ROLES_BU: string[] = [
 export class DashboardService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getStats() {
+  // user param accepté pour future granularité (filtrage par scope)
+  // Aujourd'hui : tous les rôles voient les KPIs globaux
+  async getStats(_user?: { id: string; role: string; departementId?: string }) {
     const maintenant = new Date();
     const ilYa6Mois = new Date(maintenant);
     ilYa6Mois.setMonth(ilYa6Mois.getMonth() - 6);

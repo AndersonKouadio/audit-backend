@@ -11,22 +11,27 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import {
+  ROLES_AUTHENTIFIE,
+  ROLES_GESTION_USERS,
+} from 'src/auth/constants/roles-matrix';
 import { RoleUtilisateur } from 'src/generated/prisma/enums';
 
 @ApiTags('Organisation & Setup')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('organisation')
 export class OrganisationController {
   constructor(private readonly organisationService: OrganisationService) {}
 
   @Get()
+  @Roles(...ROLES_AUTHENTIFIE)
   @ApiOperation({ summary: "Récupérer les infos de l'entreprise" })
   getOrganisation() {
     return this.organisationService.getOrganisation();
   }
 
   @Post('setup')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(RoleUtilisateur.ADMIN)
   @ApiOperation({ summary: 'Assistant de configuration initiale (Wizard)' })
   @ApiResponse({
@@ -38,8 +43,7 @@ export class OrganisationController {
   }
 
   @Patch()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(RoleUtilisateur.ADMIN)
+  @Roles(...ROLES_GESTION_USERS)
   @ApiOperation({ summary: 'Mise à jour des infos (Nom, Logo...)' })
   update(@Body() dto: UpdateOrganisationDto) {
     return this.organisationService.update(dto);

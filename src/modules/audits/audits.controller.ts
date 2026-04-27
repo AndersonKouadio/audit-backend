@@ -62,4 +62,28 @@ export class AuditsController {
   remove(@Req() req, @Param('id') id: string) {
     return this.auditsService.remove(id, req.user);
   }
+
+  // ─── Gestion de l'équipe ──────────────────────────────────────────────────
+
+  @Post(':id/equipe/:userId')
+  @Roles(...ROLES_AUDIT_MANAGEMENT)
+  @ApiOperation({ summary: "Ajouter un membre à l'équipe de la mission" })
+  addTeamMember(
+    @Req() req,
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.auditsService.addTeamMember(id, userId, req.user);
+  }
+
+  @Delete(':id/equipe/:userId')
+  @Roles(...ROLES_AUDIT_MANAGEMENT)
+  @ApiOperation({ summary: "Retirer un membre de l'équipe de la mission" })
+  removeTeamMember(
+    @Req() req,
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.auditsService.removeTeamMember(id, userId, req.user);
+  }
 }

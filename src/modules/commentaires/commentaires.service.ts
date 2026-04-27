@@ -1,8 +1,9 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCommentaireDto } from './dto/create-commentaire.dto';
-import { RoleUtilisateur } from 'src/generated/prisma/enums';
+import { RoleUtilisateur, TypeActionLog } from 'src/generated/prisma/enums';
 import { isAuditTeamRole } from 'src/auth/constants/roles-matrix';
+import { JournalAuditService } from '../journal-audit/journal-audit.service';
 
 export interface UserContext {
   id: string;
@@ -12,7 +13,10 @@ export interface UserContext {
 
 @Injectable()
 export class CommentairesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly journalService: JournalAuditService,
+  ) {}
 
   async create(createurId: string, dto: CreateCommentaireDto, user?: UserContext) {
     const { typeEntite, entiteId, texte, estInterne = false } = dto;
@@ -31,7 +35,7 @@ export class CommentairesService {
       relationsEntite.pointFraudeId = entiteId;
     }
 
-    return this.prisma.commentaire.create({
+    const commentaire = await this.prisma.commentaire.create({
       data: {
         typeEntite,
         entiteId,
@@ -41,6 +45,21 @@ export class CommentairesService {
         ...relationsEntite,
       },
     });
+
+    if (user) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role as string,
+        action: TypeActionLog.CREATION,
+        entiteType: 'COMMENTAIRE',
+        entiteId: commentaire.id,
+        entiteRef: `${typeEntite}/${entiteId}`,
+        details: { estInterne: estInterneSafe },
+      });
+    }
+
+    return commentaire;
   }
 
   async findByEntite(typeEntite: string, entiteId: string, user?: UserContext) {
@@ -77,6 +96,20 @@ export class CommentairesService {
       }
     }
 
-    return this.prisma.commentaire.delete({ where: { id } });
+    const result = await this.prisma.commentaire.delete({ where: { id } });
+
+    if (user) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role as string,
+        action: TypeActionLog.SUPPRESSION,
+        entiteType: 'COMMENTAIRE',
+        entiteId: id,
+        entiteRef: `${existing.typeEntite}/${existing.entiteId}`,
+      });
+    }
+
+    return result;
   }
 }

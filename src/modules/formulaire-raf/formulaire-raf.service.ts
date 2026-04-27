@@ -333,4 +333,22 @@ export class FormulaireRafService {
 
     return { ...updated, statutRaf: computeStatutRaf(updated) };
   }
+
+  // ─── Annuler / supprimer un RAF ────────────────────────────────────────────
+
+  async remove(id: string, _user?: { id: string; role: string; nom: string }) {
+    const raf = await this.prisma.formulaireAcceptationRisque.findUnique({
+      where: { id },
+    });
+    if (!raf) throw new NotFoundException('Formulaire RAF introuvable.');
+
+    // Refus si déjà validé par le comité d'audit
+    if (raf.dateValidationFinal) {
+      throw new ForbiddenException(
+        "Ce RAF a déjà été validé par le Comité d'Audit et ne peut plus être supprimé.",
+      );
+    }
+
+    return this.prisma.formulaireAcceptationRisque.delete({ where: { id } });
+  }
 }
