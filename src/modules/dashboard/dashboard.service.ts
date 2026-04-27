@@ -317,6 +317,185 @@ export class DashboardService {
     return alerts;
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PERFORMANCE AUDITEUR W1 vs W2 (cahier des charges)
+  // Tableau auditeur × tranches d'ageing × 2 semaines comparées
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  async getPerformanceWeekly() {
+    const now = new Date();
+    // W1 = semaine en cours, W2 = semaine précédente
+    const startW1 = new Date(now);
+    startW1.setDate(now.getDate() - now.getDay()); // dimanche dernier
+    startW1.setHours(0, 0, 0, 0);
+    const startW2 = new Date(startW1);
+    startW2.setDate(startW2.getDate() - 7);
+
+    const auditeurs = await this.prisma.utilisateur.findMany({
+      where: {
+        statut: StatutUtilisateur.ACTIF,
+        role: {
+          in: [
+            RoleUtilisateur.AUDITEUR_JUNIOR,
+            RoleUtilisateur.AUDITEUR_SENIOR,
+            RoleUtilisateur.CHEF_MISSION,
+            RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
+            RoleUtilisateur.DIRECTEUR_AUDIT,
+          ],
+        },
+      },
+      select: { id: true, nom: true, prenom: true, role: true },
+    });
+
+    const computeForWeek = async (auditorId: string, refDate: Date) => {
+      const [overdue, w90, w90_180, w180_365, w365plus, futureDate, unresolved, completedNotFollow, complete] =
+        await Promise.all([
+          this.prisma.pointAudit.count({
+            where: { createurId: auditorId, dateEcheanceActuelle: { lt: refDate }, statut: StatutPoint.OUVERT },
+          }),
+          this.countAgeingTranche(auditorId, refDate, 0, 90),
+          this.countAgeingTranche(auditorId, refDate, 90, 180),
+          this.countAgeingTranche(auditorId, refDate, 180, 365),
+          this.countAgeingTranche(auditorId, refDate, 365, 99999),
+          this.prisma.pointAudit.count({
+            where: { createurId: auditorId, dateEcheanceActuelle: { gt: refDate } },
+          }),
+          this.prisma.pointAudit.count({
+            where: { createurId: auditorId, statut: { in: [StatutPoint.OUVERT, StatutPoint.EN_ATTENTE_VALIDATION] } },
+          }),
+          this.prisma.pointAudit.count({
+            where: { createurId: auditorId, statut: StatutPoint.EN_ATTENTE_VALIDATION },
+          }),
+          this.prisma.pointAudit.count({
+            where: { createurId: auditorId, statut: { in: [StatutPoint.FERME_RESOLU, StatutPoint.FERME_RISQUE_ACCEPTE] } },
+          }),
+        ]);
+
+      return { overdue, w90, w90_180, w180_365, w365plus, futureDate, unresolved, completedNotFollow, complete };
+    };
+
+    return Promise.all(
+      auditeurs.map(async (a) => {
+        const [w1, w2] = await Promise.all([
+          computeForWeek(a.id, startW1),
+          computeForWeek(a.id, startW2),
+        ]);
+        return {
+          auditeur: { id: a.id, nom: a.nom, prenom: a.prenom, role: a.role },
+          w1,
+          w2,
+        };
+      }),
+    );
+  }
+
+  private async countAgeingTranche(
+    auditorId: string,
+    refDate: Date,
+    daysMin: number,
+    daysMax: number,
+  ): Promise<number> {
+    const minDate = new Date(refDate);
+    minDate.setDate(minDate.getDate() - daysMax);
+    const maxDate = new Date(refDate);
+    maxDate.setDate(maxDate.getDate() - daysMin);
+
+    return this.prisma.pointAudit.count({
+      where: {
+        createurId: auditorId,
+        statut: StatutPoint.OUVERT,
+        dateEcheanceActuelle: { gte: minDate, lt: maxDate },
+      },
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FLASH HEBDOMADAIRE RÉEL (cahier des charges)
+  // Liste des changements de statut sur les 7 derniers jours
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  async getFlashHebdomadaire() {
+    const ilYa7Jours = new Date();
+    ilYa7Jours.setDate(ilYa7Jours.getDate() - 7);
+
+    const changements = await this.prisma.historiqueStatut.findMany({
+      where: {
+        dateModification: { gte: ilYa7Jours },
+        typeEntite: 'POINT_AUDIT',
+      },
+      orderBy: { dateModification: 'desc' },
+      take: 100,
+      include: {
+        pointAudit: {
+          select: {
+            id: true,
+            reference: true,
+            titre: true,
+            departement: { select: { nom: true, code: true } },
+            audit: { select: { reference: true, titre: true } },
+            createur: { select: { nom: true, prenom: true } },
+          },
+        },
+      },
+    });
+
+    return changements.map((c) => ({
+      pointId: c.pointAudit?.id,
+      titre: c.pointAudit?.titre,
+      reference: c.pointAudit?.reference,
+      auditeur: c.pointAudit?.createur
+        ? `${c.pointAudit.createur.prenom} ${c.pointAudit.createur.nom}`
+        : null,
+      direction: c.pointAudit?.departement?.nom,
+      audit: c.pointAudit?.audit?.titre,
+      statutPrecedent: c.statutPrecedent,
+      nouveauStatut: c.nouveauStatut,
+      dateModification: c.dateModification,
+      modifiePar: c.modifiePar,
+      commentaire: c.commentaire,
+    }));
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RAPPORT "RISK ACCEPTED > 1 AN" (cahier des charges)
+  // Points fermés en risque accepté depuis plus d'un an
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  async getRiskAcceptedAnciens() {
+    const ilYa1An = new Date();
+    ilYa1An.setFullYear(ilYa1An.getFullYear() - 1);
+
+    return this.prisma.pointAudit.findMany({
+      where: {
+        statut: StatutPoint.FERME_RISQUE_ACCEPTE,
+        dateResolution: { lt: ilYa1An },
+      },
+      orderBy: { dateResolution: 'asc' },
+      select: {
+        id: true,
+        reference: true,
+        titre: true,
+        description: true,
+        causes: true,
+        consequences: true,
+        recommandation: true,
+        commentaireStatutBu: true,
+        statut: true,
+        dateResolution: true,
+        ageing: true,
+        departement: { select: { nom: true, code: true } },
+        audit: { select: { reference: true, titre: true } },
+        createur: { select: { nom: true, prenom: true } },
+        formulaireRisque: {
+          select: {
+            numero: true,
+            dateValidationFinal: true,
+          },
+        },
+      },
+    });
+  }
+
   private calculerEvolutionMensuelle(points: any[], _depuis: Date): Array<{ mois: string; crees: number; fermes: number }> {
     const maintenant = new Date();
     const resultat: Array<{ mois: string; crees: number; fermes: number }> = [];

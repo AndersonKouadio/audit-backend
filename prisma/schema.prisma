@@ -221,7 +221,10 @@ enum StatutPoint {
   OUVERT
   EN_ATTENTE_VALIDATION // CPF (Complete Pending Follow-up) - Le métier a fini, l'audit doit vérifier
   FERME_RESOLU // Validé par l'audit
-  FERME_RISQUE_ACCEPTE // Validé via RAF
+  FERME_RISQUE_ACCEPTE // Validé via RAF (workflow complet validé par Comité)
+  RISK_ACCEPTED // Sous-statut : risque accepté HoD, pas encore RAF émis
+  RISK_ACCEPTED_APPROVED // Sous-statut : RAF signé GM, CEO en attente
+  RISK_ACCEPTED_VALIDATED // Sous-statut : RAF validé par le Comité d'Audit
   OBSOLETE
 }
 

@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -12,6 +13,18 @@ import { ForgotPasswordDto, ResetPasswordDto } from '../dto/password-reset.dto';
 import { JsonWebTokenService } from './json-web-token.service';
 import { OtpService } from './otp.service';
 
+// Compteur en mémoire des tentatives échouées par email (lockout léger)
+// Reset au redémarrage. Pour persistant, utiliser Redis.
+interface AttemptRecord {
+  count: number;
+  firstAt: number;
+  lockedUntil?: number;
+}
+const failedAttempts = new Map<string, AttemptRecord>();
+const MAX_ATTEMPTS = 5;
+const ATTEMPT_WINDOW_MS = 15 * 60_000; // 15 minutes
+const LOCKOUT_MS = 30 * 60_000; // 30 minutes lockout
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -21,21 +34,64 @@ export class AuthService {
     private readonly otpService: OtpService,
   ) {}
 
+  private checkLockout(email: string) {
+    const rec = failedAttempts.get(email);
+    if (!rec) return;
+    if (rec.lockedUntil && rec.lockedUntil > Date.now()) {
+      const minutes = Math.ceil((rec.lockedUntil - Date.now()) / 60_000);
+      throw new ForbiddenException(
+        `Compte temporairement verrouillé suite à ${MAX_ATTEMPTS} tentatives. Réessayez dans ${minutes} minute(s).`,
+      );
+    }
+    if (rec.lockedUntil && rec.lockedUntil <= Date.now()) {
+      // Lockout expiré → reset
+      failedAttempts.delete(email);
+    }
+  }
+
+  private recordFailedAttempt(email: string) {
+    const now = Date.now();
+    const rec = failedAttempts.get(email);
+    if (!rec || now - rec.firstAt > ATTEMPT_WINDOW_MS) {
+      failedAttempts.set(email, { count: 1, firstAt: now });
+      return;
+    }
+    rec.count += 1;
+    if (rec.count >= MAX_ATTEMPTS) {
+      rec.lockedUntil = now + LOCKOUT_MS;
+      this.logger.warn(
+        `🔒 Compte ${email} verrouillé pour ${LOCKOUT_MS / 60_000} min après ${MAX_ATTEMPTS} échecs.`,
+      );
+    }
+  }
+
+  private clearFailedAttempts(email: string) {
+    failedAttempts.delete(email);
+  }
+
   async login(loginDto: LoginDto) {
+    // 0. Vérifier si le compte est verrouillé (lockout)
+    this.checkLockout(loginDto.email);
+
     // 1. Chercher l'utilisateur
     const user = await this.prisma.utilisateur.findUnique({
       where: { email: loginDto.email },
     });
 
-    if (!user) throw new NotFoundException('Identifiants incorrects');
+    if (!user) {
+      this.recordFailedAttempt(loginDto.email);
+      throw new NotFoundException('Identifiants incorrects');
+    }
 
     // 2. Vérifier le mot de passe
     const isPasswordValid = await bcrypt.compare(
       loginDto.password,
       user.motDePasse,
     );
-    if (!isPasswordValid)
+    if (!isPasswordValid) {
+      this.recordFailedAttempt(loginDto.email);
       throw new UnauthorizedException('Identifiants incorrects');
+    }
 
     // 3. Vérifier le statut
     if (user.statut !== StatutUtilisateur.ACTIF) {
@@ -43,6 +99,9 @@ export class AuthService {
         `Votre compte est ${user.statut.toLowerCase()}`,
       );
     }
+
+    // Login réussi → reset compteur tentatives
+    this.clearFailedAttempts(loginDto.email);
 
     // 4. Mettre à jour la dernière connexion
     await this.prisma.utilisateur.update({

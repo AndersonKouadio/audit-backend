@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { RoleUtilisateur } from 'src/generated/prisma/enums';
+import { RoleUtilisateur, StatutPoint } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { ApprouverRafDto } from './dto/approuver-raf.dto';
@@ -165,7 +165,7 @@ export class FormulaireRafService {
 
   // ─── Approuver un formulaire RAF ──────────────────────────────────────────
 
-  async approuver(id: string, dto: ApprouverRafDto, user?: { role: string; nom: string }) {
+  async approuver(id: string, dto: ApprouverRafDto, user?: { id?: string; role: string; nom: string }) {
     const raf = await this.prisma.formulaireAcceptationRisque.findUnique({
       where: { id },
     });
@@ -248,6 +248,48 @@ export class FormulaireRafService {
         },
       },
     });
+
+    // ── Synchronisation des sous-statuts PointAudit avec la progression du RAF ──
+    // Mapping : HOD → RISK_ACCEPTED, GM/CEO → RISK_ACCEPTED_APPROVED, COMITE → FERME_RISQUE_ACCEPTE
+    let nouveauStatutPoint: StatutPoint | null = null;
+    switch (dto.niveau) {
+      case 'HOD':
+        nouveauStatutPoint = StatutPoint.RISK_ACCEPTED;
+        break;
+      case 'GM':
+      case 'CEO':
+        nouveauStatutPoint = StatutPoint.RISK_ACCEPTED_APPROVED;
+        break;
+      case 'COMITE':
+        // Validation finale : le point passe en FERME_RISQUE_ACCEPTE
+        nouveauStatutPoint = StatutPoint.FERME_RISQUE_ACCEPTE;
+        break;
+    }
+
+    if (nouveauStatutPoint && updated.pointsAudit?.length > 0) {
+      for (const point of updated.pointsAudit) {
+        const ancienStatut = point.statut;
+        if (ancienStatut === nouveauStatutPoint) continue;
+        await this.prisma.pointAudit.update({
+          where: { id: point.id },
+          data: {
+            statut: nouveauStatutPoint,
+            ...(dto.niveau === 'COMITE' && { dateResolution: new Date() }),
+          },
+        });
+        await this.prisma.historiqueStatut.create({
+          data: {
+            typeEntite: 'POINT_AUDIT',
+            entiteId: point.id,
+            statutPrecedent: ancienStatut,
+            nouveauStatut: nouveauStatutPoint,
+            commentaire: `Synchronisation auto avec RAF ${updated.numero} (niveau ${dto.niveau}, signataire ${dto.nom}).`,
+            modifiePar: user?.nom ?? 'SYSTÈME_RAF',
+            pointAuditId: point.id,
+          },
+        });
+      }
+    }
 
     // ── Notifications post-approbation selon le niveau ──────────────────────
     switch (dto.niveau) {

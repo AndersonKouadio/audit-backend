@@ -11,15 +11,26 @@ import {
   StatutUtilisateur,
   Utilisateur,
 } from 'src/generated/prisma/client';
+import { TypeActionLog } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUtilisateurDto } from './dto/create-utilisateur.dto';
 import { UpdateMeDto } from './dto/update-me.dto';
 import { UpdateUtilisateurDto } from './dto/update-utilisateur.dto';
 import { UserQueryDto } from './dto/user-query.dto';
+import { JournalAuditService } from '../journal-audit/journal-audit.service';
+
+export interface UserContext {
+  id: string;
+  nom: string;
+  role: RoleUtilisateur | string;
+}
 
 @Injectable()
 export class UtilisateursService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly journalService: JournalAuditService,
+  ) {}
 
   // Utilitaire privé pour standardiser la sélection du département
   private readonly defaultInclude = {
@@ -175,12 +186,31 @@ export class UtilisateursService {
     }
   }
 
-  // --- SUPPRESSION (Soft ou Hard) ---
-  async remove(id: string) {
+  // --- SUPPRESSION (avec audit trail) ---
+  async remove(id: string, actor?: UserContext) {
+    const target = await this.prisma.utilisateur.findUnique({
+      where: { id },
+      select: { id: true, email: true, nom: true, prenom: true, role: true },
+    });
+    if (!target) throw new NotFoundException(`Utilisateur #${id} introuvable`);
+
     const user = await this.prisma.utilisateur.delete({
       where: { id },
       include: this.defaultInclude,
     });
+
+    if (actor) {
+      await this.journalService.logAction({
+        utilisateurId: actor.id,
+        utilisateurNom: actor.nom,
+        utilisateurRole: actor.role as string,
+        action: TypeActionLog.SUPPRESSION,
+        entiteType: 'UTILISATEUR',
+        entiteId: id,
+        entiteRef: `${target.prenom} ${target.nom} (${target.email})`,
+        details: { roleSupprime: target.role },
+      });
+    }
 
     const { motDePasse, ...userWithoutPassword } = user;
     return userWithoutPassword;

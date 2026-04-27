@@ -43,4 +43,49 @@ export class DashboardController {
   getAlerts(@Req() req: any) {
     return this.dashboardService.getAlerts(req.user.id, req.user.role);
   }
+
+  @Get('performance-weekly')
+  @Roles(
+    RoleUtilisateur.ADMIN,
+    RoleUtilisateur.DIRECTEUR_AUDIT,
+    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
+    RoleUtilisateur.CHEF_MISSION,
+    RoleUtilisateur.LECTURE_SEULE,
+  )
+  @ApiOperation({
+    summary: 'Performance auditeurs W1 vs W2 (cahier des charges)',
+    description: 'Tableau auditeur × tranches d\'ageing × 2 semaines comparées',
+  })
+  getPerformanceWeekly() {
+    return this.dashboardService.getPerformanceWeekly();
+  }
+
+  @Get('flash-hebdo')
+  @Roles(
+    RoleUtilisateur.ADMIN,
+    RoleUtilisateur.DIRECTEUR_AUDIT,
+    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
+    RoleUtilisateur.CHEF_MISSION,
+    RoleUtilisateur.LECTURE_SEULE,
+  )
+  @ApiOperation({
+    summary: 'Flash hebdomadaire : changements de statut des 7 derniers jours',
+  })
+  getFlashHebdomadaire() {
+    return this.dashboardService.getFlashHebdomadaire();
+  }
+
+  @Get('risk-accepted-anciens')
+  @Roles(
+    RoleUtilisateur.ADMIN,
+    RoleUtilisateur.DIRECTEUR_AUDIT,
+    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
+    RoleUtilisateur.LECTURE_SEULE,
+  )
+  @ApiOperation({
+    summary: 'Rapport : Points en Risk Accepted depuis plus d\'un an',
+  })
+  getRiskAcceptedAnciens() {
+    return this.dashboardService.getRiskAcceptedAnciens();
+  }
 }

@@ -100,6 +100,6 @@ export class UtilisateursController {
         'Vous ne pouvez supprimer que les profils des autres utilisateurs',
       );
     }
-    return this.utilisateursService.remove(id);
+    return this.utilisateursService.remove(id, user);
   }
 }
