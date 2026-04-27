@@ -1,12 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateActionPointDto } from './dto/create-actions-point.dto';
 import { UpdateActionPointDto } from './dto/update-actions-point.dto';
+import { RoleUtilisateur } from 'src/generated/prisma/enums';
+import {
+  isPrivilegedRole,
+  isBURole,
+  isAuditTeamRole,
+  ROLES_AUDIT_SENIOR_PLUS,
+} from 'src/auth/constants/roles-matrix';
+
+export interface UserContext {
+  id: string;
+  nom: string;
+  role: RoleUtilisateur | string;
+  departementId?: string | null;
+}
 
 @Injectable()
 export class ActionsPointsService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateActionPointDto) {
     const point = await this.prisma.pointAudit.findUnique({
@@ -27,15 +41,45 @@ export class ActionsPointsService {
     });
   }
 
-  async findAll(query: any): Promise<PaginationResponseDto<any>> {
+  async findAll(query: any, user?: UserContext): Promise<PaginationResponseDto<any>> {
     const { page = 1, limit = 10, pointAuditId, responsableId, statut } = query;
     const skip = (Number(page) - 1) * Number(limit);
+
+    // ---- FILTRAGE PAR SCOPE ----
+    const scopeFilters: any[] = [];
+    if (user && !isPrivilegedRole(user.role as RoleUtilisateur)) {
+      if (isBURole(user.role as RoleUtilisateur)) {
+        // BU : voit ses propres actions (responsableId) OU celles du même département
+        scopeFilters.push({
+          OR: [
+            { responsableId: user.id },
+            {
+              pointAudit: {
+                departementId: user.departementId ?? '__no_dept__',
+              },
+            },
+          ],
+        });
+      } else if (isAuditTeamRole(user.role as RoleUtilisateur)) {
+        // Audit team : actions sur points qu'ils ont créés ou audits où ils sont équipe/responsable
+        scopeFilters.push({
+          pointAudit: {
+            OR: [
+              { createurId: user.id },
+              { audit: { responsableId: user.id } },
+              { audit: { equipe: { some: { id: user.id } } } },
+            ],
+          },
+        });
+      }
+    }
 
     const where: any = {
       AND: [
         pointAuditId ? { pointAuditId } : {},
         responsableId ? { responsableId } : {},
         statut ? { statut } : {},
+        ...scopeFilters,
       ],
     };
 
@@ -47,8 +91,15 @@ export class ActionsPointsService {
         take: Number(limit),
         orderBy: { dateEcheance: 'asc' },
         include: {
-          responsable: { select: { nom: true, prenom: true } },
-          pointAudit: { select: { reference: true, titre: true } },
+          responsable: { select: { id: true, nom: true, prenom: true } },
+          pointAudit: {
+            select: {
+              id: true,
+              reference: true,
+              titre: true,
+              departementId: true,
+            },
+          },
         },
       }),
     ]);
@@ -64,8 +115,56 @@ export class ActionsPointsService {
     };
   }
 
-  async update(id: string, dto: UpdateActionPointDto) {
-    // Logique métier : Si l'avancement est mis à 100, on passe auto en TERMINE
+  async update(id: string, dto: UpdateActionPointDto, user?: UserContext) {
+    // Charger l'action existante pour vérification ownership
+    const existing = await this.prisma.actionPoint.findUnique({
+      where: { id },
+      include: {
+        pointAudit: {
+          select: {
+            departementId: true,
+            audit: {
+              select: { responsableId: true, equipe: { select: { id: true } } },
+            },
+          },
+        },
+      },
+    });
+    if (!existing) throw new NotFoundException('Action introuvable.');
+
+    // ---- VÉRIFICATION OWNERSHIP ----
+    if (user && !isPrivilegedRole(user.role as RoleUtilisateur)) {
+      const isOwner = existing.responsableId === user.id;
+      const isAuditMember =
+        existing.pointAudit?.audit?.responsableId === user.id ||
+        existing.pointAudit?.audit?.equipe?.some((m) => m.id === user.id);
+
+      // Audit Senior+ peuvent modifier n'importe quelle action de leur mission
+      const isSeniorAudit = ROLES_AUDIT_SENIOR_PLUS.includes(
+        user.role as RoleUtilisateur,
+      );
+
+      if (isBURole(user.role as RoleUtilisateur)) {
+        // BU : doit être responsable de l'action OU manager du département
+        const isSameDept =
+          existing.pointAudit?.departementId === user.departementId;
+        const isManager = user.role === RoleUtilisateur.MANAGER_METIER;
+        if (!isOwner && !(isManager && isSameDept)) {
+          throw new ForbiddenException(
+            "Vous ne pouvez modifier que les actions dont vous êtes responsable",
+          );
+        }
+      } else if (isAuditTeamRole(user.role as RoleUtilisateur) && !isSeniorAudit) {
+        // Auditeur junior : doit être membre de l'audit
+        if (!isAuditMember) {
+          throw new ForbiddenException(
+            "Vous n'êtes pas membre de la mission liée à cette action",
+          );
+        }
+      }
+    }
+
+    // Logique métier : statut auto selon l'avancement
     if (dto.avancement === 100) {
       dto.statut = 'TERMINE';
     } else if (dto.avancement && dto.avancement > 0 && dto.avancement < 100) {
@@ -76,12 +175,14 @@ export class ActionsPointsService {
       where: { id },
       data: {
         ...dto,
-        ...(dto.dateEcheance && { dateEcheance: new Date(dto.dateEcheance) })
+        ...(dto.dateEcheance && { dateEcheance: new Date(dto.dateEcheance) }),
       },
     });
   }
 
   async remove(id: string) {
+    const existing = await this.prisma.actionPoint.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Action introuvable.');
     return this.prisma.actionPoint.delete({ where: { id } });
   }
 }

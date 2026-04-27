@@ -1,16 +1,22 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAuditDto } from './dto/create-audit.dto';
 import { AuditQueryDto } from './dto/audit-query.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { UpdateAuditDto } from './dto/update-audit.dto';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
-import { TypeActionLog } from 'src/generated/prisma/enums';
+import { TypeActionLog, RoleUtilisateur } from 'src/generated/prisma/enums';
+import {
+  isPrivilegedRole,
+  isBURole,
+  isAuditTeamRole,
+} from 'src/auth/constants/roles-matrix';
 
 export interface UserContext {
   id: string;
   nom: string;
-  role: string;
+  role: RoleUtilisateur | string;
+  departementId?: string | null;
 }
 
 @Injectable()
@@ -64,7 +70,10 @@ export class AuditsService {
     return audit;
   }
 
-  async findAll(query: AuditQueryDto): Promise<PaginationResponseDto<any>> {
+  async findAll(
+    query: AuditQueryDto,
+    user?: UserContext,
+  ): Promise<PaginationResponseDto<any>> {
     const {
       page = 1,
       limit = 10,
@@ -76,6 +85,29 @@ export class AuditsService {
       actif,
     } = query;
     const skip = (page - 1) * limit;
+
+    // ---- FILTRAGE PAR SCOPE (server-side) ----
+    // Les rôles privilégiés (ADMIN, DIRECTEUR_AUDIT, CHEF_DEPT_AUDIT, LECTURE_SEULE)
+    // voient tout. Les autres rôles ont un filtrage strict.
+    const scopeFilters: any[] = [];
+
+    if (user && !isPrivilegedRole(user.role as RoleUtilisateur)) {
+      if (isBURole(user.role as RoleUtilisateur)) {
+        // BU : ne voit que les audits de son département + statuts publiés (pas en cours)
+        scopeFilters.push({
+          departementId: user.departementId ?? '__no_dept__',
+          statut: { in: ['PUBLIE', 'CLOTURE', 'ARCHIVE'] },
+        });
+      } else if (isAuditTeamRole(user.role as RoleUtilisateur)) {
+        // Audit team (sauf privilégiés) : voit les audits où il est responsable ou dans l'équipe
+        scopeFilters.push({
+          OR: [
+            { responsableId: user.id },
+            { equipe: { some: { id: user.id } } },
+          ],
+        });
+      }
+    }
 
     const where: any = {
       AND: [
@@ -92,6 +124,7 @@ export class AuditsService {
         annee ? { anneeFiscale: annee } : {},
         departementId ? { departementId } : {},
         actif ? { statut: { notIn: ['CLOTURE', 'ARCHIVE'] } } : {},
+        ...scopeFilters,
       ],
     };
 
@@ -121,14 +154,41 @@ export class AuditsService {
     };
   }
 
-  findOne(id: string) {
-    return this.prisma.audit.findUnique({
-      where: { id }, include: {
+  async findOne(id: string, user?: UserContext) {
+    const audit = await this.prisma.audit.findUnique({
+      where: { id },
+      include: {
         departement: { select: { nom: true, code: true } },
-        responsable: { select: { nom: true, prenom: true } },
-        _count: { select: { points: true } }, // Nombre de findings par audit
+        responsable: { select: { id: true, nom: true, prenom: true } },
+        equipe: { select: { id: true, nom: true, prenom: true } },
+        _count: { select: { points: true } },
       },
     });
+
+    if (!audit) throw new NotFoundException(`Audit ${id} introuvable`);
+
+    // ---- VÉRIFICATION DE SCOPE ----
+    if (user && !isPrivilegedRole(user.role as RoleUtilisateur)) {
+      if (isBURole(user.role as RoleUtilisateur)) {
+        const isVisibleStatut = ['PUBLIE', 'CLOTURE', 'ARCHIVE'].includes(audit.statut);
+        const isSameDept = audit.departementId === user.departementId;
+        if (!isVisibleStatut || !isSameDept) {
+          throw new ForbiddenException(
+            "Vous n'avez pas accès à cette mission d'audit",
+          );
+        }
+      } else if (isAuditTeamRole(user.role as RoleUtilisateur)) {
+        const isResponsable = audit.responsable?.id === user.id;
+        const isInTeam = audit.equipe?.some((m) => m.id === user.id);
+        if (!isResponsable && !isInTeam) {
+          throw new ForbiddenException(
+            "Vous n'êtes pas membre de cette mission d'audit",
+          );
+        }
+      }
+    }
+
+    return audit;
   }
 
   async update(id: string, dto: UpdateAuditDto, user?: UserContext) {

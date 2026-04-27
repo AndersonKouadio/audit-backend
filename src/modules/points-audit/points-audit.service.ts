@@ -13,6 +13,7 @@ import { PointAudit } from 'src/generated/prisma/client';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { RoleUtilisateur, StatutAudit, StatutPoint, TypeActionLog } from 'src/generated/prisma/enums';
+import { isPrivilegedRole } from 'src/auth/constants/roles-matrix';
 
 export interface UserContext {
   id: string;
@@ -127,7 +128,10 @@ export class PointsAuditService {
   // LISTE PAGINÉE
   // ═══════════════════════════════════════════════════════════════════════
 
-  async findAll(query: PointQueryDto): Promise<PaginationResponseDto<any>> {
+  async findAll(
+    query: PointQueryDto,
+    user?: UserContext,
+  ): Promise<PaginationResponseDto<any>> {
     const {
       page = 1,
       limit = 10,
@@ -140,6 +144,27 @@ export class PointsAuditService {
       createurId,
     } = query;
     const skip = (page - 1) * limit;
+
+    // ---- FILTRAGE PAR SCOPE (server-side) ----
+    // ADMIN, DIRECTEUR_AUDIT, CHEF_DEPARTEMENT_AUDIT, LECTURE_SEULE → vue globale
+    // BU (RISK_CHAMPION, MANAGER_METIER, EMPLOYE_METIER) → uniquement leur département
+    // Audit team (CHEF_MISSION, AUDITEUR_*) → audits où ils sont responsable/équipe + ceux qu'ils ont créés
+    const scopeFilters: any[] = [];
+    if (user && !isPrivilegedRole(user.role as RoleUtilisateur)) {
+      if (ROLES_BU.includes(user.role)) {
+        scopeFilters.push({
+          departementId: user.departementId ?? '__no_dept__',
+        });
+      } else if (ROLES_AUDIT.includes(user.role)) {
+        scopeFilters.push({
+          OR: [
+            { createurId: user.id },
+            { audit: { responsableId: user.id } },
+            { audit: { equipe: { some: { id: user.id } } } },
+          ],
+        });
+      }
+    }
 
     const where: any = {
       AND: [
@@ -157,6 +182,7 @@ export class PointsAuditService {
         auditId ? { auditId } : {},
         departementId ? { departementId } : {},
         createurId ? { createurId } : {},
+        ...scopeFilters,
       ],
     };
 
@@ -191,15 +217,26 @@ export class PointsAuditService {
   // DÉTAIL
   // ═══════════════════════════════════════════════════════════════════════
 
-  async findOne(id: string) {
+  async findOne(id: string, user?: UserContext) {
     const point = await this.prisma.pointAudit.findUnique({
       where: { id },
       include: {
-        audit: true,
+        audit: {
+          select: {
+            id: true,
+            reference: true,
+            titre: true,
+            statut: true,
+            type: true,
+            responsableId: true,
+            departementId: true,
+            equipe: { select: { id: true } },
+          },
+        },
         departement: true,
-        createur: { select: { nom: true, prenom: true, role: true } },
+        createur: { select: { id: true, nom: true, prenom: true, role: true } },
         actions: {
-          include: { responsable: { select: { nom: true, prenom: true } } },
+          include: { responsable: { select: { id: true, nom: true, prenom: true } } },
           orderBy: { createdAt: 'desc' },
         },
         commentaires: { orderBy: { dateCreation: 'desc' } },
@@ -207,6 +244,32 @@ export class PointsAuditService {
       },
     });
     if (!point) throw new NotFoundException("Point d'audit introuvable.");
+
+    // ---- VÉRIFICATION DE SCOPE ----
+    if (user && !isPrivilegedRole(user.role as RoleUtilisateur)) {
+      if (ROLES_BU.includes(user.role)) {
+        // BU : doit être du même département + action owner OU dans le département
+        const isSameDept = point.departementId === user.departementId;
+        const isActionOwner = point.actions?.some(
+          (a) => a.responsable?.id === user.id,
+        );
+        if (!isSameDept && !isActionOwner) {
+          throw new ForbiddenException(
+            "Vous n'avez pas accès à ce point d'audit",
+          );
+        }
+      } else if (ROLES_AUDIT.includes(user.role)) {
+        const isCreateur = point.createur?.id === user.id;
+        const isResponsableMission = point.audit?.responsableId === user.id;
+        const isInTeam = point.audit?.equipe?.some((m) => m.id === user.id);
+        if (!isCreateur && !isResponsableMission && !isInTeam) {
+          throw new ForbiddenException(
+            "Vous n'êtes pas membre de la mission liée à ce point",
+          );
+        }
+      }
+    }
+
     return point;
   }
 

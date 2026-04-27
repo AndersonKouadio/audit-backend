@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import compression from 'compression';
-// import helmet from 'helmet';
+import helmet from 'helmet';
 import { join } from 'path';
 import { AppModule } from './app.module';
 
@@ -37,17 +37,54 @@ async function bootstrap() {
   // Appliquer le filtre globalement à toute l'application
   // app.useGlobalFilters(new PrismaExceptionFilter());
 
-  // Security middleware
-  // app.use(helmet());
+  // Security middleware (Helmet : Headers HTTP de sécurité)
+  app.use(
+    helmet({
+      // Nécessaire pour Swagger en dev. À durcir si Swagger n'est pas exposé en prod.
+      contentSecurityPolicy: isProduction ? undefined : false,
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
 
   // Compression
   app.use(compression());
 
-  // CORS
+  // CORS strict : whitelist explicite des origines autorisées
+  // CORS_ORIGIN dans .env = liste séparée par virgules
+  // Ex: "https://audit-web.lunion-lab.com,http://audit-web.lunion-lab.com,http://localhost:3000,http://localhost:3100"
+  const corsOriginsRaw =
+    process.env.CORS_ORIGIN ||
+    process.env.FRONTEND_URL ||
+    'https://audit-web.lunion-lab.com';
+
+  const corsOrigins = corsOriginsRaw
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  console.log('CORS allowed origins:', corsOrigins);
+
   app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: (origin, callback) => {
+      // Pas d'origin (curl, Postman, server-to-server) → autorisé
+      if (!origin) return callback(null, true);
+
+      // Whitelist exacte
+      if (corsOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // En dev, on accepte tout localhost peu importe le port
+      if (!isProduction && /^https?:\/\/localhost(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+
+      console.warn(`CORS bloqué pour origin : ${origin}`);
+      callback(new Error(`Origin ${origin} non autorisée par CORS`));
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    allowedHeaders: 'Content-Type,Authorization,Accept,X-Requested-With',
   });
 
   // API prefix

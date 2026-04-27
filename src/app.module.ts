@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from 'src/auth/auth.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { OrganisationModule } from 'src/modules/organisation/organisation.module';
@@ -25,6 +27,22 @@ import { ParametresSystemeModule } from 'src/modules/parametres-systeme/parametr
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
+    // 1.bis. Rate limiting global (anti brute-force)
+    // 100 requêtes / minute par IP par défaut.
+    // Le throttler peut être surchargé par endpoint avec @Throttle().
+    ThrottlerModule.forRoot([
+      {
+        name: 'default',
+        ttl: 60_000, // 1 minute
+        limit: 100,
+      },
+      {
+        name: 'auth',
+        ttl: 15 * 60_000, // 15 minutes
+        limit: 10, // 10 tentatives login / 15 min / IP
+      },
+    ]),
 
     // 2. Socle technique (Base de données)
     PrismaModule,
@@ -62,6 +80,12 @@ import { ParametresSystemeModule } from 'src/modules/parametres-systeme/parametr
     ExportModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    // Rate limiting global appliqué à toutes les routes
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

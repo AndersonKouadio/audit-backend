@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Delete,
   Get,
@@ -14,13 +15,19 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import {
+  ROLES_AUTHENTIFIE,
+  ROLES_LECTURE_GLOBALE,
+} from 'src/auth/constants/roles-matrix';
 import { PiecesJointesService } from './pieces-jointes.service';
 import type { Response } from 'express';
 import * as path from 'path';
 
 @ApiTags('Pièces Jointes')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('pieces-jointes')
 export class PiecesJointesController {
   constructor(private readonly piecesJointesService: PiecesJointesService) {}
@@ -28,6 +35,7 @@ export class PiecesJointesController {
   // ── Upload d'un fichier ────────────────────────────────────────────────────
 
   @Post('upload')
+  @Roles(...ROLES_AUTHENTIFIE)
   @ApiOperation({
     summary: 'Téléverser un fichier (PDF, image, Excel, Word, CSV, ZIP — max 10Mo)',
     description:
@@ -59,6 +67,7 @@ export class PiecesJointesController {
   // ── Lister les pièces jointes d'une entité ────────────────────────────────
 
   @Get()
+  @Roles(...ROLES_LECTURE_GLOBALE)
   @ApiOperation({ summary: 'Lister les pièces jointes d\'une entité' })
   @ApiQuery({ name: 'entiteType', required: true })
   @ApiQuery({ name: 'entiteId', required: true })
@@ -72,10 +81,25 @@ export class PiecesJointesController {
   // ── Télécharger un fichier ────────────────────────────────────────────────
 
   @Get('download/:filename')
+  @Roles(...ROLES_LECTURE_GLOBALE)
   @ApiOperation({ summary: 'Télécharger un fichier par son nom' })
-  async download(@Param('filename') filename: string, @Res() res: Response) {
-    const filePath = this.piecesJointesService.getFilePath(filename);
-    const ext = path.extname(filename).toLowerCase();
+  async download(
+    @Req() req,
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ) {
+    // SÉCURITÉ : protection path traversal
+    const safeFilename = path.basename(filename);
+    if (safeFilename !== filename || safeFilename.includes('..')) {
+      throw new BadRequestException('Nom de fichier invalide');
+    }
+
+    // Vérification que le user a le droit de télécharger ce fichier
+    // (existe en BDD + droits sur l'entité parente)
+    await this.piecesJointesService.assertCanDownload(safeFilename, req.user);
+
+    const filePath = this.piecesJointesService.getFilePath(safeFilename);
+    const ext = path.extname(safeFilename).toLowerCase();
 
     // Types inlineables (PDF, images)
     const inlineTypes: Record<string, string> = {
@@ -89,9 +113,9 @@ export class PiecesJointesController {
 
     if (inlineTypes[ext]) {
       res.setHeader('Content-Type', inlineTypes[ext]);
-      res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+      res.setHeader('Content-Disposition', `inline; filename="${safeFilename}"`);
     } else {
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"`);
     }
 
     res.sendFile(filePath);
@@ -100,8 +124,9 @@ export class PiecesJointesController {
   // ── Supprimer une pièce jointe ────────────────────────────────────────────
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Supprimer une pièce jointe' })
+  @Roles(...ROLES_AUTHENTIFIE)
+  @ApiOperation({ summary: 'Supprimer une pièce jointe (auteur ou admin)' })
   supprimer(@Req() req, @Param('id') id: string) {
-    return this.piecesJointesService.supprimer(id, req.user.id);
+    return this.piecesJointesService.supprimer(id, req.user);
   }
 }

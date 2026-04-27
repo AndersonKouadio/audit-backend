@@ -21,8 +21,12 @@ import type { Request } from 'express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import {
+  ROLES_AUTHENTIFIE,
+  ROLES_GESTION_USERS,
+  ROLES_LECTURE_USERS,
+} from 'src/auth/constants/roles-matrix';
 import { Utilisateur } from 'src/generated/prisma/client';
-import { RoleUtilisateur } from 'src/generated/prisma/enums';
 import { CreateUtilisateurDto } from './dto/create-utilisateur.dto';
 import { UpdateMeDto } from './dto/update-me.dto';
 import { UpdateUtilisateurDto } from './dto/update-utilisateur.dto';
@@ -37,7 +41,7 @@ export class UtilisateursController {
   constructor(private readonly utilisateursService: UtilisateursService) {}
 
   @Post()
-  @Roles(RoleUtilisateur.ADMIN) // Seul l'admin crée les comptes
+  @Roles(...ROLES_GESTION_USERS) // Seul l'admin crée les comptes
   @ApiOperation({ summary: 'Créer un nouvel utilisateur' })
   @ApiResponse({
     status: 201,
@@ -48,6 +52,7 @@ export class UtilisateursController {
   }
 
   @Patch('me')
+  @Roles(...ROLES_AUTHENTIFIE) // FIX BUG : sans @Roles, le RolesGuard refusait l'accès
   @ApiOperation({ summary: 'Mettre à jour mon profil personnel' })
   updateMe(@Req() req: Request, @Body() dto: UpdateMeDto) {
     const user = req.user as Utilisateur;
@@ -55,21 +60,21 @@ export class UtilisateursController {
   }
 
   @Get()
-  @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT)
+  @Roles(...ROLES_LECTURE_USERS) // ADMIN, DIRECTEUR, CHEF_DEPT_AUDIT, CHEF_MISSION (besoin d'assigner équipes)
   @ApiOperation({ summary: 'Liste paginée des utilisateurs' })
   findAll(@Query() query: UserQueryDto) {
     return this.utilisateursService.findAll(query);
   }
 
   @Get(':id')
-  @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT)
+  @Roles(...ROLES_LECTURE_USERS)
   @ApiOperation({ summary: "Voir le profil d'un utilisateur" })
   findOne(@Param('id') id: string) {
     return this.utilisateursService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles(RoleUtilisateur.ADMIN)
+  @Roles(...ROLES_GESTION_USERS)
   @ApiOperation({ summary: 'Modifier un utilisateur (Rôle, Dept, Statut...)' })
   update(
     @Req() req: Request,
@@ -86,7 +91,7 @@ export class UtilisateursController {
   }
 
   @Delete(':id')
-  @Roles(RoleUtilisateur.ADMIN)
+  @Roles(...ROLES_GESTION_USERS)
   @ApiOperation({ summary: 'Supprimer un utilisateur' })
   remove(@Req() req: Request, @Param('id') id: string) {
     const user = req.user as Utilisateur;

@@ -8,6 +8,15 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as fs from 'fs';
 import * as path from 'path';
+import { RoleUtilisateur } from 'src/generated/prisma/enums';
+import { isPrivilegedRole } from 'src/auth/constants/roles-matrix';
+
+export interface UserContext {
+  id: string;
+  nom: string;
+  role: RoleUtilisateur | string;
+  departementId?: string | null;
+}
 
 // Entités acceptées pour les pièces jointes
 const ENTITES_VALIDES = ['AUDIT', 'POINT_AUDIT', 'ACTION_POINT', 'POINT_FRAUDE'] as const;
@@ -128,18 +137,25 @@ export class PiecesJointesService {
 
   // ─── Supprimer une pièce jointe ───────────────────────────────────────────
 
-  async supprimer(id: string, userId: string) {
+  async supprimer(id: string, user: UserContext | string) {
     const piece = await this.prisma.pieceJointe.findUnique({ where: { id } });
     if (!piece) throw new NotFoundException('Pièce jointe introuvable.');
 
-    // Seul le créateur (ou l'admin) peut supprimer
-    if (piece.televerseePar !== userId) {
+    // Compatibilité : permettre user en string (legacy) ou en objet
+    const userId = typeof user === 'string' ? user : user.id;
+    const userRole = typeof user === 'object' ? user.role : null;
+
+    // L'auteur OU un rôle privilégié (ADMIN, DIRECTEUR_AUDIT...) peut supprimer
+    const isAuteur = piece.televerseePar === userId;
+    const isAdmin = userRole && isPrivilegedRole(userRole as RoleUtilisateur);
+
+    if (!isAuteur && !isAdmin) {
       throw new ForbiddenException(
         "Vous ne pouvez supprimer que les fichiers que vous avez téléversés.",
       );
     }
 
-    // Supprimer le fichier du disque
+    // Supprimer le fichier du disque (avec protection path traversal)
     const filename = path.basename(piece.urlFichier);
     const filePath = path.join(this.uploadsDir, filename);
     if (fs.existsSync(filePath)) {
@@ -150,10 +166,90 @@ export class PiecesJointesService {
     return { success: true, message: 'Fichier supprimé.' };
   }
 
+  // ─── Vérifier qu'un user a le droit de télécharger un fichier ────────────
+
+  async assertCanDownload(filename: string, user?: UserContext): Promise<void> {
+    // Le fichier doit exister en BDD (référencé par une pièce jointe)
+    const url = `/uploads/${filename}`;
+    const piece = await this.prisma.pieceJointe.findFirst({
+      where: { urlFichier: url },
+      include: {
+        audit: { select: { id: true, departementId: true, responsableId: true } },
+        pointAudit: {
+          select: {
+            id: true,
+            departementId: true,
+            audit: {
+              select: { responsableId: true, equipe: { select: { id: true } } },
+            },
+          },
+        },
+        actionPoint: {
+          select: {
+            responsableId: true,
+            pointAudit: { select: { departementId: true } },
+          },
+        },
+      },
+    });
+
+    if (!piece) {
+      throw new NotFoundException(
+        'Ce fichier n\'est lié à aucune ressource (suppression possible)',
+      );
+    }
+
+    // Si pas de user (curl sans token), tout est déjà bloqué par le guard.
+    if (!user) return;
+
+    // Rôles privilégiés : accès global
+    if (isPrivilegedRole(user.role as RoleUtilisateur)) return;
+
+    // L'auteur du fichier peut toujours télécharger
+    if (piece.televerseePar === user.id) return;
+
+    // Rattachement à un audit ou point : vérifier scope
+    const dept =
+      piece.audit?.departementId ||
+      piece.pointAudit?.departementId ||
+      piece.actionPoint?.pointAudit?.departementId;
+
+    const isResponsableMission =
+      piece.audit?.responsableId === user.id ||
+      piece.pointAudit?.audit?.responsableId === user.id;
+
+    const isInTeam = piece.pointAudit?.audit?.equipe?.some((m) => m.id === user.id);
+
+    const isActionOwner = piece.actionPoint?.responsableId === user.id;
+
+    const isSameDept = dept && dept === user.departementId;
+
+    if (
+      !isResponsableMission &&
+      !isInTeam &&
+      !isActionOwner &&
+      !isSameDept
+    ) {
+      throw new ForbiddenException(
+        "Vous n'avez pas accès à ce fichier",
+      );
+    }
+  }
+
   // ─── Obtenir le chemin physique d'un fichier (pour le téléchargement) ────
 
   getFilePath(filename: string): string {
-    const filePath = path.join(this.uploadsDir, filename);
+    // Protection path traversal (déjà fait au controller mais ceinture+bretelles)
+    const safeName = path.basename(filename);
+    const filePath = path.join(this.uploadsDir, safeName);
+
+    // Vérifier que le chemin résolu reste bien dans uploadsDir
+    const resolved = path.resolve(filePath);
+    const baseDir = path.resolve(this.uploadsDir);
+    if (!resolved.startsWith(baseDir + path.sep)) {
+      throw new BadRequestException('Chemin de fichier invalide');
+    }
+
     if (!fs.existsSync(filePath)) {
       throw new NotFoundException('Fichier introuvable.');
     }

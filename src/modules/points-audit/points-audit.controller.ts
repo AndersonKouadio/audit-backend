@@ -17,7 +17,12 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody, ApiProperty } from '@nes
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Public } from 'src/auth/decorators/public.decorator';
+import {
+  ROLES_AUDIT_OPS,
+  ROLES_AUDIT_SENIOR_PLUS,
+  ROLES_BU_DECLARATION,
+  ROLES_LECTURE_GLOBALE,
+} from 'src/auth/constants/roles-matrix';
 import { RoleUtilisateur, StatutPoint } from 'src/generated/prisma/enums';
 import { UpdatePointsAuditDto } from './dto/update-points-audit.dto';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
@@ -64,14 +69,7 @@ export class PointsAuditController {
   // ── Création ──────────────────────────────────────────────────────────────
 
   @Post()
-  @Roles(
-    RoleUtilisateur.AUDITEUR_JUNIOR,
-    RoleUtilisateur.AUDITEUR_SENIOR,
-    RoleUtilisateur.CHEF_MISSION,
-    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
-    RoleUtilisateur.DIRECTEUR_AUDIT,
-    RoleUtilisateur.ADMIN,
-  )
+  @Roles(...ROLES_AUDIT_OPS)
   @ApiOperation({ summary: "Créer un nouveau point d'audit (Constat)" })
   create(@Req() req, @Body() dto: CreatePointAuditDto) {
     return this.pointsAuditService.create(req.user.id, dto, req.user);
@@ -80,32 +78,25 @@ export class PointsAuditController {
   // ── Liste paginée ─────────────────────────────────────────────────────────
 
   @Get()
-  @Public()
+  @Roles(...ROLES_LECTURE_GLOBALE) // était @Public — filtrage par scope dans service
   @ApiOperation({ summary: 'Liste paginée des points avec filtres' })
-  findAll(@Query() query: PointQueryDto) {
-    return this.pointsAuditService.findAll(query);
+  findAll(@Req() req, @Query() query: PointQueryDto) {
+    return this.pointsAuditService.findAll(query, req.user);
   }
 
   // ── Détail ────────────────────────────────────────────────────────────────
 
   @Get(':id')
-  @Public()
+  @Roles(...ROLES_LECTURE_GLOBALE) // était @Public — vérification scope dans service
   @ApiOperation({ summary: "Détails complets d'un point (avec actions, commentaires, historique)" })
-  findOne(@Param('id') id: string) {
-    return this.pointsAuditService.findOne(id);
+  findOne(@Req() req, @Param('id') id: string) {
+    return this.pointsAuditService.findOne(id, req.user);
   }
 
   // ── Mise à jour générale (équipe Audit uniquement) ────────────────────────
 
   @Patch(':id')
-  @Roles(
-    RoleUtilisateur.AUDITEUR_JUNIOR,
-    RoleUtilisateur.AUDITEUR_SENIOR,
-    RoleUtilisateur.CHEF_MISSION,
-    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
-    RoleUtilisateur.DIRECTEUR_AUDIT,
-    RoleUtilisateur.ADMIN,
-  )
+  @Roles(...ROLES_AUDIT_OPS)
   @ApiOperation({ summary: "Mettre à jour un constat (équipe Audit)" })
   update(@Req() req, @Param('id') id: string, @Body() dto: UpdatePointsAuditDto) {
     return this.pointsAuditService.update(id, dto, req.user);
@@ -114,11 +105,7 @@ export class PointsAuditController {
   // ── Changement de statut BU (Risk Champion / Manager Métier) ─────────────
 
   @Patch(':id/statut-bu')
-  @Roles(
-    RoleUtilisateur.RISK_CHAMPION,
-    RoleUtilisateur.MANAGER_METIER,
-    RoleUtilisateur.EMPLOYE_METIER,
-  )
+  @Roles(...ROLES_BU_DECLARATION)
   @ApiOperation({
     summary: 'Déclarer un statut BU avec justification obligatoire',
     description:
@@ -138,14 +125,7 @@ export class PointsAuditController {
   // ── Changement de statut officiel Audit ───────────────────────────────────
 
   @Patch(':id/statut')
-  @Roles(
-    RoleUtilisateur.AUDITEUR_JUNIOR,
-    RoleUtilisateur.AUDITEUR_SENIOR,
-    RoleUtilisateur.CHEF_MISSION,
-    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
-    RoleUtilisateur.DIRECTEUR_AUDIT,
-    RoleUtilisateur.ADMIN,
-  )
+  @Roles(...ROLES_AUDIT_OPS)
   @ApiOperation({
     summary: "Modifier le statut officiel Audit d'un constat",
     description:
@@ -173,6 +153,7 @@ export class PointsAuditController {
   @Roles(
     RoleUtilisateur.ADMIN,
     RoleUtilisateur.DIRECTEUR_AUDIT,
+    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
     RoleUtilisateur.CHEF_MISSION,
   )
   @ApiOperation({ summary: "Supprimer un point d'audit" })
@@ -183,13 +164,7 @@ export class PointsAuditController {
   // ── Import Batch Excel ────────────────────────────────────────────────────
 
   @Post('batch')
-  @Roles(
-    RoleUtilisateur.CHEF_MISSION,
-    RoleUtilisateur.AUDITEUR_SENIOR,
-    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
-    RoleUtilisateur.DIRECTEUR_AUDIT,
-    RoleUtilisateur.ADMIN,
-  )
+  @Roles(...ROLES_AUDIT_SENIOR_PLUS)
   @ApiOperation({ summary: "Importation massive de constats pour une mission" })
   createMany(@Req() req, @Body() dtos: CreatePointAuditDto[]) {
     return this.pointsAuditService.createMany(req.user.id, dtos, req.user);
