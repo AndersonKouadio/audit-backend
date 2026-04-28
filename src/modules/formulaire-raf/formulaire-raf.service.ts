@@ -8,6 +8,8 @@ import { RoleUtilisateur, StatutPoint, TypeActionLog } from 'src/generated/prism
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
+import { AppGateway } from 'src/socket-io/gateways/app.gateway';
+import { SOCKET_EVENTS } from 'src/socket-io/interfaces/connected-user.interface';
 import { ApprouverRafDto } from './dto/approuver-raf.dto';
 import { CreateFormulaireRafDto } from './dto/create-formulaire-raf.dto';
 
@@ -33,6 +35,7 @@ export class FormulaireRafService {
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
     private readonly journalService: JournalAuditService,
+    private readonly gateway: AppGateway,
   ) {}
 
   // ─── Helper : notifier les utilisateurs d'un rôle donné ──────────────────
@@ -112,6 +115,13 @@ export class FormulaireRafService {
         details: { nbPoints: dto.pointAuditIds?.length ?? 0 },
       });
     }
+
+    // 🔌 Temps réel
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.RAF_CREATED, {
+      id: raf.id,
+      numero: raf.numero,
+      pointsAudit: raf.pointsAudit,
+    });
 
     return { ...raf, statutRaf: computeStatutRaf(raf) };
   }
@@ -376,6 +386,17 @@ export class FormulaireRafService {
       });
     }
 
+    // 🔌 Temps réel : approbation par niveau / validation finale
+    const event =
+      dto.niveau === 'COMITE' ? SOCKET_EVENTS.RAF_VALIDATED : SOCKET_EVENTS.RAF_APPROVED;
+    this.gateway.emitToAuditTeam(event, {
+      id,
+      numero: updated.numero,
+      niveau: dto.niveau,
+      signataire: dto.nom,
+      pointsAudit: updated.pointsAudit,
+    });
+
     return { ...updated, statutRaf: computeStatutRaf(updated) };
   }
 
@@ -435,6 +456,9 @@ export class FormulaireRafService {
         entiteRef: raf.numero,
       });
     }
+
+    // 🔌 Temps réel
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.RAF_DELETED, { id, numero: raf.numero });
 
     return result;
   }

@@ -3,6 +3,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { EmailService } from 'src/modules/mailer/email.service';
 import { ParametresSystemeService } from 'src/modules/parametres-systeme/parametres-systeme.service';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
+import { AppGateway } from 'src/socket-io/gateways/app.gateway';
+import { SOCKET_EVENTS } from 'src/socket-io/interfaces/connected-user.interface';
 
 export interface CreateNotificationDto {
   destinataire: string;
@@ -22,6 +24,7 @@ export class NotificationsService {
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
     private readonly parametresService: ParametresSystemeService,
+    private readonly gateway: AppGateway,
   ) {}
 
   // ─── Créer une notification (in-app + email si activé) ───────────────────
@@ -43,6 +46,19 @@ export class NotificationsService {
 
     if (dto.envoiImmediat) {
       await this.envoyerNotification(notif.id);
+    }
+
+    // 🔌 Push temps réel à l'utilisateur destinataire (toutes ses sessions)
+    if (dto.utilisateurId) {
+      this.gateway.emitToUser(dto.utilisateurId, SOCKET_EVENTS.NOTIFICATION_NEW, {
+        id: notif.id,
+        sujet: notif.sujet,
+        message: notif.message,
+        type: notif.type,
+        entiteType: notif.entiteType,
+        entiteId: notif.entiteId,
+        dateCreation: notif.createdAt,
+      });
     }
 
     return notif;
@@ -149,10 +165,18 @@ export class NotificationsService {
     });
     if (!notif) throw new NotFoundException('Notification introuvable.');
 
-    return this.prisma.notification.update({
+    const updated = await this.prisma.notification.update({
       where: { id },
       data: { lu: true, dateLecture: new Date() },
     });
+
+    // 🔌 sync temps réel sur les autres onglets/devices de l'utilisateur
+    this.gateway.emitToUser(utilisateurId, SOCKET_EVENTS.NOTIFICATION_READ, {
+      id,
+      lu: true,
+    });
+
+    return updated;
   }
 
   // ─── Marquer toutes les notifications comme lues ─────────────────────────

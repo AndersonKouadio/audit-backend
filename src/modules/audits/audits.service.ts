@@ -5,6 +5,8 @@ import { AuditQueryDto } from './dto/audit-query.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { UpdateAuditDto } from './dto/update-audit.dto';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
+import { AppGateway } from 'src/socket-io/gateways/app.gateway';
+import { SOCKET_EVENTS } from 'src/socket-io/interfaces/connected-user.interface';
 import { TypeActionLog, RoleUtilisateur, StatutAudit } from 'src/generated/prisma/enums';
 import {
   isPrivilegedRole,
@@ -33,6 +35,7 @@ export class AuditsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly journalService: JournalAuditService,
+    private readonly gateway: AppGateway,
   ) { }
 
   async create(dto: CreateAuditDto, user?: UserContext) {
@@ -74,6 +77,21 @@ export class AuditsService {
         entiteId: audit.id,
         entiteRef: audit.reference,
       });
+    }
+
+    // 🔌 Temps réel : notifier l'équipe d'audit + le département cible
+    const payload = {
+      id: audit.id,
+      reference: audit.reference,
+      titre: audit.titre,
+      type: audit.type,
+      statut: audit.statut,
+      departementId: audit.departementId,
+      responsableId: audit.responsableId,
+    };
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.AUDIT_CREATED, payload);
+    if (audit.departementId) {
+      this.gateway.emitToDept(audit.departementId, SOCKET_EVENTS.AUDIT_CREATED, payload);
     }
 
     return audit;
@@ -243,6 +261,28 @@ export class AuditsService {
       });
     }
 
+    // 🔌 Temps réel : update générique
+    const updatePayload = {
+      id: audit.id,
+      reference: audit.reference,
+      titre: audit.titre,
+      statut: audit.statut,
+      changes: Object.keys(data),
+    };
+    this.gateway.emitToAudit(audit.id, SOCKET_EVENTS.AUDIT_UPDATED, updatePayload);
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.AUDIT_UPDATED, updatePayload);
+
+    // Si le statut a changé : event spécialisé
+    if (data.statut && data.statut !== existing.statut) {
+      const statusPayload = {
+        id: audit.id,
+        reference: audit.reference,
+        ancienStatut: existing.statut,
+        nouveauStatut: data.statut,
+      };
+      this.gateway.broadcast(SOCKET_EVENTS.AUDIT_STATUS_CHANGED, statusPayload);
+    }
+
     return audit;
   }
 
@@ -261,6 +301,12 @@ export class AuditsService {
         entiteRef: audit.reference,
       });
     }
+
+    // 🔌 Temps réel
+    this.gateway.broadcast(SOCKET_EVENTS.AUDIT_DELETED, {
+      id,
+      reference: audit?.reference,
+    });
 
     return result;
   }

@@ -4,6 +4,8 @@ import { CreateCommentaireDto } from './dto/create-commentaire.dto';
 import { RoleUtilisateur, TypeActionLog } from 'src/generated/prisma/enums';
 import { isAuditTeamRole } from 'src/auth/constants/roles-matrix';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
+import { AppGateway } from 'src/socket-io/gateways/app.gateway';
+import { SOCKET_EVENTS } from 'src/socket-io/interfaces/connected-user.interface';
 
 export interface UserContext {
   id: string;
@@ -16,6 +18,7 @@ export class CommentairesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly journalService: JournalAuditService,
+    private readonly gateway: AppGateway,
   ) {}
 
   async create(createurId: string, dto: CreateCommentaireDto, user?: UserContext) {
@@ -57,6 +60,22 @@ export class CommentairesService {
         entiteRef: `${typeEntite}/${entiteId}`,
         details: { estInterne: estInterneSafe },
       });
+    }
+
+    // 🔌 Temps réel — diffuse à l'équipe audit (et seulement à eux si interne)
+    const payload = {
+      id: commentaire.id,
+      typeEntite,
+      entiteId,
+      texte: commentaire.texte,
+      estInterne: estInterneSafe,
+      creePar: createurId,
+      dateCreation: commentaire.dateCreation,
+    };
+    if (estInterneSafe) {
+      this.gateway.emitToAuditTeam(SOCKET_EVENTS.COMMENT_CREATED, payload);
+    } else {
+      this.gateway.broadcast(SOCKET_EVENTS.COMMENT_CREATED, payload);
     }
 
     return commentaire;
@@ -109,6 +128,13 @@ export class CommentairesService {
         entiteRef: `${existing.typeEntite}/${existing.entiteId}`,
       });
     }
+
+    // 🔌 Temps réel
+    this.gateway.broadcast(SOCKET_EVENTS.COMMENT_DELETED, {
+      id,
+      typeEntite: existing.typeEntite,
+      entiteId: existing.entiteId,
+    });
 
     return result;
   }

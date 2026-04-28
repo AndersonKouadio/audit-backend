@@ -12,6 +12,8 @@ import { UpdatePointsAuditDto } from './dto/update-points-audit.dto';
 import { PointAudit } from 'src/generated/prisma/client';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { AppGateway } from 'src/socket-io/gateways/app.gateway';
+import { SOCKET_EVENTS } from 'src/socket-io/interfaces/connected-user.interface';
 import { RoleUtilisateur, StatutAudit, StatutPoint, TypeActionLog } from 'src/generated/prisma/enums';
 import { isPrivilegedRole } from 'src/auth/constants/roles-matrix';
 
@@ -73,6 +75,7 @@ export class PointsAuditService {
     private readonly prisma: PrismaService,
     private readonly journalService: JournalAuditService,
     private readonly notificationsService: NotificationsService,
+    private readonly gateway: AppGateway,
   ) {}
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -120,6 +123,20 @@ export class PointsAuditService {
         entiteRef: point.reference,
       });
     }
+
+    // 🔌 Temps réel : push création
+    const createPayload = {
+      id: point.id,
+      reference: point.reference,
+      titre: point.titre,
+      auditId: point.auditId,
+      departementId: point.departementId,
+      criticite: point.criticite,
+      statut: point.statut,
+    };
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.POINT_CREATED, createPayload);
+    this.gateway.emitToDept(point.departementId, SOCKET_EVENTS.POINT_CREATED, createPayload);
+    this.gateway.emitToAudit(point.auditId, SOCKET_EVENTS.POINT_CREATED, createPayload);
 
     // Notifier le Risk Champion + Manager du département concerné par le point
     try {
@@ -364,6 +381,17 @@ export class PointsAuditService {
       });
     }
 
+    // 🔌 Temps réel
+    const updatePayload = {
+      id: point.id,
+      reference: point.reference,
+      auditId: point.auditId,
+      departementId: point.departementId,
+      changes: Object.keys(dto),
+    };
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.POINT_UPDATED, updatePayload);
+    this.gateway.emitToDept(point.departementId, SOCKET_EVENTS.POINT_UPDATED, updatePayload);
+
     return point;
   }
 
@@ -440,6 +468,20 @@ export class PointsAuditService {
       entiteRef: point.reference,
       details: { statutBu, commentaireStatutBu: commentaireStatutBu.trim() },
     });
+
+    // 🔌 Temps réel — l'équipe audit doit voir les déclarations BU instantanément
+    const buPayload = {
+      id: point.id,
+      reference: point.reference,
+      auditId: point.auditId,
+      departementId: point.departementId,
+      ancienStatutBu: existing.statutBu,
+      nouveauStatutBu: statutBu,
+      commentaireStatutBu: commentaireStatutBu.trim(),
+      modifieParId: user.id,
+    };
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.POINT_STATUS_BU_CHANGED, buPayload);
+    this.gateway.emitToDept(point.departementId, SOCKET_EVENTS.POINT_STATUS_BU_CHANGED, buPayload);
 
     return point;
   }
@@ -587,6 +629,24 @@ export class PointsAuditService {
       }
     }
 
+    // 🔌 Temps réel — broadcast pour mise à jour des reportings ageing/flash
+    const statusPayload = {
+      id: point.id,
+      reference: point.reference,
+      auditId: point.auditId,
+      departementId: point.departementId,
+      ancienStatut: existing.statut,
+      nouveauStatut: statut,
+      modifieParId: user.id,
+      modifieParNom: user.nom,
+    };
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.POINT_STATUS_CHANGED, statusPayload);
+    this.gateway.emitToDept(point.departementId, SOCKET_EVENTS.POINT_STATUS_CHANGED, statusPayload);
+    this.gateway.broadcast(SOCKET_EVENTS.DASHBOARD_STATS_CHANGED, {
+      reason: 'point_status_changed',
+      pointId: point.id,
+    });
+
     return point;
   }
 
@@ -597,7 +657,7 @@ export class PointsAuditService {
   async remove(id: string, user?: UserContext) {
     const point = await this.prisma.pointAudit.findUnique({
       where: { id },
-      select: { reference: true },
+      select: { reference: true, auditId: true, departementId: true },
     });
     if (!point) throw new NotFoundException("Point d'audit introuvable.");
 
@@ -614,6 +674,16 @@ export class PointsAuditService {
         entiteRef: point.reference,
       });
     }
+
+    // 🔌 Temps réel
+    const deletePayload = {
+      id,
+      reference: point.reference,
+      auditId: point.auditId,
+      departementId: point.departementId,
+    };
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.POINT_DELETED, deletePayload);
+    this.gateway.emitToDept(point.departementId, SOCKET_EVENTS.POINT_DELETED, deletePayload);
 
     return result;
   }

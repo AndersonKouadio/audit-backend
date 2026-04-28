@@ -20,6 +20,7 @@ import { NotificationsModule } from 'src/modules/notifications/notifications.mod
 import { PiecesJointesModule } from 'src/modules/pieces-jointes/pieces-jointes.module';
 import { FormulaireRafModule } from 'src/modules/formulaire-raf/formulaire-raf.module';
 import { ParametresSystemeModule } from 'src/modules/parametres-systeme/parametres-systeme.module';
+import { SocketIoModule } from 'src/socket-io/socket-io.module';
 
 @Module({
   imports: [
@@ -46,6 +47,9 @@ import { ParametresSystemeModule } from 'src/modules/parametres-systeme/parametr
 
     // 2. Socle technique (Base de données)
     PrismaModule,
+
+    // 2.bis. WebSocket Gateway global (temps réel)
+    SocketIoModule,
 
     // 3. Modules de Sécurité
     AuthModule,

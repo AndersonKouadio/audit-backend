@@ -3,6 +3,8 @@ import { TypeActionLog } from 'src/generated/prisma/enums';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JournalQueryDto } from './dto/journal-query.dto';
+import { AppGateway } from 'src/socket-io/gateways/app.gateway';
+import { SOCKET_EVENTS } from 'src/socket-io/interfaces/connected-user.interface';
 
 export interface LogActionPayload {
   utilisateurId?: string;
@@ -20,10 +22,13 @@ export interface LogActionPayload {
 
 @Injectable()
 export class JournalAuditService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly gateway: AppGateway,
+  ) {}
 
   async logAction(payload: LogActionPayload) {
-    return this.prisma.journalAudit.create({
+    const entry = await this.prisma.journalAudit.create({
       data: {
         utilisateurId: payload.utilisateurId,
         utilisateurNom: payload.utilisateurNom,
@@ -38,6 +43,13 @@ export class JournalAuditService {
         userAgent: payload.userAgent,
       },
     });
+
+    // 🔌 Live feed du journal d'audit (page Journal en temps réel)
+    // Les rôles autorisés à voir le journal sont déjà filtrés par le RolesGuard
+    // côté GET /journal-audit. Le push ici sert à push aux admins/managers.
+    this.gateway.emitToAdmins(SOCKET_EVENTS.JOURNAL_ENTRY, entry);
+
+    return entry;
   }
 
   async findAll(query: JournalQueryDto): Promise<PaginationResponseDto<any>> {

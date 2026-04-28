@@ -12,6 +12,8 @@ import {
 } from 'src/auth/constants/roles-matrix';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { AppGateway } from 'src/socket-io/gateways/app.gateway';
+import { SOCKET_EVENTS } from 'src/socket-io/interfaces/connected-user.interface';
 
 export interface UserContext {
   id: string;
@@ -26,6 +28,7 @@ export class ActionsPointsService {
     private readonly prisma: PrismaService,
     private readonly journalService: JournalAuditService,
     private readonly notificationsService: NotificationsService,
+    private readonly gateway: AppGateway,
   ) {}
 
   async create(dto: CreateActionPointDto, user?: UserContext) {
@@ -57,6 +60,18 @@ export class ActionsPointsService {
         entiteRef: action.description?.slice(0, 80) ?? action.id,
       });
     }
+
+    // 🔌 Temps réel — équipe audit + responsable
+    const createPayload = {
+      id: action.id,
+      pointAuditId: action.pointAuditId,
+      responsableId: action.responsableId,
+      description: action.description?.slice(0, 120),
+      dateEcheance: action.dateEcheance,
+      statut: action.statut,
+    };
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.ACTION_CREATED, createPayload);
+    this.gateway.emitToUser(action.responsableId, SOCKET_EVENTS.ACTION_CREATED, createPayload);
 
     // Notifier le responsable assigné de cette action
     try {
@@ -231,6 +246,18 @@ export class ActionsPointsService {
       });
     }
 
+    // 🔌 Temps réel
+    const updatePayload = {
+      id: updated.id,
+      pointAuditId: updated.pointAuditId,
+      responsableId: updated.responsableId,
+      avancement: updated.avancement,
+      statut: updated.statut,
+      changes: Object.keys(dto),
+    };
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.ACTION_UPDATED, updatePayload);
+    this.gateway.emitToUser(updated.responsableId, SOCKET_EVENTS.ACTION_UPDATED, updatePayload);
+
     return updated;
   }
 
@@ -250,6 +277,12 @@ export class ActionsPointsService {
         entiteRef: existing.description?.slice(0, 80) ?? existing.id,
       });
     }
+
+    // 🔌 Temps réel
+    this.gateway.emitToAuditTeam(SOCKET_EVENTS.ACTION_DELETED, {
+      id,
+      pointAuditId: existing.pointAuditId,
+    });
 
     return result;
   }
