@@ -498,6 +498,36 @@ export class FormulaireRafService {
     return { ...updated, statutRaf: computeStatutRaf(updated) };
   }
 
+  // ─── Délier un point d'un RAF ─────────────────────────────────────────────
+
+  async delierPointAudit(id: string, pointAuditId: string) {
+    const raf = await this.prisma.formulaireAcceptationRisque.findUnique({
+      where: { id },
+    });
+    if (!raf) throw new NotFoundException('Formulaire RAF introuvable.');
+
+    // Refus si déjà validé par le comité (intégrité du workflow)
+    if (raf.dateValidationFinal) {
+      throw new ForbiddenException(
+        'Impossible de délier un point d\'un RAF déjà validé par le Comité d\'Audit.',
+      );
+    }
+
+    const updated = await this.prisma.formulaireAcceptationRisque.update({
+      where: { id },
+      data: {
+        pointsAudit: { disconnect: { id: pointAuditId } },
+      },
+      include: {
+        pointsAudit: {
+          select: { id: true, reference: true, titre: true, statut: true },
+        },
+      },
+    });
+
+    return { ...updated, statutRaf: computeStatutRaf(updated) };
+  }
+
   // ─── Annuler / supprimer un RAF ────────────────────────────────────────────
 
   async remove(id: string, actor?: { id: string; role: string; nom: string }) {

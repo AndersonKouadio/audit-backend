@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { RoleUtilisateur, StatutPoint, StatutAudit, StatutUtilisateur } from 'src/generated/prisma/enums';
+import { RoleUtilisateur, StatutActionPoint, StatutPoint, StatutAudit, StatutUtilisateur } from 'src/generated/prisma/enums';
 
 // Rôles BU : leurs alertes sont filtrées par département
 const ROLES_BU: string[] = [
@@ -216,7 +216,7 @@ export class DashboardService {
       }),
       this.prisma.actionPoint.findMany({
         where: {
-          statut: { notIn: ['TERMINE', 'ANNULEE'] as any },
+          statut: { notIn: [StatutActionPoint.TERMINE, StatutActionPoint.ANNULEE] },
           dateEcheance: { lt: maintenant },
           ...(departementFilter.departementId
             ? { pointAudit: { departementId: departementFilter.departementId } }

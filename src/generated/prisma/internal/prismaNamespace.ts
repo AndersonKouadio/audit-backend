@@ -2048,6 +2048,7 @@ export const NotificationScalarFieldEnum = {
   message: 'message',
   type: 'type',
   statut: 'statut',
+  tentatives: 'tentatives',
   utilisateurId: 'utilisateurId',
   lu: 'lu',
   dateLecture: 'dateLecture',
@@ -2289,6 +2290,20 @@ export type EnumStatutPointFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'StatutPoint[]'
  */
 export type ListEnumStatutPointFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutPoint[]'>
+    
+
+
+/**
+ * Reference to a field of type 'StatutActionPoint'
+ */
+export type EnumStatutActionPointFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutActionPoint'>
+    
+
+
+/**
+ * Reference to a field of type 'StatutActionPoint[]'
+ */
+export type ListEnumStatutActionPointFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatutActionPoint[]'>
     
 
 

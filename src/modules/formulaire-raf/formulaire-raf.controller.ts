@@ -135,6 +135,27 @@ export class FormulaireRafController {
     return this.rafService.lierPointAudit(id, pointAuditId);
   }
 
+  // ── Délier un point d'audit d'un RAF ──────────────────────────────────────
+
+  @Delete(':id/lier-point/:pointAuditId')
+  @Roles(
+    RoleUtilisateur.ADMIN,
+    RoleUtilisateur.DIRECTEUR_AUDIT,
+    RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
+    RoleUtilisateur.CHEF_MISSION,
+    RoleUtilisateur.MANAGER_METIER,
+  )
+  @ApiOperation({
+    summary: "Délier un point d'audit d'un RAF",
+    description: "Refuse si le RAF est déjà validé par le Comité d'Audit.",
+  })
+  delierPointAudit(
+    @Param('id') id: string,
+    @Param('pointAuditId') pointAuditId: string,
+  ) {
+    return this.rafService.delierPointAudit(id, pointAuditId);
+  }
+
   // ── Annuler / supprimer un formulaire RAF ─────────────────────────────────
 
   @Delete(':id')

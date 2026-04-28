@@ -292,6 +292,13 @@ model PointAudit {
   @@map("points_audit")
 }
 
+enum StatutActionPoint {
+  A_FAIRE
+  EN_COURS
+  TERMINE
+  ANNULEE
+}
+
 model ActionPoint {
   id String @id @default(cuid())
 
@@ -305,8 +312,8 @@ model ActionPoint {
   responsable   Utilisateur @relation("ProprietaireAction", fields: [responsableId], references: [id])
 
   dateEcheance DateTime
-  statut       String // "A_FAIRE", "EN_COURS", "TERMINE"
-  avancement   Int      @default(0)
+  statut       StatutActionPoint @default(A_FAIRE)
+  avancement   Int               @default(0)
 
   piecesJointes PieceJointe[] // Preuves de réalisation
 
@@ -564,7 +571,10 @@ model Notification {
   message      String @db.Text
 
   type   String // "RELANCE_DUNNING", "RETOUR_AUTO_CPF", "CHANGEMENT_STATUT", "ECHEANCE_PROCHE", "INFO"
-  statut String // "EN_ATTENTE", "ENVOYE", "ERREUR"
+  statut String // "EN_ATTENTE", "ENVOYE", "ERREUR", "ERREUR_PERMANENTE" (3 retries dépassés)
+
+  // Compteur de tentatives d'envoi (max 3 avant ERREUR_PERMANENTE)
+  tentatives Int @default(0)
 
   // Lien optionnel vers l'utilisateur (pour le centre de notifications in-app)
   utilisateurId String?

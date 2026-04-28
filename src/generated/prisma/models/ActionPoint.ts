@@ -40,7 +40,7 @@ export type ActionPointMinAggregateOutputType = {
   description: string | null
   responsableId: string | null
   dateEcheance: Date | null
-  statut: string | null
+  statut: $Enums.StatutActionPoint | null
   avancement: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -52,7 +52,7 @@ export type ActionPointMaxAggregateOutputType = {
   description: string | null
   responsableId: string | null
   dateEcheance: Date | null
-  statut: string | null
+  statut: $Enums.StatutActionPoint | null
   avancement: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -209,7 +209,7 @@ export type ActionPointGroupByOutputType = {
   description: string
   responsableId: string
   dateEcheance: Date
-  statut: string
+  statut: $Enums.StatutActionPoint
   avancement: number
   createdAt: Date
   updatedAt: Date
@@ -244,7 +244,7 @@ export type ActionPointWhereInput = {
   description?: Prisma.StringFilter<"ActionPoint"> | string
   responsableId?: Prisma.StringFilter<"ActionPoint"> | string
   dateEcheance?: Prisma.DateTimeFilter<"ActionPoint"> | Date | string
-  statut?: Prisma.StringFilter<"ActionPoint"> | string
+  statut?: Prisma.EnumStatutActionPointFilter<"ActionPoint"> | $Enums.StatutActionPoint
   avancement?: Prisma.IntFilter<"ActionPoint"> | number
   createdAt?: Prisma.DateTimeFilter<"ActionPoint"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ActionPoint"> | Date | string
@@ -277,7 +277,7 @@ export type ActionPointWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringFilter<"ActionPoint"> | string
   responsableId?: Prisma.StringFilter<"ActionPoint"> | string
   dateEcheance?: Prisma.DateTimeFilter<"ActionPoint"> | Date | string
-  statut?: Prisma.StringFilter<"ActionPoint"> | string
+  statut?: Prisma.EnumStatutActionPointFilter<"ActionPoint"> | $Enums.StatutActionPoint
   avancement?: Prisma.IntFilter<"ActionPoint"> | number
   createdAt?: Prisma.DateTimeFilter<"ActionPoint"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ActionPoint"> | Date | string
@@ -312,7 +312,7 @@ export type ActionPointScalarWhereWithAggregatesInput = {
   description?: Prisma.StringWithAggregatesFilter<"ActionPoint"> | string
   responsableId?: Prisma.StringWithAggregatesFilter<"ActionPoint"> | string
   dateEcheance?: Prisma.DateTimeWithAggregatesFilter<"ActionPoint"> | Date | string
-  statut?: Prisma.StringWithAggregatesFilter<"ActionPoint"> | string
+  statut?: Prisma.EnumStatutActionPointWithAggregatesFilter<"ActionPoint"> | $Enums.StatutActionPoint
   avancement?: Prisma.IntWithAggregatesFilter<"ActionPoint"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ActionPoint"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ActionPoint"> | Date | string
@@ -322,7 +322,7 @@ export type ActionPointCreateInput = {
   id?: string
   description: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -337,7 +337,7 @@ export type ActionPointUncheckedCreateInput = {
   description: string
   responsableId: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -348,7 +348,7 @@ export type ActionPointUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -363,7 +363,7 @@ export type ActionPointUncheckedUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   responsableId?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -376,7 +376,7 @@ export type ActionPointCreateManyInput = {
   description: string
   responsableId: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -386,7 +386,7 @@ export type ActionPointUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -398,7 +398,7 @@ export type ActionPointUncheckedUpdateManyInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   responsableId?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -547,6 +547,10 @@ export type ActionPointUncheckedUpdateManyWithoutPointAuditNestedInput = {
   deleteMany?: Prisma.ActionPointScalarWhereInput | Prisma.ActionPointScalarWhereInput[]
 }
 
+export type EnumStatutActionPointFieldUpdateOperationsInput = {
+  set?: $Enums.StatutActionPoint
+}
+
 export type ActionPointCreateNestedOneWithoutPiecesJointesInput = {
   create?: Prisma.XOR<Prisma.ActionPointCreateWithoutPiecesJointesInput, Prisma.ActionPointUncheckedCreateWithoutPiecesJointesInput>
   connectOrCreate?: Prisma.ActionPointCreateOrConnectWithoutPiecesJointesInput
@@ -567,7 +571,7 @@ export type ActionPointCreateWithoutResponsableInput = {
   id?: string
   description: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -580,7 +584,7 @@ export type ActionPointUncheckedCreateWithoutResponsableInput = {
   pointAuditId: string
   description: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -622,7 +626,7 @@ export type ActionPointScalarWhereInput = {
   description?: Prisma.StringFilter<"ActionPoint"> | string
   responsableId?: Prisma.StringFilter<"ActionPoint"> | string
   dateEcheance?: Prisma.DateTimeFilter<"ActionPoint"> | Date | string
-  statut?: Prisma.StringFilter<"ActionPoint"> | string
+  statut?: Prisma.EnumStatutActionPointFilter<"ActionPoint"> | $Enums.StatutActionPoint
   avancement?: Prisma.IntFilter<"ActionPoint"> | number
   createdAt?: Prisma.DateTimeFilter<"ActionPoint"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ActionPoint"> | Date | string
@@ -632,7 +636,7 @@ export type ActionPointCreateWithoutPointAuditInput = {
   id?: string
   description: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -645,7 +649,7 @@ export type ActionPointUncheckedCreateWithoutPointAuditInput = {
   description: string
   responsableId: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -682,7 +686,7 @@ export type ActionPointCreateWithoutPiecesJointesInput = {
   id?: string
   description: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -696,7 +700,7 @@ export type ActionPointUncheckedCreateWithoutPiecesJointesInput = {
   description: string
   responsableId: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -722,7 +726,7 @@ export type ActionPointUpdateWithoutPiecesJointesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -736,7 +740,7 @@ export type ActionPointUncheckedUpdateWithoutPiecesJointesInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   responsableId?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -747,7 +751,7 @@ export type ActionPointCreateManyResponsableInput = {
   pointAuditId: string
   description: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -757,7 +761,7 @@ export type ActionPointUpdateWithoutResponsableInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -770,7 +774,7 @@ export type ActionPointUncheckedUpdateWithoutResponsableInput = {
   pointAuditId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -782,7 +786,7 @@ export type ActionPointUncheckedUpdateManyWithoutResponsableInput = {
   pointAuditId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -793,7 +797,7 @@ export type ActionPointCreateManyPointAuditInput = {
   description: string
   responsableId: string
   dateEcheance: Date | string
-  statut: string
+  statut?: $Enums.StatutActionPoint
   avancement?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -803,7 +807,7 @@ export type ActionPointUpdateWithoutPointAuditInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -816,7 +820,7 @@ export type ActionPointUncheckedUpdateWithoutPointAuditInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   responsableId?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -828,7 +832,7 @@ export type ActionPointUncheckedUpdateManyWithoutPointAuditInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   responsableId?: Prisma.StringFieldUpdateOperationsInput | string
   dateEcheance?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  statut?: Prisma.StringFieldUpdateOperationsInput | string
+  statut?: Prisma.EnumStatutActionPointFieldUpdateOperationsInput | $Enums.StatutActionPoint
   avancement?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -950,7 +954,7 @@ export type $ActionPointPayload<ExtArgs extends runtime.Types.Extensions.Interna
     description: string
     responsableId: string
     dateEcheance: Date
-    statut: string
+    statut: $Enums.StatutActionPoint
     avancement: number
     createdAt: Date
     updatedAt: Date
@@ -1385,7 +1389,7 @@ export interface ActionPointFieldRefs {
   readonly description: Prisma.FieldRef<"ActionPoint", 'String'>
   readonly responsableId: Prisma.FieldRef<"ActionPoint", 'String'>
   readonly dateEcheance: Prisma.FieldRef<"ActionPoint", 'DateTime'>
-  readonly statut: Prisma.FieldRef<"ActionPoint", 'String'>
+  readonly statut: Prisma.FieldRef<"ActionPoint", 'StatutActionPoint'>
   readonly avancement: Prisma.FieldRef<"ActionPoint", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ActionPoint", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ActionPoint", 'DateTime'>

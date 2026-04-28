@@ -3,7 +3,7 @@ import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateActionPointDto } from './dto/create-actions-point.dto';
 import { UpdateActionPointDto } from './dto/update-actions-point.dto';
-import { RoleUtilisateur, TypeActionLog } from 'src/generated/prisma/enums';
+import { RoleUtilisateur, StatutActionPoint, TypeActionLog } from 'src/generated/prisma/enums';
 import {
   isPrivilegedRole,
   isBURole,
@@ -40,7 +40,7 @@ export class ActionsPointsService {
     const action = await this.prisma.actionPoint.create({
       data: {
         ...dto,
-        statut: 'A_FAIRE',
+        statut: StatutActionPoint.A_FAIRE,
         dateEcheance: new Date(dto.dateEcheance),
         avancement: 0,
       },
@@ -220,9 +220,9 @@ export class ActionsPointsService {
 
     // Logique métier : statut auto selon l'avancement
     if (dto.avancement === 100) {
-      dto.statut = 'TERMINE';
+      dto.statut = StatutActionPoint.TERMINE;
     } else if (dto.avancement && dto.avancement > 0 && dto.avancement < 100) {
-      dto.statut = 'EN_COURS';
+      dto.statut = StatutActionPoint.EN_COURS;
     }
 
     const updated = await this.prisma.actionPoint.update({

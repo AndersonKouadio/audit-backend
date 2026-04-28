@@ -321,6 +321,23 @@ export type EnumStatutPointWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumStatutPointFilter<$PrismaModel>
 }
 
+export type EnumStatutActionPointFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatutActionPoint | Prisma.EnumStatutActionPointFieldRefInput<$PrismaModel>
+  in?: $Enums.StatutActionPoint[] | Prisma.ListEnumStatutActionPointFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatutActionPoint[] | Prisma.ListEnumStatutActionPointFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatutActionPointFilter<$PrismaModel> | $Enums.StatutActionPoint
+}
+
+export type EnumStatutActionPointWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatutActionPoint | Prisma.EnumStatutActionPointFieldRefInput<$PrismaModel>
+  in?: $Enums.StatutActionPoint[] | Prisma.ListEnumStatutActionPointFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatutActionPoint[] | Prisma.ListEnumStatutActionPointFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatutActionPointWithAggregatesFilter<$PrismaModel> | $Enums.StatutActionPoint
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStatutActionPointFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStatutActionPointFilter<$PrismaModel>
+}
+
 export type EnumStatutImportBatchFilter<$PrismaModel = never> = {
   equals?: $Enums.StatutImportBatch | Prisma.EnumStatutImportBatchFieldRefInput<$PrismaModel>
   in?: $Enums.StatutImportBatch[] | Prisma.ListEnumStatutImportBatchFieldRefInput<$PrismaModel>
@@ -792,6 +809,23 @@ export type NestedEnumStatutPointWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumStatutPointFilter<$PrismaModel>
   _max?: Prisma.NestedEnumStatutPointFilter<$PrismaModel>
+}
+
+export type NestedEnumStatutActionPointFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatutActionPoint | Prisma.EnumStatutActionPointFieldRefInput<$PrismaModel>
+  in?: $Enums.StatutActionPoint[] | Prisma.ListEnumStatutActionPointFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatutActionPoint[] | Prisma.ListEnumStatutActionPointFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatutActionPointFilter<$PrismaModel> | $Enums.StatutActionPoint
+}
+
+export type NestedEnumStatutActionPointWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatutActionPoint | Prisma.EnumStatutActionPointFieldRefInput<$PrismaModel>
+  in?: $Enums.StatutActionPoint[] | Prisma.ListEnumStatutActionPointFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatutActionPoint[] | Prisma.ListEnumStatutActionPointFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatutActionPointWithAggregatesFilter<$PrismaModel> | $Enums.StatutActionPoint
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStatutActionPointFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStatutActionPointFilter<$PrismaModel>
 }
 
 export type NestedEnumStatutImportBatchFilter<$PrismaModel = never> = {

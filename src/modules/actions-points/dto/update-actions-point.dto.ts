@@ -1,5 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { StatutActionPoint } from 'src/generated/prisma/enums';
 import { CreateActionPointDto } from './create-actions-point.dto';
 
 export class UpdateActionPointDto extends PartialType(CreateActionPointDto) {
@@ -12,9 +13,10 @@ export class UpdateActionPointDto extends PartialType(CreateActionPointDto) {
 
   @ApiProperty({
     example: 'EN_COURS',
-    enum: ['A_FAIRE', 'EN_COURS', 'TERMINE'],
+    enum: StatutActionPoint,
+    description: 'Statut auto-calculé selon avancement (100% → TERMINE)',
   })
   @IsOptional()
-  @IsString()
-  statut?: string;
+  @IsEnum(StatutActionPoint)
+  statut?: StatutActionPoint;
 }

@@ -68,7 +68,9 @@ export class NotificationsService {
 
   async envoyerNotification(notifId: string): Promise<boolean> {
     const notif = await this.prisma.notification.findUnique({ where: { id: notifId } });
-    if (!notif || notif.statut === 'ENVOYE') return false;
+    if (!notif || notif.statut === 'ENVOYE' || notif.statut === 'ERREUR_PERMANENTE') {
+      return false;
+    }
 
     // Vérifier si les notifications email sont activées dans les paramètres système
     const params = await this.parametresService.obtenir();
@@ -89,10 +91,22 @@ export class NotificationsService {
       text: notif.message,
     });
 
+    // Retry logic : marquer ERREUR_PERMANENTE après 3 tentatives échouées
+    const nouvellesTentatives = notif.tentatives + 1;
+    let nouveauStatut: string;
+    if (success) {
+      nouveauStatut = 'ENVOYE';
+    } else if (nouvellesTentatives >= 3) {
+      nouveauStatut = 'ERREUR_PERMANENTE';
+    } else {
+      nouveauStatut = 'ERREUR';
+    }
+
     await this.prisma.notification.update({
       where: { id: notifId },
       data: {
-        statut: success ? 'ENVOYE' : 'ERREUR',
+        statut: nouveauStatut,
+        tentatives: nouvellesTentatives,
         dateEnvoi: success ? new Date() : undefined,
       },
     });
@@ -100,11 +114,22 @@ export class NotificationsService {
     return success;
   }
 
-  // ─── Traiter toutes les notifications EN_ATTENTE ──────────────────────────
+  // ─── Traiter toutes les notifications EN_ATTENTE ou ERREUR (retry) ───────
 
   async traiterFileAttente(): Promise<{ envoyes: number; erreurs: number }> {
+    const maintenant = new Date();
     const notifs = await this.prisma.notification.findMany({
-      where: { statut: 'EN_ATTENTE' },
+      where: {
+        // EN_ATTENTE : nouvelles | ERREUR : retry tant que tentatives < 3
+        statut: { in: ['EN_ATTENTE', 'ERREUR'] },
+        // Respecter la date programmée si définie
+        OR: [
+          { dateProgrammee: null },
+          { dateProgrammee: { lte: maintenant } },
+        ],
+        tentatives: { lt: 3 },
+      },
+      orderBy: { createdAt: 'asc' },
       take: 50,
     });
 

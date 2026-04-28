@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { StatutPoint } from 'src/generated/prisma/enums';
+import { StatutActionPoint, StatutPoint } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { EmailService } from 'src/modules/mailer/email.service';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
@@ -185,7 +185,22 @@ export class SchedulerService {
           dateEcheanceActuelle: { lt: maintenant },
         },
         include: {
-          departement: { select: { nom: true, code: true } },
+          departement: {
+            select: {
+              nom: true,
+              code: true,
+              riskChampion: { select: { id: true, email: true } },
+              employes: {
+                where: { role: 'MANAGER_METIER' },
+                select: { id: true, email: true },
+              },
+            },
+          },
+          audit: {
+            select: {
+              responsable: { select: { id: true, email: true } },
+            },
+          },
           createur: { select: { id: true, email: true, nom: true, prenom: true } },
         },
         take: 50,
@@ -221,10 +236,47 @@ export class SchedulerService {
         });
 
         // Incrémenter le compteur de relances
-        await this.prisma.pointAudit.update({
+        const updated = await this.prisma.pointAudit.update({
           where: { id: point.id },
           data: { nbRelances: { increment: 1 } },
+          select: { nbRelances: true },
         });
+
+        // 🔼 Escalade au manager BU + chef mission après 3 relances sans réponse
+        if (updated.nbRelances >= 3) {
+          const escaladeTargets = new Map<string, string>();
+          // Risk Champion
+          if (point.departement?.riskChampion) {
+            escaladeTargets.set(
+              point.departement.riskChampion.id,
+              point.departement.riskChampion.email,
+            );
+          }
+          // Manager(s) BU du dept
+          for (const m of point.departement?.employes ?? []) {
+            escaladeTargets.set(m.id, m.email);
+          }
+          // Chef de mission
+          if (point.audit?.responsable) {
+            escaladeTargets.set(point.audit.responsable.id, point.audit.responsable.email);
+          }
+
+          for (const [userId, email] of escaladeTargets) {
+            try {
+              await this.notificationsService.creer({
+                destinataire: email,
+                utilisateurId: userId,
+                sujet: `[ESCALADE] ${point.reference} - ${updated.nbRelances} relances sans réponse`,
+                message: `Le constat ${point.reference} - ${point.titre} a fait l'objet de ${updated.nbRelances} relances sans réponse de l'audité. Une intervention managériale est requise. Échéance dépassée depuis le ${point.dateEcheanceActuelle.toLocaleDateString('fr-FR')}.`,
+                type: 'ESCALADE_DUNNING',
+                entiteType: 'POINT_AUDIT',
+                entiteId: point.id,
+              });
+            } catch (err) {
+              this.logger.warn(`Échec notif escalade user ${userId}: ${(err as Error).message}`);
+            }
+          }
+        }
       }
 
       // Prochaine exécution
@@ -335,7 +387,7 @@ export class SchedulerService {
     const actions = await this.prisma.actionPoint.findMany({
       where: {
         dateEcheance: { gte: dans6Jours, lt: dans7Jours },
-        statut: { notIn: ['TERMINE', 'ANNULEE'] as any },
+        statut: { notIn: [StatutActionPoint.TERMINE, StatutActionPoint.ANNULEE] },
       },
       include: {
         responsable: { select: { id: true, email: true } },

@@ -86,6 +86,16 @@ export const StatutPoint = {
 export type StatutPoint = (typeof StatutPoint)[keyof typeof StatutPoint]
 
 
+export const StatutActionPoint = {
+  A_FAIRE: 'A_FAIRE',
+  EN_COURS: 'EN_COURS',
+  TERMINE: 'TERMINE',
+  ANNULEE: 'ANNULEE'
+} as const
+
+export type StatutActionPoint = (typeof StatutActionPoint)[keyof typeof StatutActionPoint]
+
+
 export const StatutImportBatch = {
   EN_ATTENTE_VALIDATION: 'EN_ATTENTE_VALIDATION',
   EN_COURS_TRAITEMENT: 'EN_COURS_TRAITEMENT',
