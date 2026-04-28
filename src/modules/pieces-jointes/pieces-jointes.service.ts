@@ -8,8 +8,9 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as fs from 'fs';
 import * as path from 'path';
-import { RoleUtilisateur } from 'src/generated/prisma/enums';
+import { RoleUtilisateur, TypeActionLog } from 'src/generated/prisma/enums';
 import { isPrivilegedRole } from 'src/auth/constants/roles-matrix';
+import { JournalAuditService } from '../journal-audit/journal-audit.service';
 
 export interface UserContext {
   id: string;
@@ -55,6 +56,7 @@ export class PiecesJointesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
+    private readonly journalService: JournalAuditService,
   ) {
     this.uploadsDir = path.join(process.cwd(), 'uploads');
     this.baseUrl = this.config.get<string>('APP_URL', 'http://localhost:3001');
@@ -73,6 +75,7 @@ export class PiecesJointesService {
     entiteType: string,
     entiteId: string,
     televerseePar: string,
+    actor?: UserContext,
   ) {
     // Validation du type d'entité
     if (!ENTITES_VALIDES.includes(entiteType as EntiteType)) {
@@ -116,6 +119,24 @@ export class PiecesJointesService {
         [champRelation]: entiteId,
       },
     });
+
+    if (actor) {
+      await this.journalService.logAction({
+        utilisateurId: actor.id,
+        utilisateurNom: actor.nom,
+        utilisateurRole: actor.role as string,
+        action: TypeActionLog.CREATION,
+        entiteType: 'PIECE_JOINTE',
+        entiteId: piece.id,
+        entiteRef: piece.nomFichier,
+        details: {
+          parentEntiteType: entiteType,
+          parentEntiteId: entiteId,
+          taille: file.size,
+          mime: file.mimetype,
+        },
+      });
+    }
 
     return piece;
   }
@@ -163,6 +184,20 @@ export class PiecesJointesService {
     }
 
     await this.prisma.pieceJointe.delete({ where: { id } });
+
+    // Log audit (si on a le user complet)
+    if (typeof user === 'object' && user.id) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role as string,
+        action: TypeActionLog.SUPPRESSION,
+        entiteType: 'PIECE_JOINTE',
+        entiteId: id,
+        entiteRef: piece.nomFichier,
+      });
+    }
+
     return { success: true, message: 'Fichier supprimé.' };
   }
 

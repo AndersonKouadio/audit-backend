@@ -61,6 +61,7 @@ export class PiecesJointesController {
       entiteType,
       entiteId,
       req.user.id,
+      req.user,
     );
   }
 

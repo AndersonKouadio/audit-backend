@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RoleUtilisateur } from 'src/generated/prisma/enums';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -32,7 +32,7 @@ export class ParametresSystemeController {
   @Patch()
   @Roles(RoleUtilisateur.ADMIN)
   @ApiOperation({ summary: 'Mettre à jour les paramètres système (ADMIN uniquement)' })
-  modifier(@Body() dto: UpdateParametresDto) {
-    return this.service.modifier(dto);
+  modifier(@Req() req, @Body() dto: UpdateParametresDto) {
+    return this.service.modifier(dto, req.user);
   }
 }

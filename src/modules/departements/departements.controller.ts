@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -34,8 +35,8 @@ export class DepartementsController {
     RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
   )
   @ApiOperation({ summary: 'Créer un nouveau département' })
-  create(@Body() createDepartementDto: CreateDepartementDto) {
-    return this.departementsService.create(createDepartementDto);
+  create(@Req() req, @Body() createDepartementDto: CreateDepartementDto) {
+    return this.departementsService.create(createDepartementDto, req.user);
   }
 
   @Get('liste')
@@ -67,16 +68,17 @@ export class DepartementsController {
   )
   @ApiOperation({ summary: 'Modifier un département' })
   update(
+    @Req() req,
     @Param('id') id: string,
     @Body() updateDepartementDto: UpdateDepartementDto,
   ) {
-    return this.departementsService.update(id, updateDepartementDto);
+    return this.departementsService.update(id, updateDepartementDto, req.user);
   }
 
   @Delete(':id')
   @Roles(RoleUtilisateur.ADMIN, RoleUtilisateur.DIRECTEUR_AUDIT)
   @ApiOperation({ summary: 'Supprimer un département' })
-  remove(@Param('id') id: string) {
-    return this.departementsService.remove(id);
+  remove(@Req() req, @Param('id') id: string) {
+    return this.departementsService.remove(id, req.user);
   }
 }

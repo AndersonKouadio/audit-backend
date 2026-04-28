@@ -47,8 +47,8 @@ export class UtilisateursController {
     status: 201,
     description: 'Utilisateur créé (Mot de passe masqué)',
   })
-  create(@Body() createUtilisateurDto: CreateUtilisateurDto) {
-    return this.utilisateursService.create(createUtilisateurDto);
+  create(@Req() req: Request, @Body() createUtilisateurDto: CreateUtilisateurDto) {
+    return this.utilisateursService.create(createUtilisateurDto, req.user as Utilisateur);
   }
 
   @Patch('me')
@@ -87,7 +87,7 @@ export class UtilisateursController {
         'Vous ne pouvez modifier que les profils des autres utilisateurs',
       );
     }
-    return this.utilisateursService.update(id, updateUtilisateurDto);
+    return this.utilisateursService.update(id, updateUtilisateurDto, user);
   }
 
   @Delete(':id')

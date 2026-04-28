@@ -38,7 +38,7 @@ export class UtilisateursService {
   };
 
   // --- CRÉATION ---
-  async create(dto: CreateUtilisateurDto) {
+  async create(dto: CreateUtilisateurDto, actor?: UserContext) {
     // 1. Vérifier si l'email existe déjà
     const existingUser = await this.prisma.utilisateur.findUnique({
       where: { email: dto.email },
@@ -65,6 +65,19 @@ export class UtilisateursService {
       },
       include: this.defaultInclude,
     });
+
+    if (actor) {
+      await this.journalService.logAction({
+        utilisateurId: actor.id,
+        utilisateurNom: actor.nom,
+        utilisateurRole: actor.role as string,
+        action: TypeActionLog.CREATION,
+        entiteType: 'UTILISATEUR',
+        entiteId: user.id,
+        entiteRef: `${user.prenom} ${user.nom} (${user.email})`,
+        details: { role: user.role, departementId: user.departementId },
+      });
+    }
 
     // On retire le mot de passe proprement
     const { motDePasse, ...userWithoutPassword } = user;
@@ -135,7 +148,7 @@ export class UtilisateursService {
   }
 
   // --- MISE À JOUR (ADMIN) ---
-  async update(id: string, dto: UpdateUtilisateurDto) {
+  async update(id: string, dto: UpdateUtilisateurDto, actor?: UserContext) {
     if (dto.motDePasse && dto.motDePasse.trim() !== '') {
       const salt = await bcrypt.genSalt(10);
       dto.motDePasse = await bcrypt.hash(dto.motDePasse, salt);
@@ -149,6 +162,19 @@ export class UtilisateursService {
         data: dto,
         include: this.defaultInclude,
       });
+
+      if (actor) {
+        await this.journalService.logAction({
+          utilisateurId: actor.id,
+          utilisateurNom: actor.nom,
+          utilisateurRole: actor.role as string,
+          action: TypeActionLog.MODIFICATION,
+          entiteType: 'UTILISATEUR',
+          entiteId: id,
+          entiteRef: `${user.prenom} ${user.nom} (${user.email})`,
+          details: { champs: Object.keys(dto) },
+        });
+      }
 
       const { motDePasse, ...userWithoutPassword } = user;
       return userWithoutPassword;

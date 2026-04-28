@@ -6,12 +6,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { StatutUtilisateur } from 'src/generated/prisma/enums';
+import { StatutUtilisateur, TypeActionLog } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto } from '../dto/login.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from '../dto/password-reset.dto';
 import { JsonWebTokenService } from './json-web-token.service';
 import { OtpService } from './otp.service';
+import { JournalAuditService } from 'src/modules/journal-audit/journal-audit.service';
 
 // Compteur en mémoire des tentatives échouées par email (lockout léger)
 // Reset au redémarrage. Pour persistant, utiliser Redis.
@@ -32,6 +33,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JsonWebTokenService,
     private readonly otpService: OtpService,
+    private readonly journalService: JournalAuditService,
   ) {}
 
   private checkLockout(email: string) {
@@ -109,6 +111,17 @@ export class AuthService {
       data: { derniereConnexion: new Date() },
     });
 
+    // 4.bis. Journal d'audit - CONNEXION
+    await this.journalService.logAction({
+      utilisateurId: user.id,
+      utilisateurNom: `${user.prenom} ${user.nom}`,
+      utilisateurRole: user.role,
+      action: TypeActionLog.CONNEXION,
+      entiteType: 'UTILISATEUR',
+      entiteId: user.id,
+      entiteRef: user.email,
+    });
+
     // 5. Générer le token
     const token = await this.jwtService.generateToken(user.id, user.role);
 
@@ -138,7 +151,24 @@ export class AuthService {
     };
   }
 
-  logout(userId: string) {
+  async logout(userId: string) {
+    const user = await this.prisma.utilisateur.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, prenom: true, nom: true, role: true },
+    });
+
+    if (user) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: `${user.prenom} ${user.nom}`,
+        utilisateurRole: user.role,
+        action: TypeActionLog.DECONNEXION,
+        entiteType: 'UTILISATEUR',
+        entiteId: user.id,
+        entiteRef: user.email,
+      });
+    }
+
     // Stateless JWT : On ne fait rien côté serveur,
     // ou on pourrait ajouter le token à une blacklist Redis.
     return { message: 'Déconnexion réussie', userId };

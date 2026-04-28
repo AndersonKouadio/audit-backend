@@ -8,15 +8,26 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateDepartementDto } from './dto/create-departement.dto';
 import { UpdateDepartementDto } from './dto/update-departement.dto';
 import { Departement } from 'src/generated/prisma/client';
+import { TypeActionLog } from 'src/generated/prisma/enums';
 import { DeptQueryDto } from './dto/dept-query.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
+import { JournalAuditService } from '../journal-audit/journal-audit.service';
+
+export interface UserContext {
+  id: string;
+  nom: string;
+  role: string;
+}
 
 @Injectable()
 export class DepartementsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly journalService: JournalAuditService,
+  ) {}
 
   // CRÉATION
-  async create(dto: CreateDepartementDto) {
+  async create(dto: CreateDepartementDto, actor?: UserContext) {
     const exists = await this.prisma.departement.findUnique({
       where: { code: dto.code },
     });
@@ -39,7 +50,21 @@ export class DepartementsService {
         throw new NotFoundException('Risk Champion (utilisateur) introuvable.');
     }
 
-    return this.prisma.departement.create({ data: dto });
+    const dept = await this.prisma.departement.create({ data: dto });
+
+    if (actor) {
+      await this.journalService.logAction({
+        utilisateurId: actor.id,
+        utilisateurNom: actor.nom,
+        utilisateurRole: actor.role,
+        action: TypeActionLog.CREATION,
+        entiteType: 'DEPARTEMENT',
+        entiteId: dept.id,
+        entiteRef: `${dept.code} - ${dept.nom}`,
+      });
+    }
+
+    return dept;
   }
   // --- LISTE PAGINÉE ET FILTRÉE ---
   async findAllPaginated(
@@ -130,7 +155,7 @@ export class DepartementsService {
     return dept;
   }
 
-  async update(id: string, dto: UpdateDepartementDto) {
+  async update(id: string, dto: UpdateDepartementDto, actor?: UserContext) {
     if (dto.riskChampionId) {
       const champion = await this.prisma.utilisateur.findUnique({
         where: { id: dto.riskChampionId },
@@ -139,13 +164,28 @@ export class DepartementsService {
         throw new NotFoundException('Risk Champion (utilisateur) introuvable.');
     }
 
-    return this.prisma.departement.update({
+    const dept = await this.prisma.departement.update({
       where: { id },
       data: dto,
     });
+
+    if (actor) {
+      await this.journalService.logAction({
+        utilisateurId: actor.id,
+        utilisateurNom: actor.nom,
+        utilisateurRole: actor.role,
+        action: TypeActionLog.MODIFICATION,
+        entiteType: 'DEPARTEMENT',
+        entiteId: id,
+        entiteRef: `${dept.code} - ${dept.nom}`,
+        details: { champs: Object.keys(dto) },
+      });
+    }
+
+    return dept;
   }
 
-  async remove(id: string) {
+  async remove(id: string, actor?: UserContext) {
     const dept = await this.prisma.departement.findUnique({
       where: { id },
       include: {
@@ -167,7 +207,21 @@ export class DepartementsService {
     }
 
     try {
-      return await this.prisma.departement.delete({ where: { id } });
+      const result = await this.prisma.departement.delete({ where: { id } });
+
+      if (actor) {
+        await this.journalService.logAction({
+          utilisateurId: actor.id,
+          utilisateurNom: actor.nom,
+          utilisateurRole: actor.role,
+          action: TypeActionLog.SUPPRESSION,
+          entiteType: 'DEPARTEMENT',
+          entiteId: id,
+          entiteRef: `${dept.code} - ${dept.nom}`,
+        });
+      }
+
+      return result;
     } catch (err) {
       throw new BadRequestException(
         `Suppression impossible : contraintes en base (${(err as Error).message}).`,

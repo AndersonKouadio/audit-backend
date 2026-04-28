@@ -1,6 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateParametresDto } from './dto/update-parametres.dto';
+import { TypeActionLog } from 'src/generated/prisma/enums';
+import { JournalAuditService } from '../journal-audit/journal-audit.service';
+
+export interface UserContext {
+  id: string;
+  nom: string;
+  role: string;
+}
 
 // Valeurs par défaut du singleton (si la ligne n'existe pas encore en BD)
 const DEFAULTS = {
@@ -17,7 +25,10 @@ const DEFAULTS = {
 
 @Injectable()
 export class ParametresSystemeService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly journalService: JournalAuditService,
+  ) {}
 
   private get db() {
     return this.prisma.parametresSysteme;
@@ -35,11 +46,26 @@ export class ParametresSystemeService {
 
   // ── Mettre à jour les paramètres ─────────────────────────────────────────
 
-  async modifier(dto: UpdateParametresDto) {
-    return this.db.upsert({
+  async modifier(dto: UpdateParametresDto, actor?: UserContext) {
+    const result = await this.db.upsert({
       where: { id: 'singleton' },
       create: { ...DEFAULTS, ...dto },
       update: dto,
     });
+
+    if (actor) {
+      await this.journalService.logAction({
+        utilisateurId: actor.id,
+        utilisateurNom: actor.nom,
+        utilisateurRole: actor.role,
+        action: TypeActionLog.MODIFICATION,
+        entiteType: 'PARAMETRES_SYSTEME',
+        entiteId: result.id,
+        entiteRef: 'Configuration globale',
+        details: { champs: Object.keys(dto) },
+      });
+    }
+
+    return result;
   }
 }

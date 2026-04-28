@@ -40,6 +40,15 @@ export class AuthController {
     return user;
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Déconnexion (loggé dans le journal d\'audit)' })
+  async logout(@Req() req: Request) {
+    const user = req.user as Utilisateur;
+    return this.authService.logout(user.id);
+  }
+
   @Post('forgot-password')
   @Throttle({ auth: { limit: 5, ttl: 15 * 60_000 } })
   @HttpCode(HttpStatus.OK)

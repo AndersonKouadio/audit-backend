@@ -4,9 +4,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { RoleUtilisateur, StatutPoint } from 'src/generated/prisma/enums';
+import { RoleUtilisateur, StatutPoint, TypeActionLog } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { JournalAuditService } from '../journal-audit/journal-audit.service';
 import { ApprouverRafDto } from './dto/approuver-raf.dto';
 import { CreateFormulaireRafDto } from './dto/create-formulaire-raf.dto';
 
@@ -31,6 +32,7 @@ export class FormulaireRafService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
+    private readonly journalService: JournalAuditService,
   ) {}
 
   // ─── Helper : notifier les utilisateurs d'un rôle donné ──────────────────
@@ -60,7 +62,7 @@ export class FormulaireRafService {
 
   // ─── Créer un formulaire RAF ───────────────────────────────────────────────
 
-  async creer(dto: CreateFormulaireRafDto) {
+  async creer(dto: CreateFormulaireRafDto, actor?: { id: string; nom: string; role: string }) {
     // Générer un numéro unique RAF-YYYY-XXX
     const annee = new Date().getFullYear();
     const prefix = `RAF-${annee}-`;
@@ -97,6 +99,19 @@ export class FormulaireRafService {
       `Un formulaire d'acceptation du risque (${numero}) a été soumis et nécessite votre approbation en tant que Head of Department.`,
       raf.id,
     );
+
+    if (actor) {
+      await this.journalService.logAction({
+        utilisateurId: actor.id,
+        utilisateurNom: actor.nom,
+        utilisateurRole: actor.role,
+        action: TypeActionLog.CREATION,
+        entiteType: 'FORMULAIRE_RAF',
+        entiteId: raf.id,
+        entiteRef: raf.numero,
+        details: { nbPoints: dto.pointAuditIds?.length ?? 0 },
+      });
+    }
 
     return { ...raf, statutRaf: computeStatutRaf(raf) };
   }
@@ -345,6 +360,22 @@ export class FormulaireRafService {
         break;
     }
 
+    if (user?.id) {
+      await this.journalService.logAction({
+        utilisateurId: user.id,
+        utilisateurNom: user.nom,
+        utilisateurRole: user.role,
+        action:
+          dto.niveau === 'COMITE'
+            ? TypeActionLog.PUBLICATION_RAPPORT
+            : TypeActionLog.VALIDATION_POINT,
+        entiteType: 'FORMULAIRE_RAF',
+        entiteId: id,
+        entiteRef: updated.numero,
+        details: { niveau: dto.niveau, signataire: dto.nom },
+      });
+    }
+
     return { ...updated, statutRaf: computeStatutRaf(updated) };
   }
 
@@ -378,7 +409,7 @@ export class FormulaireRafService {
 
   // ─── Annuler / supprimer un RAF ────────────────────────────────────────────
 
-  async remove(id: string, _user?: { id: string; role: string; nom: string }) {
+  async remove(id: string, actor?: { id: string; role: string; nom: string }) {
     const raf = await this.prisma.formulaireAcceptationRisque.findUnique({
       where: { id },
     });
@@ -391,6 +422,20 @@ export class FormulaireRafService {
       );
     }
 
-    return this.prisma.formulaireAcceptationRisque.delete({ where: { id } });
+    const result = await this.prisma.formulaireAcceptationRisque.delete({ where: { id } });
+
+    if (actor) {
+      await this.journalService.logAction({
+        utilisateurId: actor.id,
+        utilisateurNom: actor.nom,
+        utilisateurRole: actor.role,
+        action: TypeActionLog.SUPPRESSION,
+        entiteType: 'FORMULAIRE_RAF',
+        entiteId: id,
+        entiteRef: raf.numero,
+      });
+    }
+
+    return result;
   }
 }

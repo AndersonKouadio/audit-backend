@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Req, UseGuards } from '@nestjs/common';
 import { OrganisationService } from './organisation.service';
 import { SetupOrganisationDto } from './dto/setup-organisation.dto';
 import { UpdateOrganisationDto } from './dto/update-organisation.dto';
@@ -38,14 +38,14 @@ export class OrganisationController {
     status: 201,
     description: 'Organisation configurée avec succès',
   })
-  setup(@Body() dto: SetupOrganisationDto) {
-    return this.organisationService.setup(dto);
+  setup(@Req() req, @Body() dto: SetupOrganisationDto) {
+    return this.organisationService.setup(dto, req.user);
   }
 
   @Patch()
   @Roles(...ROLES_GESTION_USERS)
   @ApiOperation({ summary: 'Mise à jour des infos (Nom, Logo...)' })
-  update(@Body() dto: UpdateOrganisationDto) {
-    return this.organisationService.update(dto);
+  update(@Req() req, @Body() dto: UpdateOrganisationDto) {
+    return this.organisationService.update(dto, req.user);
   }
 }

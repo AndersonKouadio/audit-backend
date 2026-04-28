@@ -8,12 +8,14 @@ import { AuthController } from './auth.controller';
 import { JsonWebTokenService } from './services/json-web-token.service';
 import { OtpService } from './services/otp.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { JournalAuditModule } from 'src/modules/journal-audit/journal-audit.module';
 import ms from 'ms';
 import type { StringValue } from 'ms';
 
 @Module({
   imports: [
     PassportModule,
+    JournalAuditModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({

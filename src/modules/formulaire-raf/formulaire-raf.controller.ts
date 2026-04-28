@@ -48,8 +48,8 @@ export class FormulaireRafController {
     description:
       "Crée un Formulaire d'Acceptation du Risque. Réservé aux managers métier et à l'équipe audit.",
   })
-  creer(@Body() dto: CreateFormulaireRafDto) {
-    return this.rafService.creer(dto);
+  creer(@Req() req, @Body() dto: CreateFormulaireRafDto) {
+    return this.rafService.creer(dto, req.user);
   }
 
   // ── Lister les formulaires RAF ─────────────────────────────────────────────
