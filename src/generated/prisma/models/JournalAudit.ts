@@ -29,6 +29,8 @@ export type JournalAuditMinAggregateOutputType = {
   utilisateurId: string | null
   utilisateurNom: string | null
   utilisateurRole: string | null
+  utilisateurEmail: string | null
+  utilisateurDept: string | null
   action: $Enums.TypeActionLog | null
   entiteType: string | null
   entiteId: string | null
@@ -44,6 +46,8 @@ export type JournalAuditMaxAggregateOutputType = {
   utilisateurId: string | null
   utilisateurNom: string | null
   utilisateurRole: string | null
+  utilisateurEmail: string | null
+  utilisateurDept: string | null
   action: $Enums.TypeActionLog | null
   entiteType: string | null
   entiteId: string | null
@@ -59,6 +63,8 @@ export type JournalAuditCountAggregateOutputType = {
   utilisateurId: number
   utilisateurNom: number
   utilisateurRole: number
+  utilisateurEmail: number
+  utilisateurDept: number
   action: number
   entiteType: number
   entiteId: number
@@ -77,6 +83,8 @@ export type JournalAuditMinAggregateInputType = {
   utilisateurId?: true
   utilisateurNom?: true
   utilisateurRole?: true
+  utilisateurEmail?: true
+  utilisateurDept?: true
   action?: true
   entiteType?: true
   entiteId?: true
@@ -92,6 +100,8 @@ export type JournalAuditMaxAggregateInputType = {
   utilisateurId?: true
   utilisateurNom?: true
   utilisateurRole?: true
+  utilisateurEmail?: true
+  utilisateurDept?: true
   action?: true
   entiteType?: true
   entiteId?: true
@@ -107,6 +117,8 @@ export type JournalAuditCountAggregateInputType = {
   utilisateurId?: true
   utilisateurNom?: true
   utilisateurRole?: true
+  utilisateurEmail?: true
+  utilisateurDept?: true
   action?: true
   entiteType?: true
   entiteId?: true
@@ -196,6 +208,8 @@ export type JournalAuditGroupByOutputType = {
   utilisateurId: string | null
   utilisateurNom: string | null
   utilisateurRole: string | null
+  utilisateurEmail: string | null
+  utilisateurDept: string | null
   action: $Enums.TypeActionLog
   entiteType: string
   entiteId: string | null
@@ -233,6 +247,8 @@ export type JournalAuditWhereInput = {
   utilisateurId?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
   utilisateurNom?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
   utilisateurRole?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
+  utilisateurEmail?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
+  utilisateurDept?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
   action?: Prisma.EnumTypeActionLogFilter<"JournalAudit"> | $Enums.TypeActionLog
   entiteType?: Prisma.StringFilter<"JournalAudit"> | string
   entiteId?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
@@ -249,6 +265,8 @@ export type JournalAuditOrderByWithRelationInput = {
   utilisateurId?: Prisma.SortOrderInput | Prisma.SortOrder
   utilisateurNom?: Prisma.SortOrderInput | Prisma.SortOrder
   utilisateurRole?: Prisma.SortOrderInput | Prisma.SortOrder
+  utilisateurEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  utilisateurDept?: Prisma.SortOrderInput | Prisma.SortOrder
   action?: Prisma.SortOrder
   entiteType?: Prisma.SortOrder
   entiteId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -268,6 +286,8 @@ export type JournalAuditWhereUniqueInput = Prisma.AtLeast<{
   utilisateurId?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
   utilisateurNom?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
   utilisateurRole?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
+  utilisateurEmail?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
+  utilisateurDept?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
   action?: Prisma.EnumTypeActionLogFilter<"JournalAudit"> | $Enums.TypeActionLog
   entiteType?: Prisma.StringFilter<"JournalAudit"> | string
   entiteId?: Prisma.StringNullableFilter<"JournalAudit"> | string | null
@@ -284,6 +304,8 @@ export type JournalAuditOrderByWithAggregationInput = {
   utilisateurId?: Prisma.SortOrderInput | Prisma.SortOrder
   utilisateurNom?: Prisma.SortOrderInput | Prisma.SortOrder
   utilisateurRole?: Prisma.SortOrderInput | Prisma.SortOrder
+  utilisateurEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  utilisateurDept?: Prisma.SortOrderInput | Prisma.SortOrder
   action?: Prisma.SortOrder
   entiteType?: Prisma.SortOrder
   entiteId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -306,6 +328,8 @@ export type JournalAuditScalarWhereWithAggregatesInput = {
   utilisateurId?: Prisma.StringNullableWithAggregatesFilter<"JournalAudit"> | string | null
   utilisateurNom?: Prisma.StringNullableWithAggregatesFilter<"JournalAudit"> | string | null
   utilisateurRole?: Prisma.StringNullableWithAggregatesFilter<"JournalAudit"> | string | null
+  utilisateurEmail?: Prisma.StringNullableWithAggregatesFilter<"JournalAudit"> | string | null
+  utilisateurDept?: Prisma.StringNullableWithAggregatesFilter<"JournalAudit"> | string | null
   action?: Prisma.EnumTypeActionLogWithAggregatesFilter<"JournalAudit"> | $Enums.TypeActionLog
   entiteType?: Prisma.StringWithAggregatesFilter<"JournalAudit"> | string
   entiteId?: Prisma.StringNullableWithAggregatesFilter<"JournalAudit"> | string | null
@@ -322,6 +346,8 @@ export type JournalAuditCreateInput = {
   utilisateurId?: string | null
   utilisateurNom?: string | null
   utilisateurRole?: string | null
+  utilisateurEmail?: string | null
+  utilisateurDept?: string | null
   action: $Enums.TypeActionLog
   entiteType: string
   entiteId?: string | null
@@ -338,6 +364,8 @@ export type JournalAuditUncheckedCreateInput = {
   utilisateurId?: string | null
   utilisateurNom?: string | null
   utilisateurRole?: string | null
+  utilisateurEmail?: string | null
+  utilisateurDept?: string | null
   action: $Enums.TypeActionLog
   entiteType: string
   entiteId?: string | null
@@ -354,6 +382,8 @@ export type JournalAuditUpdateInput = {
   utilisateurId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utilisateurNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utilisateurRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utilisateurEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utilisateurDept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action?: Prisma.EnumTypeActionLogFieldUpdateOperationsInput | $Enums.TypeActionLog
   entiteType?: Prisma.StringFieldUpdateOperationsInput | string
   entiteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -370,6 +400,8 @@ export type JournalAuditUncheckedUpdateInput = {
   utilisateurId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utilisateurNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utilisateurRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utilisateurEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utilisateurDept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action?: Prisma.EnumTypeActionLogFieldUpdateOperationsInput | $Enums.TypeActionLog
   entiteType?: Prisma.StringFieldUpdateOperationsInput | string
   entiteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -386,6 +418,8 @@ export type JournalAuditCreateManyInput = {
   utilisateurId?: string | null
   utilisateurNom?: string | null
   utilisateurRole?: string | null
+  utilisateurEmail?: string | null
+  utilisateurDept?: string | null
   action: $Enums.TypeActionLog
   entiteType: string
   entiteId?: string | null
@@ -402,6 +436,8 @@ export type JournalAuditUpdateManyMutationInput = {
   utilisateurId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utilisateurNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utilisateurRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utilisateurEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utilisateurDept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action?: Prisma.EnumTypeActionLogFieldUpdateOperationsInput | $Enums.TypeActionLog
   entiteType?: Prisma.StringFieldUpdateOperationsInput | string
   entiteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -418,6 +454,8 @@ export type JournalAuditUncheckedUpdateManyInput = {
   utilisateurId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utilisateurNom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utilisateurRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utilisateurEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utilisateurDept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action?: Prisma.EnumTypeActionLogFieldUpdateOperationsInput | $Enums.TypeActionLog
   entiteType?: Prisma.StringFieldUpdateOperationsInput | string
   entiteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -434,6 +472,8 @@ export type JournalAuditCountOrderByAggregateInput = {
   utilisateurId?: Prisma.SortOrder
   utilisateurNom?: Prisma.SortOrder
   utilisateurRole?: Prisma.SortOrder
+  utilisateurEmail?: Prisma.SortOrder
+  utilisateurDept?: Prisma.SortOrder
   action?: Prisma.SortOrder
   entiteType?: Prisma.SortOrder
   entiteId?: Prisma.SortOrder
@@ -450,6 +490,8 @@ export type JournalAuditMaxOrderByAggregateInput = {
   utilisateurId?: Prisma.SortOrder
   utilisateurNom?: Prisma.SortOrder
   utilisateurRole?: Prisma.SortOrder
+  utilisateurEmail?: Prisma.SortOrder
+  utilisateurDept?: Prisma.SortOrder
   action?: Prisma.SortOrder
   entiteType?: Prisma.SortOrder
   entiteId?: Prisma.SortOrder
@@ -465,6 +507,8 @@ export type JournalAuditMinOrderByAggregateInput = {
   utilisateurId?: Prisma.SortOrder
   utilisateurNom?: Prisma.SortOrder
   utilisateurRole?: Prisma.SortOrder
+  utilisateurEmail?: Prisma.SortOrder
+  utilisateurDept?: Prisma.SortOrder
   action?: Prisma.SortOrder
   entiteType?: Prisma.SortOrder
   entiteId?: Prisma.SortOrder
@@ -486,6 +530,8 @@ export type JournalAuditSelect<ExtArgs extends runtime.Types.Extensions.Internal
   utilisateurId?: boolean
   utilisateurNom?: boolean
   utilisateurRole?: boolean
+  utilisateurEmail?: boolean
+  utilisateurDept?: boolean
   action?: boolean
   entiteType?: boolean
   entiteId?: boolean
@@ -502,6 +548,8 @@ export type JournalAuditSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   utilisateurId?: boolean
   utilisateurNom?: boolean
   utilisateurRole?: boolean
+  utilisateurEmail?: boolean
+  utilisateurDept?: boolean
   action?: boolean
   entiteType?: boolean
   entiteId?: boolean
@@ -518,6 +566,8 @@ export type JournalAuditSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   utilisateurId?: boolean
   utilisateurNom?: boolean
   utilisateurRole?: boolean
+  utilisateurEmail?: boolean
+  utilisateurDept?: boolean
   action?: boolean
   entiteType?: boolean
   entiteId?: boolean
@@ -534,6 +584,8 @@ export type JournalAuditSelectScalar = {
   utilisateurId?: boolean
   utilisateurNom?: boolean
   utilisateurRole?: boolean
+  utilisateurEmail?: boolean
+  utilisateurDept?: boolean
   action?: boolean
   entiteType?: boolean
   entiteId?: boolean
@@ -545,7 +597,7 @@ export type JournalAuditSelectScalar = {
   dateAction?: boolean
 }
 
-export type JournalAuditOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "utilisateurId" | "utilisateurNom" | "utilisateurRole" | "action" | "entiteType" | "entiteId" | "entiteRef" | "details" | "motif" | "adresseIP" | "userAgent" | "dateAction", ExtArgs["result"]["journalAudit"]>
+export type JournalAuditOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "utilisateurId" | "utilisateurNom" | "utilisateurRole" | "utilisateurEmail" | "utilisateurDept" | "action" | "entiteType" | "entiteId" | "entiteRef" | "details" | "motif" | "adresseIP" | "userAgent" | "dateAction", ExtArgs["result"]["journalAudit"]>
 
 export type $JournalAuditPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "JournalAudit"
@@ -555,6 +607,8 @@ export type $JournalAuditPayload<ExtArgs extends runtime.Types.Extensions.Intern
     utilisateurId: string | null
     utilisateurNom: string | null
     utilisateurRole: string | null
+    utilisateurEmail: string | null
+    utilisateurDept: string | null
     action: $Enums.TypeActionLog
     entiteType: string
     entiteId: string | null
@@ -991,6 +1045,8 @@ export interface JournalAuditFieldRefs {
   readonly utilisateurId: Prisma.FieldRef<"JournalAudit", 'String'>
   readonly utilisateurNom: Prisma.FieldRef<"JournalAudit", 'String'>
   readonly utilisateurRole: Prisma.FieldRef<"JournalAudit", 'String'>
+  readonly utilisateurEmail: Prisma.FieldRef<"JournalAudit", 'String'>
+  readonly utilisateurDept: Prisma.FieldRef<"JournalAudit", 'String'>
   readonly action: Prisma.FieldRef<"JournalAudit", 'TypeActionLog'>
   readonly entiteType: Prisma.FieldRef<"JournalAudit", 'String'>
   readonly entiteId: Prisma.FieldRef<"JournalAudit", 'String'>

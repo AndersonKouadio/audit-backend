@@ -120,6 +120,8 @@ export type StatutLigneImport = (typeof StatutLigneImport)[keyof typeof StatutLi
 export const TypeActionLog = {
   CONNEXION: 'CONNEXION',
   DECONNEXION: 'DECONNEXION',
+  ACCES_REFUSE: 'ACCES_REFUSE',
+  COMPTE_VERROUILLE: 'COMPTE_VERROUILLE',
   CREATION: 'CREATION',
   MODIFICATION: 'MODIFICATION',
   SUPPRESSION: 'SUPPRESSION',

@@ -1982,6 +1982,8 @@ export const JournalAuditScalarFieldEnum = {
   utilisateurId: 'utilisateurId',
   utilisateurNom: 'utilisateurNom',
   utilisateurRole: 'utilisateurRole',
+  utilisateurEmail: 'utilisateurEmail',
+  utilisateurDept: 'utilisateurDept',
   action: 'action',
   entiteType: 'entiteType',
   entiteId: 'entiteId',

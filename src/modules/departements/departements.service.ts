@@ -193,6 +193,35 @@ export class DepartementsService {
     return dept;
   }
 
+  /** Vérifie qu'un dept ne devient pas son propre ancêtre via parentId */
+  private async checkCircularReference(deptId: string, newParentId: string) {
+    if (deptId === newParentId) {
+      throw new BadRequestException(
+        'Un département ne peut pas être son propre parent.',
+      );
+    }
+    // Remonter la chaîne des parents : si on rencontre deptId → cycle
+    let current: { id: string; parentId: string | null } | null =
+      await this.prisma.departement.findUnique({
+        where: { id: newParentId },
+        select: { id: true, parentId: true },
+      });
+    const visited = new Set<string>();
+    while (current?.parentId) {
+      if (visited.has(current.parentId)) break; // sécurité anti-boucle infinie
+      visited.add(current.parentId);
+      if (current.parentId === deptId) {
+        throw new BadRequestException(
+          'Référence circulaire détectée : ce département serait son propre ancêtre.',
+        );
+      }
+      current = await this.prisma.departement.findUnique({
+        where: { id: current.parentId },
+        select: { id: true, parentId: true },
+      });
+    }
+  }
+
   async update(id: string, dto: UpdateDepartementDto, actor?: UserContext) {
     if (dto.riskChampionId) {
       const champion = await this.prisma.utilisateur.findUnique({
@@ -200,6 +229,11 @@ export class DepartementsService {
       });
       if (!champion)
         throw new NotFoundException('Risk Champion (utilisateur) introuvable.');
+    }
+
+    // Anti-cycle : si on change le parent, vérifier la chaîne
+    if (dto.parentId) {
+      await this.checkCircularReference(id, dto.parentId);
     }
 
     // Charger le champion existant pour détecter le changement

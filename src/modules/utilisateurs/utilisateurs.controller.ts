@@ -11,6 +11,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -53,6 +54,8 @@ export class UtilisateursController {
 
   @Patch('me')
   @Roles(...ROLES_AUTHENTIFIE) // FIX BUG : sans @Roles, le RolesGuard refusait l'accès
+  // Anti-abus : 10 mises à jour /me / 15 min (évite spam de changements password/email)
+  @Throttle({ auth: { limit: 10, ttl: 15 * 60_000 } })
   @ApiOperation({ summary: 'Mettre à jour mon profil personnel' })
   updateMe(@Req() req: Request, @Body() dto: UpdateMeDto) {
     const user = req.user as Utilisateur;

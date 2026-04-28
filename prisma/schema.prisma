@@ -466,6 +466,8 @@ enum TypeActionLog {
   // Auth
   CONNEXION
   DECONNEXION
+  ACCES_REFUSE // Tentative d'accès refusée par RolesGuard
+  COMPTE_VERROUILLE // Lockout après 5 échecs login
   // CRUD
   CREATION
   MODIFICATION
@@ -480,10 +482,12 @@ enum TypeActionLog {
 model JournalAudit {
   id String @id @default(cuid())
 
-  // Snapshot Utilisateur (Sécurité si user supprimé)
-  utilisateurId   String?
-  utilisateurNom  String?
-  utilisateurRole String?
+  // Snapshot Utilisateur étendu (Sécurité si user supprimé après le log)
+  utilisateurId      String?
+  utilisateurNom     String?
+  utilisateurRole    String?
+  utilisateurEmail   String?
+  utilisateurDept    String? // Code département snapshot
 
   action     TypeActionLog
   entiteType String // "POINT", "AUDIT"
@@ -500,6 +504,9 @@ model JournalAudit {
 
   @@index([entiteId])
   @@index([dateAction])
+  // Index composite pour les filtres GET /journal-audit (date + type + user)
+  @@index([dateAction, entiteType, utilisateurId])
+  @@index([utilisateurId, dateAction])
   @@map("journaux_audit")
 }
 

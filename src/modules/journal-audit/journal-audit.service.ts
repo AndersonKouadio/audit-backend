@@ -10,6 +10,8 @@ export interface LogActionPayload {
   utilisateurId?: string;
   utilisateurNom?: string;
   utilisateurRole?: string;
+  utilisateurEmail?: string;
+  utilisateurDept?: string;
   action: TypeActionLog;
   entiteType: string;
   entiteId?: string;
@@ -33,6 +35,8 @@ export class JournalAuditService {
         utilisateurId: payload.utilisateurId,
         utilisateurNom: payload.utilisateurNom,
         utilisateurRole: payload.utilisateurRole,
+        utilisateurEmail: payload.utilisateurEmail,
+        utilisateurDept: payload.utilisateurDept,
         action: payload.action,
         entiteType: payload.entiteType,
         entiteId: payload.entiteId,

@@ -314,6 +314,17 @@ export class SchedulerService {
     }
   }
 
+  /**
+   * Détermine la tranche d'ageing d'un point.
+   * Tranches du cahier des charges : <90j / 90-180 / 180-365 / >365
+   */
+  private getAgeingTranche(ageing: number): string {
+    if (ageing < 90) return '<90j';
+    if (ageing < 180) return '90-180j';
+    if (ageing < 365) return '180-365j';
+    return '>365j';
+  }
+
   private async _handleAgeingUpdateImpl() {
     const maintenant = new Date();
 
@@ -322,19 +333,64 @@ export class SchedulerService {
         statut: { in: [StatutPoint.OUVERT, StatutPoint.EN_ATTENTE_VALIDATION] },
         dateEcheanceActuelle: { lt: maintenant },
       },
-      select: { id: true, dateEcheanceActuelle: true },
+      select: {
+        id: true,
+        reference: true,
+        titre: true,
+        ageing: true,
+        dateEcheanceActuelle: true,
+        createurId: true,
+        departement: {
+          select: {
+            riskChampion: { select: { id: true, email: true } },
+          },
+        },
+        createur: { select: { id: true, email: true } },
+      },
     });
 
+    let basculements = 0;
     for (const point of pointsOuverts) {
       const diffMs = maintenant.getTime() - point.dateEcheanceActuelle.getTime();
-      const ageing = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const nouvelAgeing = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      const ancienneTranche = this.getAgeingTranche(point.ageing);
+      const nouvelleTranche = this.getAgeingTranche(nouvelAgeing);
+
       await this.prisma.pointAudit.update({
         where: { id: point.id },
-        data: { ageing },
+        data: { ageing: nouvelAgeing },
       });
+
+      // 🔔 Si la tranche change (ex: <90j → 90-180j), notifier les acteurs
+      if (ancienneTranche !== nouvelleTranche) {
+        basculements += 1;
+        const targets = new Map<string, string>();
+        if (point.createur) targets.set(point.createur.id, point.createur.email);
+        if (point.departement?.riskChampion) {
+          targets.set(point.departement.riskChampion.id, point.departement.riskChampion.email);
+        }
+        for (const [userId, email] of targets) {
+          try {
+            await this.notificationsService.creer({
+              destinataire: email,
+              utilisateurId: userId,
+              sujet: `[AGEING] ${point.reference} → ${nouvelleTranche}`,
+              message: `Le constat ${point.reference} - ${point.titre} a basculé de la tranche d'ageing "${ancienneTranche}" à "${nouvelleTranche}" (${nouvelAgeing} jours de retard). Une intervention est recommandée.`,
+              type: 'AGEING_TRANCHE_CHANGE',
+              entiteType: 'POINT_AUDIT',
+              entiteId: point.id,
+            });
+          } catch (err) {
+            this.logger.warn(`Échec notif tranche ageing: ${(err as Error).message}`);
+          }
+        }
+      }
     }
 
-    this.logger.log(`✅ Ageing mis à jour pour ${pointsOuverts.length} point(s).`);
+    this.logger.log(
+      `✅ Ageing mis à jour pour ${pointsOuverts.length} point(s) — ${basculements} basculement(s) de tranche.`,
+    );
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -364,29 +420,32 @@ export class SchedulerService {
   // CRON 6 : Rappel échéance proche pour actions (J-7) — chaque jour à 8h30
   // ═══════════════════════════════════════════════════════════════════════════
 
-  @Cron('30 8 * * *', { name: 'action-deadline-j7', timeZone: 'Africa/Abidjan' })
-  async handleActionDeadlineJ7() {
+  @Cron('30 8 * * *', { name: 'action-deadline-reminders', timeZone: 'Africa/Abidjan' })
+  async handleActionDeadlineReminders() {
     try {
-      await this._handleActionDeadlineJ7Impl();
+      // 3 rappels échelonnés : J-7, J-3, J-1
+      await this._handleActionDeadlineImpl(7);
+      await this._handleActionDeadlineImpl(3);
+      await this._handleActionDeadlineImpl(1);
     } catch (err) {
       this.logger.error(
-        `❌ Cron action-deadline-j7 a échoué : ${(err as Error).message}`,
+        `❌ Cron action-deadline-reminders a échoué : ${(err as Error).message}`,
         (err as Error).stack,
       );
     }
   }
 
-  private async _handleActionDeadlineJ7Impl() {
+  private async _handleActionDeadlineImpl(daysAhead: number) {
     const maintenant = new Date();
-    const dans7Jours = new Date(maintenant);
-    dans7Jours.setDate(dans7Jours.getDate() + 7);
-    const dans6Jours = new Date(maintenant);
-    dans6Jours.setDate(dans6Jours.getDate() + 6);
+    const debut = new Date(maintenant);
+    debut.setDate(debut.getDate() + daysAhead - 1);
+    const fin = new Date(maintenant);
+    fin.setDate(fin.getDate() + daysAhead);
 
-    // Actions arrivant à échéance dans exactement 7 jours (entre J+6 et J+7) et non terminées
+    // Actions arrivant à échéance dans exactement N jours et non terminées
     const actions = await this.prisma.actionPoint.findMany({
       where: {
-        dateEcheance: { gte: dans6Jours, lt: dans7Jours },
+        dateEcheance: { gte: debut, lt: fin },
         statut: { notIn: [StatutActionPoint.TERMINE, StatutActionPoint.ANNULEE] },
       },
       include: {
@@ -406,9 +465,12 @@ export class SchedulerService {
     });
 
     if (actions.length === 0) {
-      this.logger.log('✅ Aucune action à rappeler (J-7).');
+      this.logger.log(`✅ Aucune action à rappeler (J-${daysAhead}).`);
       return;
     }
+
+    // Niveau d'urgence selon la proximité
+    const urgence = daysAhead === 1 ? 'URGENT' : daysAhead === 3 ? 'IMPORTANT' : 'RAPPEL';
 
     for (const action of actions) {
       const targets = new Map<string, string>();
@@ -423,8 +485,8 @@ export class SchedulerService {
         await this.notificationsService.creer({
           destinataire: email,
           utilisateurId: userId,
-          sujet: `[ÉCHÉANCE J-7] ${action.pointAudit?.reference}`,
-          message: `Une action corrective sur le constat ${action.pointAudit?.reference} - ${action.pointAudit?.titre} arrive à échéance dans 7 jours (${new Date(action.dateEcheance).toLocaleDateString('fr-FR')}).`,
+          sujet: `[${urgence} J-${daysAhead}] ${action.pointAudit?.reference}`,
+          message: `${urgence} : Une action corrective sur le constat ${action.pointAudit?.reference} - ${action.pointAudit?.titre} arrive à échéance dans ${daysAhead} jour${daysAhead > 1 ? 's' : ''} (${new Date(action.dateEcheance).toLocaleDateString('fr-FR')}).`,
           type: 'ECHEANCE_PROCHE_ACTION',
           entiteType: 'ACTION_POINT',
           entiteId: action.id,
@@ -505,5 +567,36 @@ export class SchedulerService {
     });
 
     this.logger.log(`✅ Daily Digest envoyé à ${teamEmail} (${totalPoints} points, ${pointsEnRetard} en retard).`);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CRON 7 : Nettoyage des notifications anciennes (dimanche 3h, hebdo)
+  // Purge les notifications envoyées il y a > 90 jours pour limiter la taille de la table
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  @Cron('0 3 * * 0', { name: 'cleanup-notifications', timeZone: 'Africa/Abidjan' })
+  async handleCleanupNotifications() {
+    try {
+      const ilYa90Jours = new Date();
+      ilYa90Jours.setDate(ilYa90Jours.getDate() - 90);
+
+      const { count } = await this.prisma.notification.deleteMany({
+        where: {
+          OR: [
+            // Notifications envoyées et lues depuis > 90j
+            { statut: 'ENVOYE', lu: true, createdAt: { lt: ilYa90Jours } },
+            // Notifications en erreur permanente depuis > 90j (nettoyage)
+            { statut: 'ERREUR_PERMANENTE', createdAt: { lt: ilYa90Jours } },
+          ],
+        },
+      });
+
+      this.logger.log(`🧹 Nettoyage notifs : ${count} notification(s) supprimée(s) (>90j).`);
+    } catch (err) {
+      this.logger.error(
+        `❌ Cron cleanup-notifications a échoué : ${(err as Error).message}`,
+        (err as Error).stack,
+      );
+    }
   }
 }

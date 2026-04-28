@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { StatutUtilisateur, TypeActionLog } from 'src/generated/prisma/enums';
+import { RoleUtilisateur, StatutUtilisateur, TypeActionLog } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto } from '../dto/login.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from '../dto/password-reset.dto';
@@ -51,7 +51,7 @@ export class AuthService {
     }
   }
 
-  private recordFailedAttempt(email: string) {
+  private async recordFailedAttempt(email: string) {
     const now = Date.now();
     const rec = failedAttempts.get(email);
     if (!rec || now - rec.firstAt > ATTEMPT_WINDOW_MS) {
@@ -64,6 +64,41 @@ export class AuthService {
       this.logger.warn(
         `🔒 Compte ${email} verrouillé pour ${LOCKOUT_MS / 60_000} min après ${MAX_ATTEMPTS} échecs.`,
       );
+      // 📜 Logger dans le journal d'audit
+      try {
+        await this.journalService.logAction({
+          action: TypeActionLog.COMPTE_VERROUILLE,
+          entiteType: 'AUTH',
+          entiteRef: email,
+          details: { tentatives: rec.count, lockoutMs: LOCKOUT_MS },
+          motif: `${MAX_ATTEMPTS} tentatives infructueuses dans ${ATTEMPT_WINDOW_MS / 60_000} min`,
+        });
+      } catch (err) {
+        this.logger.warn(`Échec log lockout: ${(err as Error).message}`);
+      }
+      // 📬 Notifier tous les ADMIN qu'un compte vient d'être verrouillé
+      try {
+        const admins = await this.prisma.utilisateur.findMany({
+          where: { role: RoleUtilisateur.ADMIN, statut: StatutUtilisateur.ACTIF },
+          select: { id: true, email: true },
+        });
+        for (const admin of admins) {
+          await this.prisma.notification.create({
+            data: {
+              destinataire: admin.email,
+              utilisateurId: admin.id,
+              sujet: `[SÉCURITÉ] Compte verrouillé : ${email}`,
+              message: `Le compte "${email}" a été temporairement verrouillé après ${MAX_ATTEMPTS} tentatives de connexion infructueuses dans une fenêtre de ${ATTEMPT_WINDOW_MS / 60_000} minutes. Le verrouillage dure ${LOCKOUT_MS / 60_000} minutes. Vérifiez si une action est nécessaire (compte compromis ?).`,
+              type: 'COMPTE_VERROUILLE',
+              statut: 'EN_ATTENTE',
+              entiteType: 'AUTH',
+              entiteId: email,
+            },
+          });
+        }
+      } catch (err) {
+        this.logger.warn(`Échec notif admin lockout: ${(err as Error).message}`);
+      }
     }
   }
 
@@ -81,7 +116,7 @@ export class AuthService {
     });
 
     if (!user) {
-      this.recordFailedAttempt(loginDto.email);
+      await this.recordFailedAttempt(loginDto.email);
       throw new NotFoundException('Identifiants incorrects');
     }
 
@@ -91,7 +126,7 @@ export class AuthService {
       user.motDePasse,
     );
     if (!isPasswordValid) {
-      this.recordFailedAttempt(loginDto.email);
+      await this.recordFailedAttempt(loginDto.email);
       throw new UnauthorizedException('Identifiants incorrects');
     }
 
