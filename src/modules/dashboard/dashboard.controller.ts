@@ -30,6 +30,8 @@ export class DashboardController {
     RoleUtilisateur.DIRECTEUR_AUDIT,
     RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
     RoleUtilisateur.CHEF_MISSION,
+    RoleUtilisateur.AUDITEUR_SENIOR,
+    RoleUtilisateur.AUDITEUR_JUNIOR,
     RoleUtilisateur.LECTURE_SEULE,
   )
   @ApiOperation({ summary: 'Performance des auditeurs (missions, points, taux de clôture)' })

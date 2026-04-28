@@ -544,15 +544,15 @@ model PieceJointe {
   televerseePar String
   dateAjout     DateTime @default(now())
 
-  // Polymorphisme relationnel
+  // Polymorphisme relationnel — cascade pour éviter les orphelins
   auditId String?
-  audit   Audit?  @relation(fields: [auditId], references: [id])
+  audit   Audit?  @relation(fields: [auditId], references: [id], onDelete: Cascade)
 
   pointAuditId String?
-  pointAudit   PointAudit? @relation(fields: [pointAuditId], references: [id])
+  pointAudit   PointAudit? @relation(fields: [pointAuditId], references: [id], onDelete: Cascade)
 
   actionPointId String?
-  actionPoint   ActionPoint? @relation(fields: [actionPointId], references: [id])
+  actionPoint   ActionPoint? @relation(fields: [actionPointId], references: [id], onDelete: Cascade)
 
   @@map("pieces_jointes")
 }
