@@ -4,6 +4,7 @@ import { CreateCommentaireDto } from './dto/create-commentaire.dto';
 import { RoleUtilisateur, TypeActionLog } from 'src/generated/prisma/enums';
 import { isAuditTeamRole } from 'src/auth/constants/roles-matrix';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { AppGateway } from 'src/socket-io/gateways/app.gateway';
 import { SOCKET_EVENTS } from 'src/socket-io/interfaces/connected-user.interface';
 
@@ -19,6 +20,7 @@ export class CommentairesService {
     private readonly prisma: PrismaService,
     private readonly journalService: JournalAuditService,
     private readonly gateway: AppGateway,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(createurId: string, dto: CreateCommentaireDto, user?: UserContext) {
@@ -76,6 +78,32 @@ export class CommentairesService {
       this.gateway.emitToAuditTeam(SOCKET_EVENTS.COMMENT_CREATED, payload);
     } else {
       this.gateway.broadcast(SOCKET_EVENTS.COMMENT_CREATED, payload);
+    }
+
+    // 📬 Notifier le créateur de l'entité commentée (point/action) si différent de l'auteur
+    try {
+      if (typeEntite === 'POINT_AUDIT') {
+        const point = await this.prisma.pointAudit.findUnique({
+          where: { id: entiteId },
+          select: {
+            reference: true,
+            createur: { select: { id: true, email: true } },
+          },
+        });
+        if (point?.createur && point.createur.id !== createurId) {
+          await this.notificationsService.creer({
+            destinataire: point.createur.email,
+            utilisateurId: point.createur.id,
+            sujet: `[NOUVEAU COMMENTAIRE] ${point.reference}`,
+            message: `${user?.nom ?? 'Quelqu\'un'} a commenté sur votre constat ${point.reference}.`,
+            type: 'NOUVEAU_COMMENTAIRE',
+            entiteType: 'POINT_AUDIT',
+            entiteId,
+          });
+        }
+      }
+    } catch (err) {
+      console.error('[commentaires] Échec notif:', err);
     }
 
     return commentaire;

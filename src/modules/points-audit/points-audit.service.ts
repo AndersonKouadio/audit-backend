@@ -483,6 +483,40 @@ export class PointsAuditService {
     this.gateway.emitToAuditTeam(SOCKET_EVENTS.POINT_STATUS_BU_CHANGED, buPayload);
     this.gateway.emitToDept(point.departementId, SOCKET_EVENTS.POINT_STATUS_BU_CHANGED, buPayload);
 
+    // 📬 Notification in-app à l'équipe audit (créateur + responsable de la mission)
+    try {
+      const fullPoint = await this.prisma.pointAudit.findUnique({
+        where: { id },
+        include: {
+          createur: { select: { id: true, email: true } },
+          audit: {
+            select: {
+              responsableId: true,
+              responsable: { select: { id: true, email: true } },
+            },
+          },
+        },
+      });
+      const targets = new Map<string, string>();
+      if (fullPoint?.createur) targets.set(fullPoint.createur.id, fullPoint.createur.email);
+      if (fullPoint?.audit?.responsable) {
+        targets.set(fullPoint.audit.responsable.id, fullPoint.audit.responsable.email);
+      }
+      for (const [userId, email] of targets) {
+        await this.notificationsService.creer({
+          destinataire: email,
+          utilisateurId: userId,
+          sujet: `[STATUT BU] ${point.reference} → ${statutBu}`,
+          message: `${user.nom} (BU) a déclaré le statut "${statutBu}" sur le constat ${point.reference}. Justification : ${commentaireStatutBu.trim().slice(0, 200)}`,
+          type: 'CHANGEMENT_STATUT_BU',
+          entiteType: 'POINT_AUDIT',
+          entiteId: point.id,
+        });
+      }
+    } catch (err) {
+      console.error('[points-audit] Échec notif statut BU:', err);
+    }
+
     return point;
   }
 
@@ -657,7 +691,14 @@ export class PointsAuditService {
   async remove(id: string, user?: UserContext) {
     const point = await this.prisma.pointAudit.findUnique({
       where: { id },
-      select: { reference: true, auditId: true, departementId: true },
+      select: {
+        reference: true,
+        titre: true,
+        auditId: true,
+        departementId: true,
+        createurId: true,
+        createur: { select: { id: true, email: true } },
+      },
     });
     if (!point) throw new NotFoundException("Point d'audit introuvable.");
 
@@ -684,6 +725,23 @@ export class PointsAuditService {
     };
     this.gateway.emitToAuditTeam(SOCKET_EVENTS.POINT_DELETED, deletePayload);
     this.gateway.emitToDept(point.departementId, SOCKET_EVENTS.POINT_DELETED, deletePayload);
+
+    // 📬 Notification au créateur
+    if (point.createur && point.createur.id !== user?.id) {
+      try {
+        await this.notificationsService.creer({
+          destinataire: point.createur.email,
+          utilisateurId: point.createur.id,
+          sujet: `[POINT SUPPRIMÉ] ${point.reference}`,
+          message: `Le constat ${point.reference} - ${point.titre} a été supprimé par ${user?.nom ?? 'un administrateur'}.`,
+          type: 'POINT_SUPPRIME',
+          entiteType: 'POINT_AUDIT',
+          entiteId: id,
+        });
+      } catch (err) {
+        console.error('[points-audit] Échec notif suppression:', err);
+      }
+    }
 
     return result;
   }

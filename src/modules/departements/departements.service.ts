@@ -12,6 +12,7 @@ import { TypeActionLog } from 'src/generated/prisma/enums';
 import { DeptQueryDto } from './dto/dept-query.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 export interface UserContext {
   id: string;
@@ -24,7 +25,39 @@ export class DepartementsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly journalService: JournalAuditService,
+    private readonly notificationsService: NotificationsService,
   ) {}
+
+  /** Notifier un Risk Champion qu'il a été désigné */
+  private async notifyRiskChampion(
+    riskChampionId: string,
+    deptId: string,
+    deptName: string,
+    isNew: boolean,
+  ) {
+    try {
+      const champion = await this.prisma.utilisateur.findUnique({
+        where: { id: riskChampionId },
+        select: { id: true, email: true },
+      });
+      if (!champion) return;
+      await this.notificationsService.creer({
+        destinataire: champion.email,
+        utilisateurId: champion.id,
+        sujet: isNew
+          ? `[RISK CHAMPION] Désigné pour ${deptName}`
+          : `[RISK CHAMPION] Changement pour ${deptName}`,
+        message: isNew
+          ? `Vous avez été désigné(e) Risk Champion du département ${deptName}. Vous recevrez désormais les alertes liées à ce département.`
+          : `Vous n'êtes plus Risk Champion du département ${deptName}.`,
+        type: 'RISK_CHAMPION',
+        entiteType: 'DEPARTEMENT',
+        entiteId: deptId,
+      });
+    } catch (err) {
+      console.error('[departements] Échec notif risk champion:', err);
+    }
+  }
 
   // CRÉATION
   async create(dto: CreateDepartementDto, actor?: UserContext) {
@@ -62,6 +95,11 @@ export class DepartementsService {
         entiteId: dept.id,
         entiteRef: `${dept.code} - ${dept.nom}`,
       });
+    }
+
+    // 📬 Notifier le Risk Champion désigné à la création
+    if (dept.riskChampionId) {
+      await this.notifyRiskChampion(dept.riskChampionId, dept.id, dept.nom, true);
     }
 
     return dept;
@@ -164,6 +202,12 @@ export class DepartementsService {
         throw new NotFoundException('Risk Champion (utilisateur) introuvable.');
     }
 
+    // Charger le champion existant pour détecter le changement
+    const existing = await this.prisma.departement.findUnique({
+      where: { id },
+      select: { riskChampionId: true },
+    });
+
     const dept = await this.prisma.departement.update({
       where: { id },
       data: dto,
@@ -180,6 +224,19 @@ export class DepartementsService {
         entiteRef: `${dept.code} - ${dept.nom}`,
         details: { champs: Object.keys(dto) },
       });
+    }
+
+    // 📬 Notifier ancien et nouveau Risk Champion si changement
+    if (
+      'riskChampionId' in dto &&
+      dto.riskChampionId !== existing?.riskChampionId
+    ) {
+      if (existing?.riskChampionId) {
+        await this.notifyRiskChampion(existing.riskChampionId, dept.id, dept.nom, false);
+      }
+      if (dto.riskChampionId) {
+        await this.notifyRiskChampion(dto.riskChampionId, dept.id, dept.nom, true);
+      }
     }
 
     return dept;

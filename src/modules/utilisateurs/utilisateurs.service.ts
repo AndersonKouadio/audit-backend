@@ -18,6 +18,7 @@ import { UpdateMeDto } from './dto/update-me.dto';
 import { UpdateUtilisateurDto } from './dto/update-utilisateur.dto';
 import { UserQueryDto } from './dto/user-query.dto';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 export interface UserContext {
   id: string;
@@ -30,6 +31,7 @@ export class UtilisateursService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly journalService: JournalAuditService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   // Utilitaire privé pour standardiser la sélection du département
@@ -77,6 +79,22 @@ export class UtilisateursService {
         entiteRef: `${user.prenom} ${user.nom} (${user.email})`,
         details: { role: user.role, departementId: user.departementId },
       });
+    }
+
+    // 📬 Notification de bienvenue (in-app + email)
+    try {
+      const frontendUrl = process.env.FRONTEND_URL || 'https://audit-web.lunion-lab.com';
+      await this.notificationsService.creer({
+        destinataire: user.email,
+        utilisateurId: user.id,
+        sujet: '[BIENVENUE] Votre compte Audit Apps',
+        message: `Bienvenue ${user.prenom} ${user.nom}. Votre compte a été créé avec le rôle ${user.role}. Connectez-vous à ${frontendUrl} avec l'email ${user.email} et le mot de passe communiqué par votre administrateur.`,
+        type: 'BIENVENUE',
+        entiteType: 'UTILISATEUR',
+        entiteId: user.id,
+      });
+    } catch (err) {
+      console.error('[utilisateurs] Échec notif bienvenue:', err);
     }
 
     // On retire le mot de passe proprement
@@ -174,6 +192,24 @@ export class UtilisateursService {
           entiteRef: `${user.prenom} ${user.nom} (${user.email})`,
           details: { champs: Object.keys(dto) },
         });
+      }
+
+      // 📬 Notif au user concerné si rôle/statut/dept changent
+      const sensitiveChanges = ['role', 'statut', 'departementId'].filter((k) => k in dto);
+      if (sensitiveChanges.length > 0) {
+        try {
+          await this.notificationsService.creer({
+            destinataire: user.email,
+            utilisateurId: user.id,
+            sujet: '[VOTRE COMPTE] Modification de votre profil',
+            message: `Votre profil a été modifié par un administrateur. Champs concernés : ${sensitiveChanges.join(', ')}.`,
+            type: 'PROFIL_MODIFIE',
+            entiteType: 'UTILISATEUR',
+            entiteId: user.id,
+          });
+        } catch (err) {
+          console.error('[utilisateurs] Échec notif modif:', err);
+        }
       }
 
       const { motDePasse, ...userWithoutPassword } = user;

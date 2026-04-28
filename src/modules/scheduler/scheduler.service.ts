@@ -44,7 +44,20 @@ export class SchedulerService {
         statut: StatutPoint.EN_ATTENTE_VALIDATION,
         dateCPF: { lt: ilYa30Jours },
       },
-      select: { id: true, reference: true, createurId: true, departementId: true },
+      select: {
+        id: true,
+        reference: true,
+        titre: true,
+        createurId: true,
+        departementId: true,
+        createur: { select: { id: true, email: true } },
+        departement: {
+          select: {
+            riskChampionId: true,
+            riskChampion: { select: { id: true, email: true } },
+          },
+        },
+      },
     });
 
     if (pointsExpires.length === 0) {
@@ -94,7 +107,7 @@ export class SchedulerService {
       html: emailHtml,
     });
 
-    // Notification in-app pour l'équipe
+    // Notification in-app pour l'équipe (digest global)
     await this.notificationsService.creer({
       destinataire: teamEmail,
       sujet: `[AUTO] ${pointsExpires.length} point(s) remis à OUVERT`,
@@ -103,7 +116,31 @@ export class SchedulerService {
       entiteType: 'POINT_AUDIT',
     });
 
-    this.logger.log(`✅ ${pointsExpires.length} point(s) remis à OUVERT.`);
+    // 📬 Notification individuelle (in-app push) à chaque créateur + risk champion concerné
+    for (const p of pointsExpires) {
+      const targets = new Map<string, string>();
+      if (p.createur) targets.set(p.createur.id, p.createur.email);
+      if (p.departement?.riskChampion) {
+        targets.set(p.departement.riskChampion.id, p.departement.riskChampion.email);
+      }
+      for (const [userId, email] of targets) {
+        try {
+          await this.notificationsService.creer({
+            destinataire: email,
+            utilisateurId: userId,
+            sujet: `[CPF EXPIRÉ] ${p.reference} remis à OUVERT`,
+            message: `Le point ${p.reference} - ${p.titre} a été automatiquement remis à OUVERT (30 jours sans validation audit). Veuillez le traiter.`,
+            type: 'RETOUR_AUTO_CPF',
+            entiteType: 'POINT_AUDIT',
+            entiteId: p.id,
+          });
+        } catch (err) {
+          this.logger.warn(`Échec notif CPF user ${userId}: ${(err as Error).message}`);
+        }
+      }
+    }
+
+    this.logger.log(`✅ ${pointsExpires.length} point(s) remis à OUVERT + notifs individuelles.`);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -265,6 +302,85 @@ export class SchedulerService {
         (err as Error).stack,
       );
     }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CRON 5 : Résumé quotidien (Daily Digest) — chaque jour à 08h00
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CRON 6 : Rappel échéance proche pour actions (J-7) — chaque jour à 8h30
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  @Cron('30 8 * * *', { name: 'action-deadline-j7', timeZone: 'Africa/Abidjan' })
+  async handleActionDeadlineJ7() {
+    try {
+      await this._handleActionDeadlineJ7Impl();
+    } catch (err) {
+      this.logger.error(
+        `❌ Cron action-deadline-j7 a échoué : ${(err as Error).message}`,
+        (err as Error).stack,
+      );
+    }
+  }
+
+  private async _handleActionDeadlineJ7Impl() {
+    const maintenant = new Date();
+    const dans7Jours = new Date(maintenant);
+    dans7Jours.setDate(dans7Jours.getDate() + 7);
+    const dans6Jours = new Date(maintenant);
+    dans6Jours.setDate(dans6Jours.getDate() + 6);
+
+    // Actions arrivant à échéance dans exactement 7 jours (entre J+6 et J+7) et non terminées
+    const actions = await this.prisma.actionPoint.findMany({
+      where: {
+        dateEcheance: { gte: dans6Jours, lt: dans7Jours },
+        statut: { notIn: ['TERMINE', 'ANNULEE'] as any },
+      },
+      include: {
+        responsable: { select: { id: true, email: true } },
+        pointAudit: {
+          select: {
+            reference: true,
+            titre: true,
+            departement: {
+              select: {
+                riskChampion: { select: { id: true, email: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (actions.length === 0) {
+      this.logger.log('✅ Aucune action à rappeler (J-7).');
+      return;
+    }
+
+    for (const action of actions) {
+      const targets = new Map<string, string>();
+      if (action.responsable) targets.set(action.responsable.id, action.responsable.email);
+      if (action.pointAudit?.departement?.riskChampion) {
+        targets.set(
+          action.pointAudit.departement.riskChampion.id,
+          action.pointAudit.departement.riskChampion.email,
+        );
+      }
+      for (const [userId, email] of targets) {
+        await this.notificationsService.creer({
+          destinataire: email,
+          utilisateurId: userId,
+          sujet: `[ÉCHÉANCE J-7] ${action.pointAudit?.reference}`,
+          message: `Une action corrective sur le constat ${action.pointAudit?.reference} - ${action.pointAudit?.titre} arrive à échéance dans 7 jours (${new Date(action.dateEcheance).toLocaleDateString('fr-FR')}).`,
+          type: 'ECHEANCE_PROCHE_ACTION',
+          entiteType: 'ACTION_POINT',
+          entiteId: action.id,
+        });
+      }
+    }
+
+    this.logger.log(`✅ ${actions.length} action(s) avec rappel J-7 envoyé.`);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

@@ -11,6 +11,7 @@ import * as path from 'path';
 import { RoleUtilisateur, TypeActionLog } from 'src/generated/prisma/enums';
 import { isPrivilegedRole } from 'src/auth/constants/roles-matrix';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 export interface UserContext {
   id: string;
@@ -57,6 +58,7 @@ export class PiecesJointesService {
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
     private readonly journalService: JournalAuditService,
+    private readonly notificationsService: NotificationsService,
   ) {
     this.uploadsDir = path.join(process.cwd(), 'uploads');
     this.baseUrl = this.config.get<string>('APP_URL', 'http://localhost:3001');
@@ -136,6 +138,32 @@ export class PiecesJointesService {
           mime: file.mimetype,
         },
       });
+    }
+
+    // 📬 Notif au créateur de l'entité parente si différent de l'auteur
+    try {
+      if (entiteType === 'POINT_AUDIT' && actor?.id) {
+        const point = await this.prisma.pointAudit.findUnique({
+          where: { id: entiteId },
+          select: {
+            reference: true,
+            createur: { select: { id: true, email: true } },
+          },
+        });
+        if (point?.createur && point.createur.id !== actor.id) {
+          await this.notificationsService.creer({
+            destinataire: point.createur.email,
+            utilisateurId: point.createur.id,
+            sujet: `[PIÈCE JOINTE] ${point.reference}`,
+            message: `${actor.nom} a ajouté un fichier "${file.originalname}" sur le constat ${point.reference}.`,
+            type: 'NOUVELLE_PIECE_JOINTE',
+            entiteType: 'POINT_AUDIT',
+            entiteId,
+          });
+        }
+      }
+    } catch (err) {
+      console.error('[pieces-jointes] Échec notif:', err);
     }
 
     return piece;

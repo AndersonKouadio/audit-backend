@@ -95,13 +95,55 @@ export class FormulaireRafService {
       },
     });
 
-    // ── Notifier les HoD qu'un nouveau RAF nécessite leur approbation ──
-    await this.notifierParRole(
-      RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
-      `Nouveau formulaire RAF — ${numero}`,
-      `Un formulaire d'acceptation du risque (${numero}) a été soumis et nécessite votre approbation en tant que Head of Department.`,
-      raf.id,
-    );
+    // ── Notifier le HoD spécifique du département des points (au lieu de tous les CHEF_DEPT) ──
+    if (raf.pointsAudit && raf.pointsAudit.length > 0) {
+      const points = await this.prisma.pointAudit.findMany({
+        where: { id: { in: raf.pointsAudit.map((p) => p.id) } },
+        select: {
+          departement: {
+            select: {
+              riskChampionId: true,
+              employes: {
+                where: { role: RoleUtilisateur.MANAGER_METIER },
+                select: { id: true, email: true },
+              },
+            },
+          },
+        },
+      });
+      const hodTargets = new Map<string, string>();
+      for (const p of points) {
+        if (p.departement?.riskChampionId) {
+          const champ = await this.prisma.utilisateur.findUnique({
+            where: { id: p.departement.riskChampionId },
+            select: { id: true, email: true },
+          });
+          if (champ) hodTargets.set(champ.id, champ.email);
+        }
+        for (const m of p.departement?.employes ?? []) {
+          hodTargets.set(m.id, m.email);
+        }
+      }
+      for (const [userId, email] of hodTargets) {
+        await this.notificationsService.creer({
+          destinataire: email,
+          utilisateurId: userId,
+          sujet: `[NOUVEAU RAF] ${numero}`,
+          message: `Un formulaire d'acceptation du risque (${numero}) concernant votre département a été soumis et nécessite votre approbation HoD.`,
+          type: 'NOUVEAU_RAF',
+          entiteType: 'FORMULAIRE_RAF',
+          entiteId: raf.id,
+        });
+      }
+    } else {
+      // Fallback : pas de points liés → utiliser le rôle générique
+      await this.notifierParRole(
+        RoleUtilisateur.CHEF_DEPARTEMENT_AUDIT,
+        `Nouveau formulaire RAF — ${numero}`,
+        `Un formulaire d'acceptation du risque (${numero}) a été soumis et nécessite votre approbation HoD.`,
+        raf.id,
+      );
+    }
 
     if (actor) {
       await this.journalService.logAction({
@@ -349,19 +391,47 @@ export class FormulaireRafService {
         break;
 
       case 'COMITE':
-        // Notifier les créateurs des points d'audit liés
+        // Notifier : créateurs des points + responsable de l'audit + risk champion du dept
         for (const point of updated.pointsAudit ?? []) {
           const pointFull = await this.prisma.pointAudit.findUnique({
             where: { id: point.id },
-            include: { createur: { select: { id: true, email: true } } },
+            include: {
+              createur: { select: { id: true, email: true } },
+              audit: {
+                select: {
+                  responsableId: true,
+                  responsable: { select: { id: true, email: true } },
+                },
+              },
+              departement: {
+                select: {
+                  riskChampion: { select: { id: true, email: true } },
+                },
+              },
+            },
           });
+
+          const targets = new Map<string, string>();
           if (pointFull?.createur) {
+            targets.set(pointFull.createur.id, pointFull.createur.email);
+          }
+          if (pointFull?.audit?.responsable) {
+            targets.set(pointFull.audit.responsable.id, pointFull.audit.responsable.email);
+          }
+          if (pointFull?.departement?.riskChampion) {
+            targets.set(
+              pointFull.departement.riskChampion.id,
+              pointFull.departement.riskChampion.email,
+            );
+          }
+
+          for (const [userId, email] of targets) {
             await this.notificationsService.creer({
-              destinataire: (pointFull.createur as any).email,
+              destinataire: email,
+              utilisateurId: userId,
               sujet: `RAF ${updated.numero} — Validé par le Comité d'Audit`,
               message: `Le formulaire d'acceptation du risque ${updated.numero} lié au constat "${point.titre}" (${point.reference}) a été entièrement validé par le Comité d'Audit (${dto.nom}).`,
-              type: 'CHANGEMENT_STATUT',
-              utilisateurId: (pointFull.createur as any).id,
+              type: 'RAF_VALIDE',
               entiteType: 'FORMULAIRE_RAF',
               entiteId: id,
             });

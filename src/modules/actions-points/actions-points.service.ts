@@ -258,6 +258,57 @@ export class ActionsPointsService {
     this.gateway.emitToAuditTeam(SOCKET_EVENTS.ACTION_UPDATED, updatePayload);
     this.gateway.emitToUser(updated.responsableId, SOCKET_EVENTS.ACTION_UPDATED, updatePayload);
 
+    // 📬 Notif au créateur du point quand l'action passe à TERMINE (validation à faire)
+    if (updated.statut === 'TERMINE' && existing.statut !== 'TERMINE') {
+      try {
+        const point = await this.prisma.pointAudit.findUnique({
+          where: { id: updated.pointAuditId },
+          select: {
+            reference: true,
+            titre: true,
+            createur: { select: { id: true, email: true } },
+          },
+        });
+        if (point?.createur) {
+          await this.notificationsService.creer({
+            destinataire: point.createur.email,
+            utilisateurId: point.createur.id,
+            sujet: `[ACTION TERMINÉE] ${point.reference}`,
+            message: `Une action corrective sur le constat ${point.reference} - ${point.titre} a été marquée comme TERMINÉE. Veuillez la valider.`,
+            type: 'ACTION_TERMINEE',
+            entiteType: 'POINT_AUDIT',
+            entiteId: updated.pointAuditId,
+          });
+        }
+      } catch (err) {
+        console.error('[actions-points] Échec notif action terminée:', err);
+      }
+    }
+
+    // 📬 Réassignation : ancien + nouveau notifiés
+    if (dto.responsableId && dto.responsableId !== existing.responsableId) {
+      try {
+        const ids = [existing.responsableId, dto.responsableId].filter(Boolean) as string[];
+        const users = await this.prisma.utilisateur.findMany({
+          where: { id: { in: ids } },
+          select: { id: true, email: true },
+        });
+        for (const u of users) {
+          await this.notificationsService.creer({
+            destinataire: u.email,
+            utilisateurId: u.id,
+            sujet: `[RÉASSIGNATION] Action corrective`,
+            message: `La responsabilité de l'action "${updated.description?.slice(0, 60) ?? ''}" a été modifiée.`,
+            type: 'REASSIGNATION_ACTION',
+            entiteType: 'ACTION_POINT',
+            entiteId: updated.id,
+          });
+        }
+      } catch (err) {
+        console.error('[actions-points] Échec notif réassignation:', err);
+      }
+    }
+
     return updated;
   }
 
@@ -283,6 +334,29 @@ export class ActionsPointsService {
       id,
       pointAuditId: existing.pointAuditId,
     });
+
+    // 📬 Notif au responsable de l'action
+    if (existing.responsableId && existing.responsableId !== user?.id) {
+      try {
+        const responsable = await this.prisma.utilisateur.findUnique({
+          where: { id: existing.responsableId },
+          select: { id: true, email: true },
+        });
+        if (responsable) {
+          await this.notificationsService.creer({
+            destinataire: responsable.email,
+            utilisateurId: responsable.id,
+            sujet: `[ACTION SUPPRIMÉE]`,
+            message: `Une action corrective qui vous était assignée a été supprimée par ${user?.nom ?? 'un administrateur'}.`,
+            type: 'ACTION_SUPPRIMEE',
+            entiteType: 'ACTION_POINT',
+            entiteId: id,
+          });
+        }
+      } catch (err) {
+        console.error('[actions-points] Échec notif suppression:', err);
+      }
+    }
 
     return result;
   }

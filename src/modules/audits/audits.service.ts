@@ -5,6 +5,7 @@ import { AuditQueryDto } from './dto/audit-query.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { UpdateAuditDto } from './dto/update-audit.dto';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { AppGateway } from 'src/socket-io/gateways/app.gateway';
 import { SOCKET_EVENTS } from 'src/socket-io/interfaces/connected-user.interface';
 import { TypeActionLog, RoleUtilisateur, StatutAudit } from 'src/generated/prisma/enums';
@@ -35,8 +36,38 @@ export class AuditsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly journalService: JournalAuditService,
+    private readonly notificationsService: NotificationsService,
     private readonly gateway: AppGateway,
   ) { }
+
+  /** Helper interne : notifie une liste d'utilisateurs (best-effort) */
+  private async notifyUsers(
+    userIds: string[],
+    payload: {
+      sujet: string;
+      message: string;
+      type: string;
+      entiteType: string;
+      entiteId?: string;
+    },
+  ) {
+    if (userIds.length === 0) return;
+    try {
+      const users = await this.prisma.utilisateur.findMany({
+        where: { id: { in: userIds } },
+        select: { id: true, email: true },
+      });
+      for (const u of users) {
+        await this.notificationsService.creer({
+          destinataire: u.email,
+          utilisateurId: u.id,
+          ...payload,
+        });
+      }
+    } catch (err) {
+      console.error('[audits] Échec notif:', err);
+    }
+  }
 
   async create(dto: CreateAuditDto, user?: UserContext) {
     // 1. Vérifier si la référence est unique
@@ -61,9 +92,9 @@ export class AuditsService {
         },
       },
       include: {
-        responsable: { select: { nom: true, prenom: true } },
+        responsable: { select: { id: true, nom: true, prenom: true } },
         departement: { select: { nom: true, code: true } },
-        equipe: { select: { nom: true, prenom: true } },
+        equipe: { select: { id: true, nom: true, prenom: true } },
       },
     });
 
@@ -93,6 +124,25 @@ export class AuditsService {
     if (audit.departementId) {
       this.gateway.emitToDept(audit.departementId, SOCKET_EVENTS.AUDIT_CREATED, payload);
     }
+
+    // 📬 Notifications in-app : responsable + membres de l'équipe + risk champion du dept
+    const recipientIds = new Set<string>();
+    if (audit.responsableId) recipientIds.add(audit.responsableId);
+    for (const m of audit.equipe ?? []) recipientIds.add(m.id);
+    if (audit.departementId) {
+      const dept = await this.prisma.departement.findUnique({
+        where: { id: audit.departementId },
+        select: { riskChampionId: true },
+      });
+      if (dept?.riskChampionId) recipientIds.add(dept.riskChampionId);
+    }
+    await this.notifyUsers(Array.from(recipientIds), {
+      sujet: `[NOUVELLE MISSION] ${audit.reference} - ${audit.titre}`,
+      message: `Vous êtes assigné(e) à la mission d'audit ${audit.reference} (${audit.type}). Date prévue : ${new Date(audit.dateDebutPrevue).toLocaleDateString('fr-FR')}.`,
+      type: 'NOUVELLE_MISSION',
+      entiteType: 'AUDIT',
+      entiteId: audit.id,
+    });
 
     return audit;
   }
@@ -272,7 +322,7 @@ export class AuditsService {
     this.gateway.emitToAudit(audit.id, SOCKET_EVENTS.AUDIT_UPDATED, updatePayload);
     this.gateway.emitToAuditTeam(SOCKET_EVENTS.AUDIT_UPDATED, updatePayload);
 
-    // Si le statut a changé : event spécialisé
+    // Si le statut a changé : event spécialisé + notifs
     if (data.statut && data.statut !== existing.statut) {
       const statusPayload = {
         id: audit.id,
@@ -281,6 +331,40 @@ export class AuditsService {
         nouveauStatut: data.statut,
       };
       this.gateway.broadcast(SOCKET_EVENTS.AUDIT_STATUS_CHANGED, statusPayload);
+
+      // 📬 Notifs aux acteurs concernés selon la transition
+      const fullAudit = await this.prisma.audit.findUnique({
+        where: { id },
+        include: {
+          equipe: { select: { id: true } },
+          departement: { select: { riskChampionId: true } },
+        },
+      });
+      const teamIds = new Set<string>();
+      if (fullAudit?.responsableId) teamIds.add(fullAudit.responsableId);
+      for (const m of fullAudit?.equipe ?? []) teamIds.add(m.id);
+      if (fullAudit?.departement?.riskChampionId) {
+        teamIds.add(fullAudit.departement.riskChampionId);
+      }
+      await this.notifyUsers(Array.from(teamIds), {
+        sujet: `[STATUT MISSION] ${audit.reference} → ${data.statut}`,
+        message: `La mission ${audit.reference} - ${audit.titre} est passée de ${existing.statut} à ${data.statut}.`,
+        type: 'CHANGEMENT_STATUT_AUDIT',
+        entiteType: 'AUDIT',
+        entiteId: audit.id,
+      });
+    }
+
+    // Notifier ancien et nouveau responsable si changement
+    if (data.responsableId && data.responsableId !== existing.responsableId) {
+      const targets = [existing.responsableId, data.responsableId].filter(Boolean) as string[];
+      await this.notifyUsers(targets, {
+        sujet: `[RESPONSABLE MISSION] ${audit.reference}`,
+        message: `Le responsable de la mission ${audit.reference} a été modifié.`,
+        type: 'CHANGEMENT_RESPONSABLE',
+        entiteType: 'AUDIT',
+        entiteId: audit.id,
+      });
     }
 
     return audit;
@@ -339,6 +423,22 @@ export class AuditsService {
       });
     }
 
+    // 📬 Notif au membre ajouté
+    await this.notifyUsers([userId], {
+      sujet: `[ÉQUIPE D'AUDIT] Vous avez été assigné à ${audit.reference}`,
+      message: `Vous avez été ajouté(e) à l'équipe de la mission ${audit.reference} - ${audit.titre}.`,
+      type: 'ASSIGNATION_EQUIPE',
+      entiteType: 'AUDIT',
+      entiteId: auditId,
+    });
+
+    // 🔌 Temps réel
+    this.gateway.emitToAudit(auditId, SOCKET_EVENTS.AUDIT_TEAM_UPDATED, {
+      auditId,
+      action: 'added',
+      memberId: userId,
+    });
+
     return updated;
   }
 
@@ -364,6 +464,21 @@ export class AuditsService {
         details: { action: 'remove_team_member', memberId: userId },
       });
     }
+
+    // 📬 Notif au membre retiré
+    await this.notifyUsers([userId], {
+      sujet: `[ÉQUIPE D'AUDIT] Vous avez été retiré de ${audit.reference}`,
+      message: `Vous n'êtes plus membre de l'équipe de la mission ${audit.reference}.`,
+      type: 'RETRAIT_EQUIPE',
+      entiteType: 'AUDIT',
+      entiteId: auditId,
+    });
+
+    this.gateway.emitToAudit(auditId, SOCKET_EVENTS.AUDIT_TEAM_UPDATED, {
+      auditId,
+      action: 'removed',
+      memberId: userId,
+    });
 
     return updated;
   }
