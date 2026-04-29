@@ -30,13 +30,14 @@ import { SocketIoModule } from 'src/socket-io/socket-io.module';
     }),
 
     // 1.bis. Rate limiting global (anti brute-force)
-    // 100 requêtes / minute par IP par défaut.
-    // Le throttler peut être surchargé par endpoint avec @Throttle().
+    // 1000 requêtes / minute par IP : suffisant pour une SPA qui charge plusieurs
+    // queries en parallèle (dashboard, points-audit, reporting) tout en bloquant
+    // les bots/scrapers. Le throttler stricte reste sur /auth/login (10/15 min).
     ThrottlerModule.forRoot([
       {
         name: 'default',
         ttl: 60_000, // 1 minute
-        limit: 100,
+        limit: 1000,
       },
       {
         name: 'auth',
