@@ -125,17 +125,13 @@ export class AuditsService {
       this.gateway.emitToDept(audit.departementId, SOCKET_EVENTS.AUDIT_CREATED, payload);
     }
 
-    // 📬 Notifications in-app : responsable + membres de l'équipe + risk champion du dept
+    // 📬 Notifications in-app : responsable + membres de l'équipe uniquement.
+    // Le risk champion (rôle BU) sera notifié à la publication via changerStatut,
+    // sinon il reçoit une notif sur un audit qu'il ne peut pas encore voir
+    // (les BU n'accèdent aux audits qu'à partir du statut PUBLIE).
     const recipientIds = new Set<string>();
     if (audit.responsableId) recipientIds.add(audit.responsableId);
     for (const m of audit.equipe ?? []) recipientIds.add(m.id);
-    if (audit.departementId) {
-      const dept = await this.prisma.departement.findUnique({
-        where: { id: audit.departementId },
-        select: { riskChampionId: true },
-      });
-      if (dept?.riskChampionId) recipientIds.add(dept.riskChampionId);
-    }
     await this.notifyUsers(Array.from(recipientIds), {
       sujet: `[NOUVELLE MISSION] ${audit.reference} - ${audit.titre}`,
       message: `Vous êtes assigné(e) à la mission d'audit ${audit.reference} (${audit.type}). Date prévue : ${new Date(audit.dateDebutPrevue).toLocaleDateString('fr-FR')}.`,
