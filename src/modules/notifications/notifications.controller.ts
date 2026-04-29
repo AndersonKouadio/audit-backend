@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Patch,
+  Post,
   Param,
   Query,
   Req,
@@ -68,5 +69,21 @@ export class NotificationsController {
   @ApiOperation({ summary: 'Marquer toutes les notifications comme lues' })
   marquerToutesLues(@Req() req) {
     return this.notificationsService.marquerToutesLues(req.user.id);
+  }
+
+  // ── Test : envoyer une notification à soi-même (pour vérifier le son) ────
+
+  @Post('test')
+  @Roles(...ROLES_AUTHENTIFIE)
+  @ApiOperation({ summary: 'Envoyer une notification de test à soi-même' })
+  async envoyerTest(@Req() req) {
+    return this.notificationsService.creer({
+      destinataire: req.user.email,
+      utilisateurId: req.user.id,
+      sujet: 'Test notification',
+      message: 'Si vous entendez ce son, tout fonctionne ✓',
+      type: 'TEST',
+      envoiImmediat: false,
+    });
   }
 }
