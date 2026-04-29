@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from 'src/auth/auth.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { OrganisationModule } from 'src/modules/organisation/organisation.module';
@@ -28,23 +26,6 @@ import { SocketIoModule } from 'src/socket-io/socket-io.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-
-    // 1.bis. Rate limiting global (anti brute-force)
-    // 1000 requêtes / minute par IP : suffisant pour une SPA qui charge plusieurs
-    // queries en parallèle (dashboard, points-audit, reporting) tout en bloquant
-    // les bots/scrapers. Le throttler stricte reste sur /auth/login (10/15 min).
-    ThrottlerModule.forRoot([
-      {
-        name: 'default',
-        ttl: 60_000, // 1 minute
-        limit: 1000,
-      },
-      {
-        name: 'auth',
-        ttl: 15 * 60_000, // 15 minutes
-        limit: 10, // 10 tentatives login / 15 min / IP
-      },
-    ]),
 
     // 2. Socle technique (Base de données)
     PrismaModule,
@@ -85,12 +66,6 @@ import { SocketIoModule } from 'src/socket-io/socket-io.module';
     ExportModule,
   ],
   controllers: [],
-  providers: [
-    // Rate limiting global appliqué à toutes les routes
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-  ],
+  providers: [],
 })
 export class AppModule {}

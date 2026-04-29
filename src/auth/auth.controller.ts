@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { Utilisateur } from 'src/generated/prisma/client';
 import { LoginDto } from './dto/login.dto';
@@ -23,8 +22,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  // Anti brute-force : 10 tentatives par 15 minutes par IP
-  @Throttle({ auth: { limit: 10, ttl: 15 * 60_000 } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Connexion utilisateur' })
   @ApiResponse({ status: 200, description: 'Token JWT généré' })
@@ -50,7 +47,6 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  @Throttle({ auth: { limit: 5, ttl: 15 * 60_000 } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Demande de réinitialisation de mot de passe (Envoie OTP)',
@@ -64,7 +60,6 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  @Throttle({ auth: { limit: 10, ttl: 15 * 60_000 } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Valider OTP et changer le mot de passe' })
   @ApiResponse({ status: 200, description: 'Mot de passe changé avec succès' })
