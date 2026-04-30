@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAuditDto } from './dto/create-audit.dto';
 import { AuditQueryDto } from './dto/audit-query.dto';
@@ -70,14 +70,14 @@ export class AuditsService {
   }
 
   async create(dto: CreateAuditDto, user?: UserContext) {
-    // 1. Vérifier si la référence est unique
-    const exists = await this.prisma.audit.findUnique({
-      where: { reference: dto.reference },
+    // 1. Génération automatique de la référence : AUD-YYYY-NNN
+    //    NNN = compteur incrémental sur l'année fiscale en cours.
+    const annee = dto.anneeFiscale;
+    const prefix = `AUD-${annee}-`;
+    const count = await this.prisma.audit.count({
+      where: { reference: { startsWith: prefix } },
     });
-    if (exists)
-      throw new ConflictException(
-        `La référence ${dto.reference} est déjà utilisée.`,
-      );
+    const reference = `${prefix}${String(count + 1).padStart(3, '0')}`;
 
     // 2. Création avec relations
     const { equipeIds, ...data } = dto;
@@ -85,6 +85,7 @@ export class AuditsService {
     const audit = await this.prisma.audit.create({
       data: {
         ...data,
+        reference,
         dateDebutPrevue: new Date(data.dateDebutPrevue),
         dateFinPrevue: new Date(data.dateFinPrevue),
         equipe: {

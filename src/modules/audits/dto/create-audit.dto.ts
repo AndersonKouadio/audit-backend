@@ -11,10 +11,8 @@ import {
 import { TypeAudit } from 'src/generated/prisma/enums';
 
 export class CreateAuditDto {
-  @ApiProperty({ example: 'AUD-2026-001' })
-  @IsNotEmpty()
-  @IsString()
-  reference: string;
+  // La référence est désormais générée automatiquement par le service
+  // (format AUD-YYYY-NNN). Champ retiré du DTO de création.
 
   @ApiProperty({ example: 'Audit des processus Achats' })
   @IsNotEmpty()
