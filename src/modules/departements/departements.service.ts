@@ -3,6 +3,8 @@ import {
   ConflictException,
   NotFoundException,
   BadRequestException,
+  Logger,
+  OnApplicationBootstrap,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateDepartementDto } from './dto/create-departement.dto';
@@ -13,6 +15,7 @@ import { DeptQueryDto } from './dto/dept-query.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 import { JournalAuditService } from '../journal-audit/journal-audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { AUDIT_DEPT_CODE, AUDIT_DEPT_DEFAULT } from './departement.constants';
 
 export interface UserContext {
   id: string;
@@ -21,12 +24,36 @@ export interface UserContext {
 }
 
 @Injectable()
-export class DepartementsService {
+export class DepartementsService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(DepartementsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly journalService: JournalAuditService,
     private readonly notificationsService: NotificationsService,
   ) {}
+
+  /**
+   * Au démarrage de l'app, on s'assure que le département AUDIT existe.
+   * Idempotent (upsert).
+   */
+  async onApplicationBootstrap() {
+    try {
+      const dept = await this.prisma.departement.upsert({
+        where: { code: AUDIT_DEPT_CODE },
+        update: {},
+        create: AUDIT_DEPT_DEFAULT,
+      });
+      this.logger.log(
+        `Département système ${AUDIT_DEPT_CODE} prêt (id=${dept.id}).`,
+      );
+    } catch (err) {
+      this.logger.error(
+        `Impossible de provisionner le département ${AUDIT_DEPT_CODE} :`,
+        err,
+      );
+    }
+  }
 
   /** Notifier un Risk Champion qu'il a été désigné */
   private async notifyRiskChampion(
@@ -284,6 +311,12 @@ export class DepartementsService {
       },
     });
     if (!dept) throw new NotFoundException(`Département #${id} introuvable`);
+
+    if (dept.code === AUDIT_DEPT_CODE) {
+      throw new BadRequestException(
+        `Le département "${dept.nom}" est un département système et ne peut pas être supprimé.`,
+      );
+    }
 
     if (dept._count.sousDepartements > 0) {
       throw new BadRequestException(

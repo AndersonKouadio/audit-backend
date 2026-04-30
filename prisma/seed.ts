@@ -41,19 +41,22 @@ async function main() {
   }
 
   // ---------------------------------------------------------
-  // 2. CRÉATION DU DÉPARTEMENT "IT" (Strict minimum)
+  // 2. DÉPARTEMENTS SYSTÈME
   // ---------------------------------------------------------
-  // L'admin a besoin d'un département pour exister, on crée donc IT/Support par défaut.
-  const deptIT = await prisma.departement.upsert({
-    where: { code: 'IT' },
+  // Le département AUDIT héberge l'équipe d'audit (CHEF_MISSION, AUDITEUR_*,
+  // STAGIAIRE) ainsi que l'admin système. Il est aussi recréé automatiquement
+  // au démarrage de l'app via DepartementsService.onApplicationBootstrap.
+  const deptAudit = await prisma.departement.upsert({
+    where: { code: 'AUDIT' },
     update: {},
     create: {
-      code: 'IT',
-      nom: "Support & Systèmes d'Information",
-      description: 'Département technique (Généré par le système)',
+      code: 'AUDIT',
+      nom: 'Audit Interne',
+      description:
+        "Département en charge des missions d'audit interne (généré automatiquement par le système).",
     },
   });
-  console.log('💻 Département IT vérifié/créé.');
+  console.log('🛡️  Département AUDIT vérifié/créé.');
 
   // ---------------------------------------------------------
   // 3. CRÉATION DU SUPER ADMIN
@@ -68,7 +71,7 @@ async function main() {
     where: { email: adminEmail },
     update: {
       role: RoleUtilisateur.ADMIN, // Mise à jour du rôle si nécessaire
-      departementId: deptIT.id,
+      departementId: deptAudit.id,
     },
     create: {
       email: adminEmail,
@@ -77,7 +80,7 @@ async function main() {
       motDePasse: hash,
       role: RoleUtilisateur.ADMIN,
       statut: StatutUtilisateur.ACTIF,
-      departementId: deptIT.id,
+      departementId: deptAudit.id,
     },
   });
 
