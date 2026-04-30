@@ -201,7 +201,15 @@ export class SchedulerService {
               responsable: { select: { id: true, email: true } },
             },
           },
-          createur: { select: { id: true, email: true, nom: true, prenom: true } },
+          // Action owners (responsables des actions ouvertes)
+          actions: {
+            where: {
+              statut: { notIn: [StatutActionPoint.TERMINE, StatutActionPoint.ANNULEE] },
+            },
+            select: {
+              responsable: { select: { id: true, email: true } },
+            },
+          },
         },
         take: 50,
       });
@@ -209,31 +217,58 @@ export class SchedulerService {
       let relancesEnvoyees = 0;
 
       for (const point of pointsEnRetard) {
-        const emailHtml = this.emailService.buildRelanceTemplate({
-          reference: point.reference,
-          titre: point.titre,
-          dateEcheance: point.dateEcheanceActuelle.toLocaleDateString('fr-FR'),
-          destinataire: point.createur.email,
-        });
+        // Destinataires côté BU :
+        //   1. Action owners (responsables des actions ouvertes) — priorité
+        //   2. Sinon Risk Champion du département
+        //   3. Sinon Manager(s) métier du département (filet de sécurité)
+        const destinataires = new Map<string, string>();
+        for (const a of point.actions ?? []) {
+          if (a.responsable) destinataires.set(a.responsable.id, a.responsable.email);
+        }
+        if (destinataires.size === 0 && point.departement?.riskChampion) {
+          destinataires.set(
+            point.departement.riskChampion.id,
+            point.departement.riskChampion.email,
+          );
+        }
+        if (destinataires.size === 0) {
+          for (const m of point.departement?.employes ?? []) {
+            destinataires.set(m.id, m.email);
+          }
+        }
 
-        const ok = await this.emailService.sendEmail({
-          to: point.createur.email,
-          subject: `[RELANCE] Point d'audit en retard — ${point.reference}`,
-          html: emailHtml,
-        });
+        if (destinataires.size === 0) {
+          this.logger.warn(
+            `[Dunning] Aucun destinataire BU pour le point ${point.reference}, relance ignorée.`,
+          );
+          continue;
+        }
 
-        if (ok) relancesEnvoyees++;
+        for (const [userId, email] of destinataires) {
+          const emailHtml = this.emailService.buildRelanceTemplate({
+            reference: point.reference,
+            titre: point.titre,
+            dateEcheance: point.dateEcheanceActuelle.toLocaleDateString('fr-FR'),
+            destinataire: email,
+          });
 
-        // Notification in-app liée à l'utilisateur
-        await this.notificationsService.creer({
-          destinataire: point.createur.email,
-          sujet: `[RELANCE] Point d'audit en retard — ${point.reference}`,
-          message: `Le constat "${point.titre}" (${point.reference}) est en retard. Échéance dépassée : ${point.dateEcheanceActuelle.toLocaleDateString('fr-FR')}.`,
-          type: 'RELANCE_DUNNING',
-          utilisateurId: point.createur.id,
-          entiteType: 'POINT_AUDIT',
-          entiteId: point.id,
-        });
+          const ok = await this.emailService.sendEmail({
+            to: email,
+            subject: `[RELANCE] Point d'audit en retard — ${point.reference}`,
+            html: emailHtml,
+          });
+          if (ok) relancesEnvoyees++;
+
+          await this.notificationsService.creer({
+            destinataire: email,
+            sujet: `[RELANCE] Point d'audit en retard — ${point.reference}`,
+            message: `Le constat "${point.titre}" (${point.reference}) est en retard. Échéance dépassée : ${point.dateEcheanceActuelle.toLocaleDateString('fr-FR')}.`,
+            type: 'RELANCE_DUNNING',
+            utilisateurId: userId,
+            entiteType: 'POINT_AUDIT',
+            entiteId: point.id,
+          });
+        }
 
         // Incrémenter le compteur de relances
         const updated = await this.prisma.pointAudit.update({
