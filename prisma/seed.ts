@@ -85,6 +85,38 @@ async function main() {
   });
 
   console.log(` 👮 Super Admin créé : ${adminEmail}`);
+
+  // ---------------------------------------------------------
+  // 4. PARAMÈTRES SYSTÈME (singleton — défauts du schema)
+  // ---------------------------------------------------------
+  await prisma.parametresSysteme.upsert({
+    where: { id: 'singleton' },
+    update: {},
+    create: { id: 'singleton' }, // tous les autres champs ont des @default
+  });
+  console.log('⚙️  Paramètres système (singleton) vérifiés/créés.');
+
+  // ---------------------------------------------------------
+  // 5. PLANIFICATION DUNNING par défaut (relances hebdomadaires lundi 9h)
+  // ---------------------------------------------------------
+  const existingPlan = await prisma.planificationDunning.findFirst({
+    where: { typeCible: 'POINTS_ECHUS' },
+  });
+  if (!existingPlan) {
+    await prisma.planificationDunning.create({
+      data: {
+        typeCible: 'POINTS_ECHUS',
+        frequence: 'HEBDOMADAIRE',
+        jour: 1, // lundi
+        heure: 9,
+        actif: true,
+      },
+    });
+    console.log('📧 Planification Dunning (lundi 9h) créée.');
+  } else {
+    console.log('ℹ️  Planification Dunning déjà existante.');
+  }
+
   console.log('✅ Seeding terminé. Prêt pour le premier lancement !');
 }
 
